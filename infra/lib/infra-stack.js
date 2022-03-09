@@ -1,5 +1,6 @@
-const { Stack, Duration } = require('aws-cdk-lib');
-// const sqs = require('aws-cdk-lib/aws-sqs');
+const { Stack } = require('aws-cdk-lib');
+const s3 = require('aws-cdk-lib/aws-s3');
+const cdk = require('aws-cdk-lib');
 
 class InfraStack extends Stack {
   /**
@@ -11,13 +12,12 @@ class InfraStack extends Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
-    // example resource
-    // const queue = new sqs.Queue(this, 'InfraQueue', {
-    //   visibilityTimeout: Duration.seconds(300)
-    // });
+    const s3Bucket = new s3.Bucket(this, 'jobinbasani-sample-bucket', {
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: 'index.html',
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
   }
 }
 
-module.exports = { InfraStack }
+module.exports = { InfraStack };

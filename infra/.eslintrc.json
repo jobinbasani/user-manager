@@ -1,0 +1,26 @@
+{
+  "extends": "airbnb-base",
+  "plugins": [
+    "import",
+    "json-format"
+  ],
+  "rules": {
+    "import/no-unresolved": [
+      "error"
+    ],
+    "prefer-destructuring": ["error", {"object": false, "array": false}],
+    "function-paren-newline": ["error", "consistent"],
+    "no-console": "off",
+    "max-len": ["error", { "code": 140 }]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/tests/**"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
+}
