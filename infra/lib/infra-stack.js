@@ -1,4 +1,6 @@
 const { Stack } = require('aws-cdk-lib');
+const { CloudFrontWebDistribution, OriginAccessIdentity } = require('aws-cdk-lib/aws-cloudfront');
+const { PolicyStatement } = require('aws-cdk-lib/aws-iam');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
 
@@ -27,6 +29,40 @@ class InfraStack extends Stack {
       value: s3Bucket.bucketArn,
       description: 'Bucket ARN',
     });
+
+    const cloudFrontOAI = new OriginAccessIdentity(this, 'OAI', {
+      comment: 'OAI for User Manager website.',
+    });
+
+    const distribution = new CloudFrontWebDistribution(this, 'UserManagerCDN', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: s3Bucket,
+            originAccessIdentity: cloudFrontOAI,
+          },
+          behaviors: [{ isDefaultBehavior: true }],
+        },
+      ],
+    });
+
+    const cloudfrontS3Access = new PolicyStatement({
+      actions: [
+        's3:GetBucket*',
+        's3:GetObject*',
+        's3:List*',
+      ],
+      resources: [
+        s3Bucket.bucketArn,
+        `${s3Bucket.bucketArn}/*`,
+      ],
+    });
+
+    cloudfrontS3Access.addCanonicalUserPrincipal(
+      cloudFrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId,
+    );
+
+    s3Bucket.addToResourcePolicy(cloudfrontS3Access);
   }
 }
 
