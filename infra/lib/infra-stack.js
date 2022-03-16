@@ -1,6 +1,7 @@
 const { Stack } = require('aws-cdk-lib');
 const { CloudFrontWebDistribution, OriginAccessIdentity } = require('aws-cdk-lib/aws-cloudfront');
 const { PolicyStatement } = require('aws-cdk-lib/aws-iam');
+const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
 
@@ -63,6 +64,27 @@ class InfraStack extends Stack {
     );
 
     s3Bucket.addToResourcePolicy(cloudfrontS3Access);
+
+    const userTable = new Table(this, id, {
+      billingMode: BillingMode.PROVISIONED,
+      partitionKey: {
+        name: 'email',
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'rec_type',
+        type: AttributeType.STRING,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    userTable.addGlobalSecondaryIndex({
+      indexName: 'familyIndex',
+      partitionKey: {
+        name: 'family_id',
+        type: AttributeType.STRING,
+      },
+    });
   }
 }
 
