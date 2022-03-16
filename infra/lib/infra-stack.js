@@ -66,6 +66,7 @@ class InfraStack extends Stack {
     s3Bucket.addToResourcePolicy(cloudfrontS3Access);
 
     const userTable = new Table(this, id, {
+      tableName: 'UserDetails',
       billingMode: BillingMode.PROVISIONED,
       partitionKey: {
         name: 'email',
