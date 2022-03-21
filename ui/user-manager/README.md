@@ -1,6 +1,8 @@
-# Getting Started with Create React App
+# User Manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Install [nvm](https://github.com/nvm-sh/nvm)
+
+Run `nvm use`
 
 ## Available Scripts
 
