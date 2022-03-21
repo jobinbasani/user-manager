@@ -6,12 +6,6 @@ const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
 
 class InfraStack extends Stack {
-  /**
-   *
-   * @param {Construct} scope
-   * @param {string} id
-   * @param {StackProps=} props
-   */
   constructor(scope, id, props) {
     super(scope, id, props);
 
