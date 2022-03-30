@@ -3,7 +3,8 @@ import EventListAttendee from './EventListAttendee';
 
 export default function EventListItem({
   event,
-  selectEvent
+  selectEvent,
+  deleteEvent
 }) {
   return (
     <Segment.Group>
@@ -35,6 +36,7 @@ export default function EventListItem({
       </Segment>
       <Segment clearing>
         <div>{event.description}</div>
+        <Button onClick={() => deleteEvent(event.id)} color={'red'} floated={'right'} content={'Delete'}/>
         <Button onClick={() => selectEvent(event)} color={'teal'} floated={'right'} content={'View'}/>
       </Segment>
     </Segment.Group>

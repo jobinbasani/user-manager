@@ -6,7 +6,9 @@ export default function EventForm({
   setFormOpen,
   setEvents,
   createEvent,
-  selectedEvent
+  selectedEvent,
+  updateEvent,
+  deleteEvent
 }) {
 
   const initialValues = selectedEvent ?? {
@@ -21,7 +23,13 @@ export default function EventForm({
   const [values, setValues] = useState(initialValues);
 
   function handleFormSubmit() {
-    createEvent({...values, id: cuid(), hostedBy: 'Bob', attendees: [], hostPhotoURL: '/assets/user.png'});
+    selectedEvent ? updateEvent({ ...selectedEvent, ...values }) : createEvent({
+      ...values,
+      id: cuid(),
+      hostedBy: 'Bob',
+      attendees: [],
+      hostPhotoURL: '/assets/user.png'
+    });
     setFormOpen(false);
   }
 
@@ -38,7 +46,7 @@ export default function EventForm({
 
   return (
     <Segment clearing>
-      <Header content={selectedEvent?'Edit Event':'Create new event'}/>
+      <Header content={selectedEvent ? 'Edit Event' : 'Create new event'}/>
       <Form onSubmit={handleFormSubmit}>
         <Form.Field>
           <input type="text" placeholder="Event Title" name="title" value={values.title} onChange={e => handleInputChange(e)}/>
