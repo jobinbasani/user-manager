@@ -24,11 +24,6 @@ class InfraStack extends Stack {
       description: 'Bucket name',
     });
 
-    const bucketArn = new cdk.CfnOutput(this, 'BucketArn', {
-      value: s3Bucket.bucketArn,
-      description: 'Bucket ARN',
-    });
-
     const cloudFrontOAI = new OriginAccessIdentity(this, 'OAI', {
       comment: 'OAI for User Manager website.',
     });
@@ -70,6 +65,7 @@ class InfraStack extends Stack {
 
     const s3WebUpdateRole = new Role(this, 'S3UserManagerWebUpdateRole', {
       assumedBy: new AccountPrincipal(this.account),
+      description: 'Role to manage contents of S3 bucket, to be ideally used by CI/CD pipeline',
     });
 
     s3WebUpdateRole.addToPolicy(new PolicyStatement({
@@ -81,6 +77,11 @@ class InfraStack extends Stack {
         `${s3Bucket.bucketArn}/*`,
       ],
     }));
+
+    const s3WebUpdateRoleName = new cdk.CfnOutput(this, 'S3 Web update role', {
+      value: s3WebUpdateRole.roleName,
+      description: 'S3 Web update role',
+    });
 
     const userTable = new Table(this, id, {
       tableName: 'UserDetails',
