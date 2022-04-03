@@ -41,6 +41,11 @@ class InfraStack extends Stack {
       ],
     });
 
+    const cdnUrl = new cdk.CfnOutput(this, 'CdnUrl', {
+      value: `https://${distribution.distributionDomainName}/`,
+      description: 'Cloudfront URL',
+    });
+
     const cloudfrontS3Access = new PolicyStatement({
       actions: [
         's3:GetBucket*',
