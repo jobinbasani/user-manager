@@ -4,6 +4,7 @@ const {
   PolicyStatement,
   Role,
   AccountPrincipal,
+  Group,
 } = require('aws-cdk-lib/aws-iam');
 const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
@@ -63,12 +64,9 @@ class InfraStack extends Stack {
 
     s3Bucket.addToResourcePolicy(cloudfrontS3Access);
 
-    const s3WebUpdateRole = new Role(this, 'S3UserManagerWebUpdateRole', {
-      assumedBy: new AccountPrincipal(this.account),
-      description: 'Role to manage contents of S3 bucket, to be ideally used by CI/CD pipeline',
-    });
+    const s3WebUpdateGroup = new Group(this, 'S3UserManagerWebUpdateGroup');
 
-    s3WebUpdateRole.addToPolicy(new PolicyStatement({
+    s3WebUpdateGroup.addToPolicy(new PolicyStatement({
       actions: [
         's3:*',
       ],
@@ -78,9 +76,9 @@ class InfraStack extends Stack {
       ],
     }));
 
-    const s3WebUpdateRoleName = new cdk.CfnOutput(this, 'S3 Web update role', {
-      value: s3WebUpdateRole.roleName,
-      description: 'S3 Web update role',
+    const s3WebUpdateGroupName = new cdk.CfnOutput(this, 'S3 Web update group', {
+      value: s3WebUpdateGroup.groupName,
+      description: 'S3 Web update group',
     });
 
     const userTable = new Table(this, id, {
