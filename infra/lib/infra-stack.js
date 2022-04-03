@@ -1,6 +1,10 @@
 const { Stack } = require('aws-cdk-lib');
 const { CloudFrontWebDistribution, OriginAccessIdentity } = require('aws-cdk-lib/aws-cloudfront');
-const { PolicyStatement } = require('aws-cdk-lib/aws-iam');
+const {
+  PolicyStatement,
+  Role,
+  AccountPrincipal,
+} = require('aws-cdk-lib/aws-iam');
 const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
@@ -63,6 +67,20 @@ class InfraStack extends Stack {
     );
 
     s3Bucket.addToResourcePolicy(cloudfrontS3Access);
+
+    const s3WebUpdateRole = new Role(this, 'S3UserManagerWebUpdateRole', {
+      assumedBy: new AccountPrincipal(this.account),
+    });
+
+    s3WebUpdateRole.addToPolicy(new PolicyStatement({
+      actions: [
+        's3:*',
+      ],
+      resources: [
+        s3Bucket.bucketArn,
+        `${s3Bucket.bucketArn}/*`,
+      ],
+    }));
 
     const userTable = new Table(this, id, {
       tableName: 'UserDetails',
