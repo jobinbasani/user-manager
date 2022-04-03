@@ -2,8 +2,6 @@ const { Stack } = require('aws-cdk-lib');
 const { CloudFrontWebDistribution, OriginAccessIdentity } = require('aws-cdk-lib/aws-cloudfront');
 const {
   PolicyStatement,
-  Role,
-  AccountPrincipal,
   Group,
 } = require('aws-cdk-lib/aws-iam');
 const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb');
