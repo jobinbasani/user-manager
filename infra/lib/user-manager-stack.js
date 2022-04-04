@@ -3,10 +3,15 @@ const { CloudFrontWebDistribution, OriginAccessIdentity } = require('aws-cdk-lib
 const {
   PolicyStatement,
   Group,
+  Role,
+  WebIdentityPrincipal,
+  PrincipalWithConditions,
 } = require('aws-cdk-lib/aws-iam');
 const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
+const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
+const { Condition } = require('aws-cdk-lib/aws-stepfunctions');
 
 class UserManagerStack extends Stack {
   constructor(scope, id, props) {
@@ -62,9 +67,24 @@ class UserManagerStack extends Stack {
 
     s3Bucket.addToResourcePolicy(cloudfrontS3Access);
 
-    const s3WebUpdateGroup = new Group(this, 'S3UserManagerWebUpdateGroup');
+    const githubProvider = new OpenIdConnectProvider(this, 'githubOidcProvider', {
+      url: 'https://token.actions.githubusercontent.com',
+    });
 
-    s3WebUpdateGroup.addToPolicy(new PolicyStatement({
+    const githubRole = new Role(this, 'githubDeployRole', {
+      assumedBy: new WebIdentityPrincipal(githubProvider.openIdConnectProviderArn, {
+        'ForAllValues:StringEquals': {
+          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+        },
+        'ForAllValues:StringLike': {
+          'token.actions.githubusercontent.com:sub': 'repo:jobinbasani/user-manager:*',
+        },
+      }),
+      roleName: 'GithubDeployRole',
+      description: 'This role is used by Github actions',
+    });
+
+    githubRole.addToPolicy(new PolicyStatement({
       actions: [
         's3:*',
       ],
@@ -74,9 +94,9 @@ class UserManagerStack extends Stack {
       ],
     }));
 
-    const s3WebUpdateGroupName = new cdk.CfnOutput(this, 'WebAppUpdateGroup', {
-      value: s3WebUpdateGroup.groupName,
-      description: 'S3 Web update group',
+    const githubDeployRoleName = new cdk.CfnOutput(this, 'GithubDeployRoleARN', {
+      value: githubRole.roleArn,
+      description: 'Role ARN to be assumed by Github',
     });
 
     const userTable = new Table(this, id, {
