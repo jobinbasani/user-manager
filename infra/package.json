@@ -8,7 +8,7 @@
     "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
     "synth": "cdk synth",
     "diff": "cdk diff",
-    "deploy": "cdk deploy",
+    "deploy": "cdk deploy --region ca-central-1",
     "destroy": "cdk destroy",
     "test": "jest",
     "lint": "./node_modules/.bin/eslint .",

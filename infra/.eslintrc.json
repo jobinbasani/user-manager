@@ -12,7 +12,8 @@
     "function-paren-newline": ["error", "consistent"],
     "no-console": "off",
     "max-len": ["error", { "code": 140 }],
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "no-new": "off"
   },
   "overrides": [
     {

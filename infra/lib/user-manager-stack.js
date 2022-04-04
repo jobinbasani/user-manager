@@ -8,7 +8,7 @@ const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb'
 const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
 
-class InfraStack extends Stack {
+class UserManagerStack extends Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
@@ -18,9 +18,9 @@ class InfraStack extends Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const bucketName = new cdk.CfnOutput(this, 'BucketName', {
+    const bucketName = new cdk.CfnOutput(this, 'WebAppBucketName', {
       value: s3Bucket.bucketName,
-      description: 'Bucket name',
+      description: 'S3 Bucket that holds the web application',
     });
 
     const cloudFrontOAI = new OriginAccessIdentity(this, 'OAI', {
@@ -74,7 +74,7 @@ class InfraStack extends Stack {
       ],
     }));
 
-    const s3WebUpdateGroupName = new cdk.CfnOutput(this, 'S3 Web update group', {
+    const s3WebUpdateGroupName = new cdk.CfnOutput(this, 'WebAppUpdateGroup', {
       value: s3WebUpdateGroup.groupName,
       description: 'S3 Web update group',
     });
@@ -103,4 +103,4 @@ class InfraStack extends Stack {
   }
 }
 
-module.exports = { InfraStack };
+module.exports = { UserManagerStack };
