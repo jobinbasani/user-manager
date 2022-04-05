@@ -2,7 +2,8 @@ name: Update Web App
 
 on:
   push:
-    branches: [ main ]
+    paths:
+      - 'ui/user-manager/**'
   pull_request:
     branches: [ main ]
 env:
@@ -39,6 +40,7 @@ jobs:
     - name: update app
       run: |
         s3bucket=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
-        aws s3 cp build s3://${s3bucket}/${GITHUB_REF##*/}/ --recursive
+        branchName=${GITHUB_REF##*/}
+        aws s3 cp build s3://${s3bucket}/${branchName}/ --recursive
 
 

@@ -39,11 +39,17 @@ class UserManagerStack extends Stack {
           behaviors: [{ isDefaultBehavior: true }],
         },
       ],
+      defaultRootObject: 'main/index.html',
     });
 
     const cdnUrl = new cdk.CfnOutput(this, 'CdnUrl', {
       value: `https://${distribution.distributionDomainName}/`,
       description: 'Cloudfront URL',
+    });
+
+    const cdnId = new cdk.CfnOutput(this, 'CdnId', {
+      value: distribution.distributionId,
+      description: 'Cloudfront Distribution ID',
     });
 
     const cloudfrontS3Access = new PolicyStatement({
