@@ -19,13 +19,17 @@ function App() {
 
   return (
     <>
-      <NavBar setFormOpen={handleCreateFormOpen} />
-      <Container className='main'>
-        <Route path='/' exact component={HomePage} />
-        <Route path='/events' exact component={EventDashboard} />
-        <Route path='/events/:id' component={EventDetailedPage} />
-        <Route path='/createEvent' component={EventForm} />
-      </Container>
+      <Route path='/' exact component={HomePage} />
+      <Route path={'/(.+)'} render={()=>(
+        <>
+          <NavBar setFormOpen={handleCreateFormOpen} />
+          <Container className='main'>
+            <Route path='/events' exact component={EventDashboard} />
+            <Route path='/events/:id' component={EventDetailedPage} />
+            <Route path='/createEvent' component={EventForm} />
+          </Container>
+        </>
+      )} />
     </>
   );
 }
