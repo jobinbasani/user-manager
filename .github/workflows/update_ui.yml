@@ -7,6 +7,10 @@ on:
     branches: [ main ]
 env:
   AWS_REGION : "ca-central-1"
+
+defaults:
+  run:
+    working-directory: ./ui/user-manager
   
 permissions:
       id-token: write
@@ -23,7 +27,6 @@ jobs:
       with:
         node-version: '16.13.0'
     - name: Build app
-      working-directory: ./ui/user-manager
       run: |
         npm ci
         npm run build --if-present
@@ -33,4 +36,9 @@ jobs:
         role-to-assume: ${{ secrets.USER_MANAGER_AWS_DEPLOY_ROLE_ARN }}
         role-session-name: githubdeploysession
         aws-region: ${{ env.AWS_REGION }}
+    - name: update app
+      run: |
+        s3bucket=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --profile personal --region ca-central-1 --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
+        echo $s3bucket
+
 

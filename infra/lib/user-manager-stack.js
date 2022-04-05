@@ -2,16 +2,13 @@ const { Stack } = require('aws-cdk-lib');
 const { CloudFrontWebDistribution, OriginAccessIdentity } = require('aws-cdk-lib/aws-cloudfront');
 const {
   PolicyStatement,
-  Group,
   Role,
   WebIdentityPrincipal,
-  PrincipalWithConditions,
 } = require('aws-cdk-lib/aws-iam');
 const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
-const { Condition } = require('aws-cdk-lib/aws-stepfunctions');
 
 class UserManagerStack extends Stack {
   constructor(scope, id, props) {
@@ -91,6 +88,15 @@ class UserManagerStack extends Stack {
       resources: [
         s3Bucket.bucketArn,
         `${s3Bucket.bucketArn}/*`,
+      ],
+    }));
+
+    githubRole.addToPolicy(new PolicyStatement({
+      actions: [
+        'cloudformation:DescribeStacks',
+      ],
+      resources: [
+        '*',
       ],
     }));
 
