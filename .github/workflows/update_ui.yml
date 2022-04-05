@@ -6,7 +6,7 @@ on:
       - 'ui/user-manager/**'
   pull_request:
     branches: [ main ]
-    
+
 env:
   AWS_REGION : "ca-central-1"
 
@@ -43,7 +43,7 @@ jobs:
         s3bucket=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
         cdnId=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnId'].OutputValue" | jq -r '.[0]')
         branchName=${GITHUB_REF##*/}
-        aws s3 cp build s3://${s3bucket}/${branchName}/ --recursive
+        aws s3 cp build s3://${s3bucket}/${branchName}/ --recursive --quiet
         aws cloudfront create-invalidation --distribution-id ${cdnId} --paths "/${branchName}/*"
 
 
