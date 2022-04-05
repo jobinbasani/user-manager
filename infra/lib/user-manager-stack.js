@@ -106,6 +106,15 @@ class UserManagerStack extends Stack {
       ],
     }));
 
+    githubRole.addToPolicy(new PolicyStatement({
+      actions: [
+        'cloudfront:CreateInvalidation',
+      ],
+      resources: [
+        `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distribution.distributionId}`,
+      ],
+    }));
+
     const githubDeployRoleName = new cdk.CfnOutput(this, 'GithubDeployRoleARN', {
       value: githubRole.roleArn,
       description: 'Role ARN to be assumed by Github',
