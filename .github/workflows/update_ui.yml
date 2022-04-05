@@ -39,6 +39,6 @@ jobs:
     - name: update app
       run: |
         s3bucket=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
-        echo $s3bucket
+        aws s3 cp build s3://${s3bucket}/${GITHUB_REF##*/}/ --recursive
 
 
