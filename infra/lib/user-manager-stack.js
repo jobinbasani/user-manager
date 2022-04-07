@@ -10,7 +10,6 @@ const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
 const { GoFunction } = require('@aws-cdk/aws-lambda-go-alpha');
-const { resolve } = require('path');
 
 class UserManagerStack extends Stack {
   constructor(scope, id, props) {
@@ -145,7 +144,7 @@ class UserManagerStack extends Stack {
     });
 
     const userManagerLambda = new GoFunction(this, 'userManagerLambda', {
-      entry: resolve(`${__dirname}/../../api/lambdas/user_manager`),
+      entry: `${__dirname}/../../api/lambdas/user_manager`,
     });
 
     const userManagerLambdaName = new cdk.CfnOutput(this, 'UserManagerLambda', {
