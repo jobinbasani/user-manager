@@ -10,6 +10,7 @@ const s3 = require('aws-cdk-lib/aws-s3');
 const cdk = require('aws-cdk-lib');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
 const { GoFunction } = require('@aws-cdk/aws-lambda-go-alpha');
+const { LambdaRestApi } = require('aws-cdk-lib/aws-apigateway');
 
 class UserManagerStack extends Stack {
   constructor(scope, id, props) {
@@ -150,6 +151,16 @@ class UserManagerStack extends Stack {
     const userManagerLambdaName = new cdk.CfnOutput(this, 'UserManagerLambda', {
       value: userManagerLambda.functionName,
       description: 'UserManager Lambda Function Name',
+    });
+
+    const userManagerApiGateway = new LambdaRestApi(this, 'userManagerApiGateway', {
+      handler: userManagerLambda,
+      proxy: true,
+    });
+
+    const userManagerApiGatewayUrl = new cdk.CfnOutput(this, 'UserManagerApiGatewayURL', {
+      value: userManagerApiGateway.url,
+      description: 'userManager ApiGateway URL',
     });
   }
 }
