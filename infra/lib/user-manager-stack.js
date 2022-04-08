@@ -148,6 +148,22 @@ class UserManagerStack extends Stack {
       entry: `${__dirname}/../../api/lambdas/user_manager`,
     });
 
+    userManagerLambda.addToRolePolicy(new PolicyStatement({
+      actions: [
+        'dynamodb:GetItem',
+        'dynamodb:PutItem',
+        'dynamodb:Query',
+        'dynamodb:UpdateItem',
+        'dynamodb:DeleteItem',
+        'dynamodb:BatchGetItem',
+        'dynamodb:BatchWriteItem',
+        'dynamodb:ConditionCheckItem',
+      ],
+      resources: [
+        userTable.tableArn,
+      ],
+    }));
+
     const userManagerLambdaName = new cdk.CfnOutput(this, 'UserManagerLambda', {
       value: userManagerLambda.functionName,
       description: 'UserManager Lambda Function Name',
