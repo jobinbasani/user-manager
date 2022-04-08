@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"lambdas/user_manager/routes"
-	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -19,7 +18,6 @@ func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 	if gorillaMux == nil {
 		gorillaMux = gorillamux.New(routes.GetRoutes())
 	}
-	log.Println(req)
 	resp, err := gorillaMux.ProxyWithContext(ctx, *core.NewSwitchableAPIGatewayRequestV1(&req))
 	return *resp.Version1(), err
 }

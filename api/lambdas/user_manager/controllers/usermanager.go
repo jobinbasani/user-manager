@@ -22,7 +22,7 @@ type UserManagerController struct {
 
 // AddRoutes attaches handlers to user related paths
 func (umc *UserManagerController) AddRoutes(r *mux.Router) {
-	r.HandleFunc("user", umc.getUser).Methods(http.MethodGet)
+	r.HandleFunc("/user", umc.getUser).Methods(http.MethodGet)
 }
 
 func (umc *UserManagerController) getUser(w http.ResponseWriter, r *http.Request) {
