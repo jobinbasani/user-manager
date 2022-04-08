@@ -27,7 +27,7 @@ func (umc *UserManagerController) AddRoutes(r *mux.Router) {
 
 func (umc *UserManagerController) getUser(w http.ResponseWriter, r *http.Request) {
 	user := model.User{
-		DisplayName: "TestUser",
+		DisplayName: "testUser",
 	}
 	writeJSONResponse(&w, user)
 }
