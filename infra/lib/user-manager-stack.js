@@ -1,4 +1,7 @@
-const { Stack } = require('aws-cdk-lib');
+const {
+  Stack,
+  Duration,
+} = require('aws-cdk-lib');
 const { CloudFrontWebDistribution, OriginAccessIdentity } = require('aws-cdk-lib/aws-cloudfront');
 const {
   PolicyStatement,
@@ -96,6 +99,7 @@ class UserManagerStack extends Stack {
 
     const userManagerLambda = new GoFunction(this, 'userManagerLambda', {
       entry: `${__dirname}/../../api/lambdas/user_manager`,
+      timeout: Duration.seconds(10),
     });
 
     userManagerLambda.addToRolePolicy(new PolicyStatement({
