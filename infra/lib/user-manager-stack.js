@@ -72,56 +72,6 @@ class UserManagerStack extends Stack {
 
     s3Bucket.addToResourcePolicy(cloudfrontS3Access);
 
-    const githubProvider = new OpenIdConnectProvider(this, 'githubOidcProvider', {
-      url: 'https://token.actions.githubusercontent.com',
-    });
-
-    const githubRole = new Role(this, 'githubDeployRole', {
-      assumedBy: new WebIdentityPrincipal(githubProvider.openIdConnectProviderArn, {
-        'ForAllValues:StringEquals': {
-          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-        },
-        'ForAllValues:StringLike': {
-          'token.actions.githubusercontent.com:sub': 'repo:jobinbasani/user-manager:*',
-        },
-      }),
-      roleName: 'GithubDeployRole',
-      description: 'This role is used by Github actions',
-    });
-
-    githubRole.addToPolicy(new PolicyStatement({
-      actions: [
-        's3:*',
-      ],
-      resources: [
-        s3Bucket.bucketArn,
-        `${s3Bucket.bucketArn}/*`,
-      ],
-    }));
-
-    githubRole.addToPolicy(new PolicyStatement({
-      actions: [
-        'cloudformation:DescribeStacks',
-      ],
-      resources: [
-        '*',
-      ],
-    }));
-
-    githubRole.addToPolicy(new PolicyStatement({
-      actions: [
-        'cloudfront:CreateInvalidation',
-      ],
-      resources: [
-        `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distribution.distributionId}`,
-      ],
-    }));
-
-    const githubDeployRoleName = new cdk.CfnOutput(this, 'GithubDeployRoleARN', {
-      value: githubRole.roleArn,
-      description: 'Role ARN to be assumed by Github',
-    });
-
     const userTable = new Table(this, id, {
       tableName: 'UserDetails',
       billingMode: BillingMode.PROVISIONED,
@@ -177,6 +127,65 @@ class UserManagerStack extends Stack {
     const userManagerApiGatewayUrl = new cdk.CfnOutput(this, 'UserManagerApiGatewayURL', {
       value: userManagerApiGateway.url,
       description: 'userManager ApiGateway URL',
+    });
+
+    const githubProvider = new OpenIdConnectProvider(this, 'githubOidcProvider', {
+      url: 'https://token.actions.githubusercontent.com',
+    });
+
+    const githubRole = new Role(this, 'githubDeployRole', {
+      assumedBy: new WebIdentityPrincipal(githubProvider.openIdConnectProviderArn, {
+        'ForAllValues:StringEquals': {
+          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+        },
+        'ForAllValues:StringLike': {
+          'token.actions.githubusercontent.com:sub': 'repo:jobinbasani/user-manager:*',
+        },
+      }),
+      roleName: 'GithubDeployRole',
+      description: 'This role is used by Github actions',
+    });
+
+    githubRole.addToPolicy(new PolicyStatement({
+      actions: [
+        's3:*',
+      ],
+      resources: [
+        s3Bucket.bucketArn,
+        `${s3Bucket.bucketArn}/*`,
+      ],
+    }));
+
+    githubRole.addToPolicy(new PolicyStatement({
+      actions: [
+        'cloudformation:DescribeStacks',
+      ],
+      resources: [
+        '*',
+      ],
+    }));
+
+    githubRole.addToPolicy(new PolicyStatement({
+      actions: [
+        'cloudfront:CreateInvalidation',
+      ],
+      resources: [
+        `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distribution.distributionId}`,
+      ],
+    }));
+
+    githubRole.addToPolicy(new PolicyStatement({
+      actions: [
+        'lambda:UpdateFunctionCode',
+      ],
+      resources: [
+        userManagerLambda.functionArn,
+      ],
+    }));
+
+    const githubDeployRoleName = new cdk.CfnOutput(this, 'GithubDeployRoleARN', {
+      value: githubRole.roleArn,
+      description: 'Role ARN to be assumed by Github',
     });
   }
 }
