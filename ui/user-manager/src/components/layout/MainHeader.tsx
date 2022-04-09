@@ -17,8 +17,6 @@ import { Link } from 'react-router-dom';
 
 import {logo} from '../../assets/images';
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
 const MainHeader = () => {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
