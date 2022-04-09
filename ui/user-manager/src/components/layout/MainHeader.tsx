@@ -1,13 +1,13 @@
 import React from "react";
-import { AppBar, 
-         Container, 
-         Toolbar, 
-         Box, 
+import { AppBar,
+         Container,
+         Toolbar,
+         Box,
          IconButton,
          Button,
          Tooltip,
          Avatar,
-         Menu, 
+         Menu,
          MenuItem,
          Typography} from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
@@ -96,11 +96,11 @@ const MainHeader = () => {
                 </Button>
               ))}
             </Box>
-  
+
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt="Remy Sharp" src="./static/images/avatar/2.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
