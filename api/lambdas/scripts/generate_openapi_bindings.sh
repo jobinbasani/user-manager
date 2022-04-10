@@ -15,3 +15,6 @@ docker run --rm -v "$rootdir":/src_files "$GENERATOR_IMAGE" generate \
 mv $WORKDIR/go/* $WORKDIR
 rm -Rf $WORKDIR/go
 rm -Rf $WORKDIR/api
+rm -Rf $WORKDIR/go.*
+rm -f $WORKDIR/Dockerfile
+rm -f $WORKDIR/main.go
