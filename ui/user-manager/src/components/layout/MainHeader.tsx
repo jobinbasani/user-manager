@@ -1,13 +1,13 @@
 import React from "react";
-import { AppBar, 
-         Container, 
-         Toolbar, 
-         Box, 
+import { AppBar,
+         Container,
+         Toolbar,
+         Box,
          IconButton,
          Button,
          Tooltip,
          Avatar,
-         Menu, 
+         Menu,
          MenuItem,
          Typography} from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
@@ -88,14 +88,18 @@ const MainHeader = () => {
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
                   <Typography textAlign="center">
-                      <Link to={item.navLink} className={classes["nav-link"]}>
-                        {item.value}
-                      </Link>
+                      {item.navLink.startsWith("https:") ?
+                          <a href={item.navLink} className={classes["nav-link"]}>{item.value}</a>
+                          :
+                          <Link to={item.navLink} className={classes["nav-link"]}>
+                              {item.value}
+                          </Link>
+                      }
                   </Typography>
                 </Button>
               ))}
             </Box>
-  
+
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

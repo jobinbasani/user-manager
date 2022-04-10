@@ -11,3 +11,6 @@ build: clean
 clean:
 	@echo "Cleaning bin folder..."
 	@rm -rf ./bin
+
+openapi:
+	go generate ./...

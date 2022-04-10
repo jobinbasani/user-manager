@@ -1,0 +1,221 @@
+openapi: '3.0.3'
+info:
+  title: User Manager API
+  version: '1.0.0'
+servers:
+  - url: 'https://usermanager.aws.com'
+
+security:
+  - bearer: [ ]
+
+paths:
+  /api/v1/user:
+    get:
+      operationId: getUser
+      summary: Provides user profile information
+      tags:
+        - User Management
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  responses:
+    BadRequest:
+      description: the server received and understood the request, but it was semantically invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequestError'
+    Unauthorized:
+      description: authentication credentials were required but not submitted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnauthorizedError'
+    Forbidden:
+      description: the request was denied based on access policy
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+    NotFound:
+      description: the requested resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFoundError'
+    InternalServerError:
+      description: the server encountered an unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalServerError'
+
+  securitySchemes:
+    bearer: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
+
+  schemas:
+    InternalServerError:
+      type: object
+      description: Unhandled internal server error has occurred.
+      required:
+        - message
+        - code
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: integer
+              field:
+                type: string
+              message:
+                type: string
+            required:
+              - code
+              - field
+              - message
+
+    NotFoundError:
+      type: object
+      description: The specified content was not found.
+      required:
+        - message
+        - code
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: integer
+              field:
+                type: string
+              message:
+                type: string
+            required:
+              - code
+              - field
+              - message
+    BadRequestError:
+      type: object
+      description: The specified content was not found.
+      required:
+        - message
+        - code
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: integer
+              field:
+                type: string
+              message:
+                type: string
+            required:
+              - code
+              - field
+              - message
+    UnauthorizedError:
+      type: object
+      description: User must be authenticated in order to access this endpoint.
+      required:
+        - message
+        - code
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: integer
+              field:
+                type: string
+              message:
+                type: string
+            required:
+              - code
+              - field
+              - message
+
+    ForbiddenError:
+      type: object
+      description: User does not have the appropriate permissions to access this endpoint.
+      required:
+        - message
+        - code
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: integer
+              field:
+                type: string
+              message:
+                type: string
+            required:
+              - code
+              - field
+              - message
+    User:
+      type: object
+      required:
+        - displayName
+        - firstName
+        - email
+      properties:
+        displayName:
+          description: Display name of the user
+          type: string
+        firstName:
+          type: string
+          description: First name
+        email:
+          type: string
+          description: Email ID of user
