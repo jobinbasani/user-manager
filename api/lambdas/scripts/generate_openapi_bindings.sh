@@ -18,3 +18,6 @@ rm -Rf $WORKDIR/api
 rm -Rf $WORKDIR/go.*
 rm -f $WORKDIR/Dockerfile
 rm -f $WORKDIR/main.go
+
+sed -i '' 's#"encoding/json"##g' $WORKDIR/api_user_management.go
+sed -i '' 's#"github.com/gorilla/mux"##g' $WORKDIR/api_user_management.go
