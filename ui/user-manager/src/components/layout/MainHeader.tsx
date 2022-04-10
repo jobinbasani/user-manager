@@ -38,19 +38,18 @@ const MainHeader = () => {
 
     return(
         <AppBar position="static" className={classes.header}>
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <img alt='logo' src={String(logo)} style={{ width: '7rem' }}/>
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Toolbar disableGutters className={classes["app-toolbar"]}>
+            <img alt='logo' src={String(logo)} style={{ width: '5rem'}}/>
+            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }}}>
               <IconButton
                 size="large"
-                aria-label="account of current user"
+                aria-label="Holy Family Main Menu"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleOpenNavMenu}
                 color="inherit"
               >
-                <MenuIcon />
+              <MenuIcon />
               </IconButton>
               <Menu
                 id="menu-appbar"
@@ -100,7 +99,9 @@ const MainHeader = () => {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt="Remy Sharp" 
+                          src="/static/images/avatar/2.jpg" 
+                          className={classes["app-avatar"]}/>
                 </IconButton>
               </Tooltip>
               <Menu
@@ -127,7 +128,6 @@ const MainHeader = () => {
               </Menu>
             </Box>
           </Toolbar>
-        </Container>
       </AppBar>
     );
 
