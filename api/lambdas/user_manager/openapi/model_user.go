@@ -17,6 +17,9 @@ type User struct {
 	// First name
 	FirstName string `json:"firstName"`
 
+	// First name
+	LastName string `json:"lastName,omitempty"`
+
 	// Email ID of user
 	Email string `json:"email"`
 }

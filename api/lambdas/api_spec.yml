@@ -216,6 +216,9 @@ components:
         firstName:
           type: string
           description: First name
+        lastName:
+          type: string
+          description: First name
         email:
           type: string
           description: Email ID of user
