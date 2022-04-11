@@ -1,3 +1,4 @@
+import { LOGIN_URL } from './ApiConstants';
 
 
 /** Main header navigation items */
@@ -8,7 +9,7 @@ export const navMenuItems = [
     {key: "4", value: "Catechism", navLink: "/catechism"},
     {key: "5", value: "Gallery", navLink: "/gallery"},
     {key: "6", value: "Register", navLink: "/register"},
-    {key: "7", value: "Login", navLink: "https://hfxchurch.auth.ca-central-1.amazoncognito.com/oauth2/authorize?client_id=76tmogtonieiq0opkdcemoho7v&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&scope=openid&response_type=token"},
+    {key: "7", value: "Login", navLink: LOGIN_URL},
 
 ];
 
