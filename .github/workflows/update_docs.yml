@@ -38,15 +38,11 @@ jobs:
 
         docs_exists=$(aws s3api list-objects-v2 --bucket ${s3bucket} --query "contains(Contents[].Key, 'docs/index.html')" | jq .)
 
-        if [ "$docs_exists" == "false" ] ; then
+        if [[ "$docs_exists" == "false" ]] ; then
           wget -q -O swagger.tar.gz https://github.com/swagger-api/swagger-ui/archive/refs/tags/v4.10.3.tar.gz
           tar -zxf swagger.tar.gz
-          cd swagger-ui-4.10.3
-          pwd
-          ls -la
-          sed -i 's/url:.*,/url: "api_spec.yml",/g' dist/swagger-initializer.js
-          aws s3 cp dist s3://${s3bucket}/docs/ --recursive --quiet
-          cd ..
+          sed -i 's/url:.*,/url: "api_spec.yml",/g' swagger-ui-4.10.3/dist/swagger-initializer.js
+          aws s3 cp swagger-ui-4.10.3/dist s3://${s3bucket}/docs/ --recursive --quiet
         fi
 
         aws s3 cp api_spec.yml s3://${s3bucket}/docs/ --recursive --quiet
