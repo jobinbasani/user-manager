@@ -36,14 +36,14 @@ jobs:
         s3bucket=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
         cdnId=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnId'].OutputValue" | jq -r '.[0]')
 
-        docs_exists=$(aws s3api list-objects-v2 \
-          --bucket ${s3bucket} \
-          --query "contains(Contents[].Key, 'docs/index.html')" | jq .)
+        docs_exists=$(aws s3api list-objects-v2 --bucket ${s3bucket} --query "contains(Contents[].Key, 'docs/index.html')" | jq .)
 
-        if [ "$docs_exists" = false ] ; then
+        if [ "$docs_exists" == "false" ] ; then
           wget -q -O swagger.tar.gz https://github.com/swagger-api/swagger-ui/archive/refs/tags/v4.10.3.tar.gz
           tar -zxf swagger.tar.gz
           cd swagger-ui-4.10.3
+          pwd
+          ls -la
           sed -i 's/url:.*,/url: "api_spec.yml",/g' dist/swagger-initializer.js
           aws s3 cp dist s3://${s3bucket}/docs/ --recursive --quiet
           cd ..
