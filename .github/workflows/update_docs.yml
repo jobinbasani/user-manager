@@ -44,8 +44,9 @@ jobs:
           sed -i 's/url:.*,/url: "api_spec.yml",/g' swagger-ui-4.10.3/dist/swagger-initializer.js
           aws s3 cp swagger-ui-4.10.3/dist s3://${s3bucket}/docs/ --recursive --quiet
         fi
-
-        aws s3 cp api_spec.yml s3://${s3bucket}/docs/ --recursive --quiet
+        pwd
+        ls -la
+        aws s3 cp api_spec.yml s3://${s3bucket}/docs/ 
         aws cloudfront create-invalidation --distribution-id ${cdnId} --paths "/docs/*"
 
 
