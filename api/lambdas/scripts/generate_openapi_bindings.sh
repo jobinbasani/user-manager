@@ -1,13 +1,22 @@
-        s3bucket=$(aws cloudformation describe-stacks --profile personal --region ca-central-1 --stack-name UserManagerStack --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
-        echo $s3bucket
-        docs_exists=$(aws s3api list-objects-v2 --profile personal --region ca-central-1 --bucket ${s3bucket} --query "contains(Contents[].Key, 'docs/index.html')" | jq .)
+#!/usr/bin/env bash
 
-        if [[ "$docs_exists" == "false" ]] ; then
-          wget -q -O swagger.tar.gz https://github.com/swagger-api/swagger-ui/archive/refs/tags/v4.10.3.tar.gz
-          tar -zxf swagger.tar.gz
-          pwd
-          ls -la
-          sed -i 's/url:.*,/url: "api_spec.yml",/g' swagger-ui-4.10.3/dist/swagger-initializer.js
-        fi
+rootdir=$(cd $(dirname ${BASH_SOURCE[0]}); cd ../; pwd)
 
+PACKAGE_NAME=openapi
+WORKDIR=${rootdir}/user_manager/${PACKAGE_NAME}
+GENERATOR_IMAGE=openapitools/openapi-generator-cli:v5.4.0
 
+docker run --rm -v "$rootdir":/src_files "$GENERATOR_IMAGE" generate \
+  -i /src_files/api_spec.yml \
+  -g go-server \
+  -o /src_files/user_manager/${PACKAGE_NAME} \
+  --package-name=${PACKAGE_NAME}
+
+mv $WORKDIR/go/* $WORKDIR
+rm -Rf $WORKDIR/go
+rm -Rf $WORKDIR/api
+rm -Rf $WORKDIR/go.*
+rm -f $WORKDIR/Dockerfile
+rm -f $WORKDIR/main.go
+
+goimports -w $WORKDIR
