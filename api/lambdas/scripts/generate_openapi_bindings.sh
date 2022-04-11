@@ -20,3 +20,5 @@ rm -f $WORKDIR/Dockerfile
 rm -f $WORKDIR/main.go
 
 goimports -w $WORKDIR
+
+git add $WORKDIR
