@@ -35,6 +35,7 @@ jobs:
       run: |
         s3bucket=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
         cdnId=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnId'].OutputValue" | jq -r '.[0]')
+        cdnUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnUrl'].OutputValue" | jq -r '.[0]')
 
         docs_exists=$(aws s3api list-objects-v2 --bucket ${s3bucket} --query "contains(Contents[].Key, 'docs/index.html')" | jq .)
 
@@ -44,8 +45,8 @@ jobs:
           sed -i 's/url:.*,/url: "api_spec.yml",/g' swagger-ui-4.10.3/dist/swagger-initializer.js
           aws s3 cp swagger-ui-4.10.3/dist s3://${s3bucket}/docs/ --recursive --quiet
         fi
-        pwd
-        ls -la
+
+        sed -i "s#- url: '.*'#- url: '${cdnUrl/%\//}'#g" api_spec.yml
         aws s3 cp api_spec.yml s3://${s3bucket}/docs/ 
         aws cloudfront create-invalidation --distribution-id ${cdnId} --paths "/docs/*"
 
