@@ -4,3 +4,4 @@ bin
 user_manager/openapi/.openapi-generator
 user_manager/openapi/.openapi-generator-ignore
 user_manager/openapi/README.md
+user_manager/.env

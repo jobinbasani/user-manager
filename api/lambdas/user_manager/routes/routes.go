@@ -14,9 +14,9 @@ import (
 
 // GetRoutes registers all API gateway paths to a handler
 func GetRoutes(cfg *config.Config) *mux.Router {
-	UserManagementApiService := service.NewUserManagerService(cfg)
-	UserManagementApiController := openapi.NewUserManagementApiController(UserManagementApiService)
+	UserManagementAPIService := service.NewUserManagerService(cfg)
+	UserManagementAPIController := openapi.NewUserManagementApiController(UserManagementAPIService)
 
-	return openapi.NewRouter(UserManagementApiController)
+	return openapi.NewRouter(UserManagementAPIController)
 
 }

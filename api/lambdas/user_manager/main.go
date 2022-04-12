@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/core"
 	"github.com/awslabs/aws-lambda-go-api-proxy/gorillamux"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 var gorillaMux *gorillamux.GorillaMuxAdapter
@@ -18,7 +19,7 @@ var cfg *config.Config
 // returns a proxy response
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	if cfg == nil {
-		cfg = config.Configure()
+		cfg = config.Configure(ctx)
 	}
 	if gorillaMux == nil {
 		gorillaMux = gorillamux.New(routes.GetRoutes(cfg))
