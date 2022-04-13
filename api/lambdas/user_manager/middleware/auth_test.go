@@ -39,7 +39,7 @@ func Test(t *testing.T) {
 	u, err := url.Parse(srv.URL)
 	require.NoError(t, err)
 
-	jwksUrl := fmt.Sprintf("http://%s/.well-known/jwks.json", u.Host)
+	jwksURL := fmt.Sprintf("http://%s/.well-known/jwks.json", u.Host)
 
 	req, err := http.NewRequest(http.MethodGet, "/test/request", nil)
 	require.NoError(t, err)
@@ -47,9 +47,29 @@ func Test(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	cfg := &config.Config{}
+
+	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusUnauthorized {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
 	var userManagerJwkCache config.UserManagerJwkCache
-	err = userManagerJwkCache.Set(jwksUrl)
+	err = userManagerJwkCache.Set("http://invalid-jwks-url")
 	cfg.JwkCache = &userManagerJwkCache
+
+	req, err = http.NewRequest(http.MethodGet, "/test/request", nil)
+	req.Header.Add("Authorization", "Bearer abc")
+
+	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusUnauthorized {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	err = userManagerJwkCache.Set(jwksURL)
 	require.NoError(t, err)
 
 	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
@@ -59,7 +79,13 @@ func Test(t *testing.T) {
 			status, http.StatusOK)
 	}
 
-	req.Header.Add("Authorization", "Bearer abc")
+	req, err = http.NewRequest(http.MethodGet, "/test/request", nil)
+	req.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
 
 	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusUnauthorized {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
 }
