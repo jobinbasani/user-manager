@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -20,7 +21,7 @@ func Test(t *testing.T) {
 				Path:       "/api/v1/user",
 				HTTPMethod: "GET",
 			},
-			expectedStatusCode: 200,
+			expectedStatusCode: http.StatusUnauthorized,
 		},
 	}
 	for _, test := range tests {

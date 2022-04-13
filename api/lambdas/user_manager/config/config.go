@@ -19,7 +19,7 @@ type Config struct {
 }
 
 // Configure creates a config by processing the environment variables and default values
-func Configure(ctx context.Context) *Config {
+func Configure(_ context.Context) *Config {
 	config := &Config{}
 	err := envconfig.Process("", config)
 	if err != nil {

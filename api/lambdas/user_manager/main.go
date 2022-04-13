@@ -22,7 +22,7 @@ func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 		cfg = config.Configure(ctx)
 	}
 	if gorillaMux == nil {
-		gorillaMux = gorillamux.New(routes.GetRoutes(cfg))
+		gorillaMux = gorillamux.New(routes.GetRoutes(ctx, cfg))
 	}
 	resp, err := gorillaMux.ProxyWithContext(ctx, *core.NewSwitchableAPIGatewayRequestV1(&req))
 	return *resp.Version1(), err

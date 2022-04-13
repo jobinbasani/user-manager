@@ -11,6 +11,9 @@ package openapi
 
 type User struct {
 
+	// A unique identifier
+	Id string `json:"id"`
+
 	// Display name of the user
 	DisplayName string `json:"displayName"`
 
@@ -27,6 +30,7 @@ type User struct {
 // AssertUserRequired checks if the required fields are not zero-ed
 func AssertUserRequired(obj User) error {
 	elements := map[string]interface{}{
+		"id":          obj.Id,
 		"displayName": obj.DisplayName,
 		"firstName":   obj.FirstName,
 		"email":       obj.Email,
