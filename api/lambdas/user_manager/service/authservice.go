@@ -5,6 +5,7 @@ import (
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
+	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
@@ -24,6 +25,7 @@ func (c CognitoService) GetUserInfo(ctx context.Context) (openapi.User, error) {
 		AccessToken: aws.String(util.GetUserAccessTokenFromContext(ctx)),
 	})
 	if err != nil {
+		log.Println(err)
 		return openapi.User{}, err
 	}
 	return openapi.User{
