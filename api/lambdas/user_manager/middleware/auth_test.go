@@ -6,8 +6,6 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"fmt"
-	"github.com/lestrrat-go/jwx/v2/jwa"
-	"github.com/lestrrat-go/jwx/v2/jwt"
 	"lambdas/user_manager/config"
 	"net/http"
 	"net/http/httptest"
@@ -15,11 +13,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lestrrat-go/jwx/v2/jwa"
+	"github.com/lestrrat-go/jwx/v2/jwt"
+
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/stretchr/testify/require"
 )
 
-func Test(t *testing.T) {
+func TestBearerTokenAuth(t *testing.T) {
 
 	rsaKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
@@ -45,74 +46,80 @@ func Test(t *testing.T) {
 	u, err := url.Parse(srv.URL)
 	require.NoError(t, err)
 
-	jwksURL := fmt.Sprintf("http://%s/.well-known/jwks.json", u.Host)
+	values := []struct {
+		testName           string
+		jwksURL            string
+		bearerTokenFunc    func() string
+		expectedStatusCode int
+	}{
+		{
+			testName: "test empty bearer token",
+			jwksURL:  "http://invalid-jwks-url",
+			bearerTokenFunc: func() string {
+				return ""
+			},
+			expectedStatusCode: http.StatusUnauthorized,
+		},
+		{
+			testName: "test invalid bearer token",
+			jwksURL:  fmt.Sprintf("http://%s/.well-known/jwks.json", u.Host),
+			bearerTokenFunc: func() string {
+				return "Bearer abc"
+			},
+			expectedStatusCode: http.StatusForbidden,
+		},
+		{
+			testName: "test invalid JWKS url",
+			jwksURL:  "http://invalid-jwks-url",
+			bearerTokenFunc: func() string {
+				return "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+			},
+			expectedStatusCode: http.StatusInternalServerError,
+		},
+		{
+			testName: "test bearer token with invalid signature",
+			jwksURL:  fmt.Sprintf("http://%s/.well-known/jwks.json", u.Host),
+			bearerTokenFunc: func() string {
+				return "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+			},
+			expectedStatusCode: http.StatusForbidden,
+		},
+		{
+			testName: "test bearer token with correct signature",
+			jwksURL:  fmt.Sprintf("http://%s/.well-known/jwks.json", u.Host),
+			bearerTokenFunc: func() string {
+				testJwt, err := jwt.NewBuilder().
+					Subject("test_sub").
+					IssuedAt(time.Now()).
+					Expiration(time.Now().Add(time.Hour * 2)).
+					Build()
+				require.NoError(t, err)
 
-	req, err := http.NewRequest(http.MethodGet, "/test/request", nil)
-	require.NoError(t, err)
-
-	rr := httptest.NewRecorder()
-
-	cfg := &config.Config{}
-
-	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
+				signed, err := jwt.Sign(testJwt, jwt.WithKey(jwa.RS256, key))
+				require.NoError(t, err)
+				return fmt.Sprintf("Bearer %s", string(signed))
+			},
+			expectedStatusCode: http.StatusOK,
+		},
 	}
 
-	var userManagerJwkCache config.UserManagerJwkCache
-	err = userManagerJwkCache.Set("http://invalid-jwks-url")
-	cfg.JwkCache = &userManagerJwkCache
+	for _, v := range values {
+		t.Logf("Executing test case '%s'", v.testName)
 
-	req, err = http.NewRequest(http.MethodGet, "/test/request", nil)
-	req.Header.Add("Authorization", "Bearer abc")
+		req, err := http.NewRequest(http.MethodGet, "/test/request", nil)
+		require.NoError(t, err)
+		req.Header.Add("Authorization", v.bearerTokenFunc())
 
-	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
+		rr := httptest.NewRecorder()
 
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
+		cfg := &config.Config{}
+		var userManagerJwkCache config.UserManagerJwkCache
+		err = userManagerJwkCache.Set(v.jwksURL)
+		require.NoError(t, err)
+		cfg.JwkCache = &userManagerJwkCache
 
-	err = userManagerJwkCache.Set(jwksURL)
-	require.NoError(t, err)
-
-	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-
-	req, err = http.NewRequest(http.MethodGet, "/test/request", nil)
-	req.Header.Add("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
-
-	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
-	}
-
-	testJwt, err := jwt.NewBuilder().
-		Subject("test_sub").
-		IssuedAt(time.Now()).
-		Expiration(time.Now().Add(time.Hour * 2)).
-		Build()
-	require.NoError(t, err)
-
-	signed, err := jwt.Sign(testJwt, jwt.WithKey(jwa.RS256, key))
-	require.NoError(t, err)
-
-	req, err = http.NewRequest(http.MethodGet, "/test/request", nil)
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", string(signed)))
-
-	DoAuth(context.Background(), cfg)(nil).ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusOK)
+		DoAuth(context.Background(), cfg)(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {})).ServeHTTP(rr, req)
+		require.Equalf(t, rr.Code, v.expectedStatusCode, "Received wrong status code")
 	}
 
 }
