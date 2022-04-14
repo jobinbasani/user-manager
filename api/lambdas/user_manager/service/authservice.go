@@ -28,9 +28,20 @@ func (c CognitoService) GetUserInfo(ctx context.Context) (openapi.User, error) {
 		log.Println(err)
 		return openapi.User{}, err
 	}
-	return openapi.User{
-		Id: *userOutput.Username,
-	}, nil
+	var user openapi.User
+	for _, attr := range userOutput.UserAttributes {
+		switch *attr.Name {
+		case "sub":
+			user.Id = *attr.Value
+		case "given_name":
+			user.FirstName = *attr.Value
+		case "family_name":
+			user.LastName = *attr.Value
+		case "email":
+			user.Email = *attr.Value
+		}
+	}
+	return user, nil
 }
 
 func NewAuthService(cfg *config.Config) AuthService {
