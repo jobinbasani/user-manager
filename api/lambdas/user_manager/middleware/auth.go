@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"lambdas/user_manager/config"
-	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
 	"net/http"
 
@@ -33,10 +32,8 @@ func DoAuth(ctx context.Context, config *config.Config) func(http.Handler) http.
 				http.Error(w, "Invalid token", http.StatusForbidden)
 				return
 			}
-			userInfo := openapi.User{
-				Id: t.Subject(),
-			}
-			ctx := context.WithValue(r.Context(), util.UserInfoContextKey, userInfo)
+			ctx := context.WithValue(r.Context(), util.UserIdContextKey, t.Subject())
+			ctx = context.WithValue(ctx, util.UserAccessTokenContextKey, token)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

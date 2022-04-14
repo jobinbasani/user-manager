@@ -3,6 +3,9 @@ package config
 import (
 	"context"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+
 	"github.com/kelseyhightower/envconfig"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 )
@@ -15,13 +18,19 @@ type UserManagerJwkCache struct {
 
 // Config contains the application level configuration, which can be overridden by environment variables
 type Config struct {
-	JwkCache *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
+	JwkCache  *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
+	Region    string               `envconfig:"AWS_REGION" required:"true"`
+	AwsConfig aws.Config
 }
 
 // Configure creates a config by processing the environment variables and default values
-func Configure(_ context.Context) *Config {
+func Configure(ctx context.Context) *Config {
 	config := &Config{}
 	err := envconfig.Process("", config)
+	if err != nil {
+		panic(err)
+	}
+	config.AwsConfig, err = awsconfig.LoadDefaultConfig(ctx)
 	if err != nil {
 		panic(err)
 	}
