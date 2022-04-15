@@ -44,24 +44,7 @@ func (c CognitoService) getUserInfoByAttribute(ctx context.Context, attribute st
 	if len(output.Users) == 0 {
 		return openapi.User{}, errors.New(fmt.Sprintf("no user with '%s' found", attribute))
 	}
-	return c.cognitoUserOutputToUserRecord(&output.Users[0]), nil
-}
-
-func (c CognitoService) cognitoUserOutputToUserRecord(cognitoUser *types.UserType) openapi.User {
-	var user openapi.User
-	for _, attr := range cognitoUser.Attributes {
-		switch *attr.Name {
-		case "sub":
-			user.Id = *attr.Value
-		case "given_name":
-			user.FirstName = *attr.Value
-		case "family_name":
-			user.LastName = *attr.Value
-		case "email":
-			user.Email = *attr.Value
-		}
-	}
-	return user
+	return c.cognitoUserOutputToUserRecord(output.Users[0].Attributes), nil
 }
 
 func (c CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.User, error) {
@@ -72,20 +55,24 @@ func (c CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.U
 		log.Println(err)
 		return openapi.User{}, err
 	}
+	return c.cognitoUserOutputToUserRecord(userOutput.UserAttributes), nil
+}
+
+func (c CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {
 	var user openapi.User
-	for _, attr := range userOutput.UserAttributes {
-		switch *attr.Name {
+	for _, attribute := range attributes {
+		switch *attribute.Name {
 		case "sub":
-			user.Id = *attr.Value
+			user.Id = *attribute.Value
 		case "given_name":
-			user.FirstName = *attr.Value
+			user.FirstName = *attribute.Value
 		case "family_name":
-			user.LastName = *attr.Value
+			user.LastName = *attribute.Value
 		case "email":
-			user.Email = *attr.Value
+			user.Email = *attribute.Value
 		}
 	}
-	return user, nil
+	return user
 }
 
 func NewAuthService(cfg *config.Config) AuthService {
