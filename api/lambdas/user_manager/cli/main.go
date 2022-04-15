@@ -15,6 +15,8 @@ func main() {
 		Description: "Tools for managing video streams",
 		Commands: []*cli.Command{
 			newGetUserInfoCommand(),
+			newGetUserInfoBySubCommand(),
+			newGetUserInfoByEmailCommand(),
 		},
 		ErrWriter: os.Stderr,
 	}

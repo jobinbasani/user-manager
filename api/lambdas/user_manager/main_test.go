@@ -19,7 +19,7 @@ func Test(t *testing.T) {
 			name: "Verify path",
 			req: events.APIGatewayProxyRequest{
 				Path:       "/api/v1/user",
-				HTTPMethod: "GET",
+				HTTPMethod: http.MethodGet,
 			},
 			expectedStatusCode: http.StatusUnauthorized,
 		},

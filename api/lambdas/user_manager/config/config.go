@@ -18,8 +18,9 @@ type UserManagerJwkCache struct {
 
 // Config contains the application level configuration, which can be overridden by environment variables
 type Config struct {
-	JwkCache  *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
-	AwsConfig aws.Config
+	AwsConfig         aws.Config
+	JwkCache          *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
+	CognitoUserPoolId string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
 }
 
 // Configure creates a config by processing the environment variables and default values

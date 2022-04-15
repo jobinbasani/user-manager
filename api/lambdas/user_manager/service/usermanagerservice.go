@@ -17,7 +17,7 @@ type UserManagerService struct {
 
 // GetUser returns the user profile
 func (u *UserManagerService) GetUser(ctx context.Context) (openapi.ImplResponse, error) {
-	user, err := u.authService.GetUserInfo(ctx)
+	user, err := u.authService.GetUserInfoByAccessToken(ctx)
 	if err != nil {
 		return openapi.ImplResponse{
 			Code: http.StatusNotFound,
