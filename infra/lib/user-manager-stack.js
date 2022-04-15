@@ -162,6 +162,7 @@ class UserManagerStack extends Stack {
       timeout: Duration.seconds(10),
       environment: {
         USERMANAGER_JWKS_URL: `https://cognito-idp.${Stack.of(this).region}.amazonaws.com/${userPool.userPoolId}/.well-known/jwks.json`,
+        USERMANAGER_USER_POOL_ID: userPool.userPoolId,
       },
     });
 
