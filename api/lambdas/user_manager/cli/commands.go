@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
@@ -91,8 +90,8 @@ func getUserInfoAction(c *cli.Context) error {
 
 func getUserInfoBySubAction(c *cli.Context) error {
 	sub := c.String("sub")
-	poolId := c.String("pool_id")
-	user, err := getUserInfoByAttribute(c, poolId, "sub", sub)
+	poolID := c.String("pool_id")
+	user, err := getUserInfoByAttribute(c, poolID, "sub", sub)
 	if err != nil {
 		return err
 	}
@@ -102,8 +101,8 @@ func getUserInfoBySubAction(c *cli.Context) error {
 
 func getUserInfoByEmailAction(c *cli.Context) error {
 	email := c.String("email")
-	poolId := c.String("pool_id")
-	user, err := getUserInfoByAttribute(c, poolId, "email", email)
+	poolID := c.String("pool_id")
+	user, err := getUserInfoByAttribute(c, poolID, "email", email)
 	if err != nil {
 		return err
 	}
@@ -111,9 +110,9 @@ func getUserInfoByEmailAction(c *cli.Context) error {
 	return nil
 }
 
-func getUserInfoByAttribute(c *cli.Context, poolId string, attributeType string, attributeValue string) (openapi.User, error) {
+func getUserInfoByAttribute(c *cli.Context, poolID string, attributeType string, attributeValue string) (openapi.User, error) {
 	cfg := &config.Config{
-		CognitoUserPoolId: poolId,
+		CognitoUserPoolID: poolID,
 	}
 	var err error
 	cfg.AwsConfig, err = awsconfig.LoadDefaultConfig(c.Context)
@@ -127,5 +126,5 @@ func getUserInfoByAttribute(c *cli.Context, poolId string, attributeType string,
 	case "email":
 		return authService.GetUserInfoByEmail(c.Context, attributeValue)
 	}
-	return openapi.User{}, errors.New(fmt.Sprintf("unknown attribute type '%s'", attributeType))
+	return openapi.User{}, fmt.Errorf("unknown attribute type '%s'", attributeType)
 }

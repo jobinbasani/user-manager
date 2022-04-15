@@ -2,9 +2,7 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
@@ -12,6 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
+	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider/types"
 )
 
 type AuthService interface {
@@ -35,14 +34,14 @@ func (c CognitoService) GetUserInfoBySub(ctx context.Context, sub string) (opena
 
 func (c CognitoService) getUserInfoByAttribute(ctx context.Context, attribute string) (openapi.User, error) {
 	output, err := c.client.ListUsers(ctx, &cognitoidentityprovider.ListUsersInput{
-		UserPoolId: aws.String(c.cfg.CognitoUserPoolId),
+		UserPoolId: aws.String(c.cfg.CognitoUserPoolID),
 		Filter:     aws.String(attribute),
 	})
 	if err != nil {
 		return openapi.User{}, err
 	}
 	if len(output.Users) == 0 {
-		return openapi.User{}, errors.New(fmt.Sprintf("no user with '%s' found", attribute))
+		return openapi.User{}, fmt.Errorf("no user with '%s' found", attribute)
 	}
 	return c.cognitoUserOutputToUserRecord(output.Users[0].Attributes), nil
 }

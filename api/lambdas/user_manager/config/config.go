@@ -20,7 +20,7 @@ type UserManagerJwkCache struct {
 type Config struct {
 	AwsConfig         aws.Config
 	JwkCache          *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
-	CognitoUserPoolId string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
+	CognitoUserPoolID string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
 }
 
 // Configure creates a config by processing the environment variables and default values

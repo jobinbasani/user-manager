@@ -9,6 +9,8 @@ type ContextKey string
 
 // UserIDContextKey is the key used to set the user id in Context
 const UserIDContextKey = "UserInfo"
+
+// UserAccessTokenContextKey is the key used to set the user access token in Context
 const UserAccessTokenContextKey = "UserAccessToken"
 
 func GetUserIDFromContext(ctx context.Context) string {

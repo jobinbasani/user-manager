@@ -5,6 +5,7 @@ import (
 	"errors"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
+	"log"
 	"net/http"
 )
 
@@ -19,6 +20,7 @@ type UserManagerService struct {
 func (u *UserManagerService) GetUser(ctx context.Context) (openapi.ImplResponse, error) {
 	user, err := u.authService.GetUserInfoByAccessToken(ctx)
 	if err != nil {
+		log.Println(err)
 		return openapi.ImplResponse{
 			Code: http.StatusNotFound,
 			Body: nil,
