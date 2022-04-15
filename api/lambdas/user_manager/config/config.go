@@ -19,7 +19,6 @@ type UserManagerJwkCache struct {
 // Config contains the application level configuration, which can be overridden by environment variables
 type Config struct {
 	JwkCache  *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
-	Region    string               `envconfig:"AWS_REGION" required:"true"`
 	AwsConfig aws.Config
 }
 

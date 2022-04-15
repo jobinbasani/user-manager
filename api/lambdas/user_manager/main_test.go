@@ -24,6 +24,9 @@ func Test(t *testing.T) {
 			expectedStatusCode: http.StatusUnauthorized,
 		},
 	}
+
+	t.Setenv("USERMANAGER_JWKS_URL", "https://cognito-idp.ca-central-1.amazonaws.com/poolid/.well-known/jwks.json")
+
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			resp, err := Handler(context.Background(), test.req)
