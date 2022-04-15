@@ -182,6 +182,15 @@ class UserManagerStack extends Stack {
       ],
     }));
 
+    userManagerLambda.addToRolePolicy(new PolicyStatement({
+      actions: [
+        'cognito-idp:ListUsers',
+      ],
+      resources: [
+        userPool.userPoolArn,
+      ],
+    }));
+
     const userManagerLambdaName = new cdk.CfnOutput(this, 'UserManagerLambda', {
       value: userManagerLambda.functionName,
       description: 'UserManager Lambda Function Name',
