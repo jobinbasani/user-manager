@@ -3,13 +3,19 @@ const {
   Duration,
 } = require('aws-cdk-lib');
 const {
-  CloudFrontWebDistribution, OriginAccessIdentity,
-  OriginProtocolPolicy, CloudFrontAllowedMethods,
+  OriginAccessIdentity,
+  OriginProtocolPolicy,
+  Distribution,
+  CachePolicy,
+  AllowedMethods,
+  OriginRequestPolicy,
+  ViewerProtocolPolicy,
 } = require('aws-cdk-lib/aws-cloudfront');
 const {
   PolicyStatement,
   Role,
   WebIdentityPrincipal,
+  CanonicalUserPrincipal,
 } = require('aws-cdk-lib/aws-iam');
 const { Table, BillingMode, AttributeType } = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
@@ -25,21 +31,18 @@ const {
   UserPoolClient,
   UserPoolClientIdentityProvider,
 } = require('aws-cdk-lib/aws-cognito');
+const {
+  S3Origin,
+  HttpOrigin,
+} = require('aws-cdk-lib/aws-cloudfront-origins');
+const {
+  BucketEncryption,
+  BlockPublicAccess,
+} = require('aws-cdk-lib/aws-s3');
 
 class UserManagerStack extends Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
-
-    const s3Bucket = new s3.Bucket(this, 'usermanager', {
-      websiteIndexDocument: 'index.html',
-      websiteErrorDocument: 'index.html',
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-
-    const bucketName = new cdk.CfnOutput(this, 'WebAppBucketName', {
-      value: s3Bucket.bucketName,
-      description: 'S3 Bucket that holds the web application',
-    });
 
     const userTable = new Table(this, id, {
       tableName: 'UserDetails',
@@ -212,58 +215,63 @@ class UserManagerStack extends Stack {
 
     const apiEndPointDomainName = cdk.Fn.parseDomainName(userManagerApiGateway.url);
 
-    const distribution = new CloudFrontWebDistribution(this, 'UserManagerCDN', {
-      originConfigs: [
-        {
-          s3OriginSource: {
-            s3BucketSource: s3Bucket,
-            originAccessIdentity: cloudFrontOAI,
-          },
-          behaviors: [{ isDefaultBehavior: true }],
-        },
-        {
-          customOriginSource: {
-            domainName: apiEndPointDomainName,
-            originProtocolPolicy: OriginProtocolPolicy.MATCH_VIEWER,
-          },
-          behaviors: [
-            {
-              pathPattern: '/api/*',
-              allowedMethods: CloudFrontAllowedMethods.ALL,
-            },
-          ],
-        },
-      ],
-      defaultRootObject: 'main/index.html',
+    const userManagerS3Bucket = new s3.Bucket(this, 'user_manager', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      encryption: BucketEncryption.S3_MANAGED,
+      autoDeleteObjects: true,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
     });
 
+    const bucketName = new cdk.CfnOutput(this, 'WebAppBucketName', {
+      value: userManagerS3Bucket.bucketName,
+      description: 'S3 Bucket that holds the web application',
+    });
+
+    const userManagerOAI = new OriginAccessIdentity(this, 'UserManagerOAI', {
+      comment: 'OAI for User Manager website.',
+    });
+
+    userManagerS3Bucket.addToResourcePolicy(new PolicyStatement({
+      actions: [
+        's3:GetObject',
+      ],
+      resources: [userManagerS3Bucket.arnForObjects('*')],
+      principals: [new CanonicalUserPrincipal(userManagerOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
+    }));
+
+    const cloudfrontDistribution = new Distribution(this, 'UserManagerCDNDist', {
+      defaultRootObject: 'index.html',
+      defaultBehavior: {
+        origin: new S3Origin(userManagerS3Bucket, {
+          originAccessIdentity: userManagerOAI,
+        }),
+        compress: true,
+        allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        cachePolicy: CachePolicy.CACHING_OPTIMIZED,
+      },
+    });
+
+    cloudfrontDistribution.addBehavior('/api/*',
+      new HttpOrigin(apiEndPointDomainName, {
+        protocolPolicy: OriginProtocolPolicy.HTTPS_ONLY,
+      }),
+      {
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        cachePolicy: CachePolicy.CACHING_DISABLED,
+        originRequestPolicy: OriginRequestPolicy.ALL_VIEWER,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      });
+
     const cdnUrl = new cdk.CfnOutput(this, 'CdnUrl', {
-      value: `https://${distribution.distributionDomainName}/`,
+      value: `https://${cloudfrontDistribution.distributionDomainName}/`,
       description: 'Cloudfront URL',
     });
 
     const cdnId = new cdk.CfnOutput(this, 'CdnId', {
-      value: distribution.distributionId,
+      value: cloudfrontDistribution.distributionId,
       description: 'Cloudfront Distribution ID',
     });
-
-    const cloudfrontS3Access = new PolicyStatement({
-      actions: [
-        's3:GetBucket*',
-        's3:GetObject*',
-        's3:List*',
-      ],
-      resources: [
-        s3Bucket.bucketArn,
-        `${s3Bucket.bucketArn}/*`,
-      ],
-    });
-
-    cloudfrontS3Access.addCanonicalUserPrincipal(
-      cloudFrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId,
-    );
-
-    s3Bucket.addToResourcePolicy(cloudfrontS3Access);
 
     const githubProvider = new OpenIdConnectProvider(this, 'githubOidcProvider', {
       url: 'https://token.actions.githubusercontent.com',
@@ -287,8 +295,8 @@ class UserManagerStack extends Stack {
         's3:*',
       ],
       resources: [
-        s3Bucket.bucketArn,
-        `${s3Bucket.bucketArn}/*`,
+        userManagerS3Bucket.bucketArn,
+        `${userManagerS3Bucket.bucketArn}/*`,
       ],
     }));
 
@@ -306,7 +314,7 @@ class UserManagerStack extends Stack {
         'cloudfront:CreateInvalidation',
       ],
       resources: [
-        `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${distribution.distributionId}`,
+        `arn:aws:cloudfront::${Stack.of(this).account}:distribution/${cloudfrontDistribution.distributionId}`,
       ],
     }));
 
