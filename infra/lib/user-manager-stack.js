@@ -10,6 +10,7 @@ const {
   AllowedMethods,
   OriginRequestPolicy,
   ViewerProtocolPolicy,
+  PriceClass,
 } = require('aws-cdk-lib/aws-cloudfront');
 const {
   PolicyStatement,
@@ -241,6 +242,7 @@ class UserManagerStack extends Stack {
 
     const cloudfrontDistribution = new Distribution(this, 'UserManagerCDNDist', {
       defaultRootObject: 'index.html',
+      priceClass: PriceClass.PRICE_CLASS_100,
       defaultBehavior: {
         origin: new S3Origin(userManagerS3Bucket, {
           originAccessIdentity: userManagerOAI,
