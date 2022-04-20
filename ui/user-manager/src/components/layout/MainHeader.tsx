@@ -9,16 +9,24 @@ import { AppBar,
          Menu,
          MenuItem,
          Typography} from "@mui/material";
-import MenuIcon from '@mui/icons-material/Menu';
-import { navMenuItems, rightMenuItems } from "../../constants/MenuConstants";
-import classes from "./MainHeader.module.css";
-import { Link } from 'react-router-dom';
 
+import { useDispatch, useSelector } from 'react-redux';
+
+import MenuIcon from '@mui/icons-material/Menu';
+import { navMenuItems, rightMenuItems, NavMenuItemType } from '../../constants/MenuConstants';
+import classes from "./MainHeader.module.css";
+import { Link, useNavigate } from 'react-router-dom';
 import {logo} from '../../assets/images';
+import { RootState } from '../../store/index';
+import { doLogout } from "../../store/auth/auth-action";
 
 const MainHeader = () => {
+    const authStatus = useSelector((state: RootState) => state.auth.isAuthenticated);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+    const dispatch = useDispatch();
+    let navigate = useNavigate();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -31,9 +39,125 @@ const MainHeader = () => {
     const handleCloseNavMenu = () => {
         setAnchorElNav(null);
     };
-    const handleCloseUserMenu = () => {
+    const handleCloseUserMenu = (menuItem: any) => {
         setAnchorElUser(null);
+        console.log("Menu Item: " + menuItem);
+        if (menuItem.target.outerText.toLowerCase() === "logout") {
+          dispatch(doLogout());
+          navigate("/home");
+        }
     };
+
+    const profileMenu = () => {
+      if (authStatus) {
+        return (
+          <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open User Profile">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" 
+                          src="/static/images/avatar/2.jpg" 
+                          className={classes["app-avatar"]}/>
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {rightMenuItems.map((item) => (
+                  <MenuItem key={item.key} onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">{item.value}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+        );
+      } else {
+        return null;
+      }
+    }
+
+    /** Return main header menu items */
+    const mainHeaderMenu = (item: NavMenuItemType, isDropdown: boolean) => {
+      const menuClassName = isDropdown? "nav-link-menu":"nav-link";
+      if (item.navLink.startsWith("https:") ) {
+        if (!authStatus)
+          return isDropdown ? getDropdownLoginUrl(item, menuClassName) : getLoginUrl(item, menuClassName);
+        else 
+          return null;
+      } else if (item.isPrivate) {
+          if (authStatus) {
+            return !isDropdown? menuLinkItem(item) : menuDropdownItem(item);
+          } else {
+            return null;
+          }
+      } else {
+        return !isDropdown? menuLinkItem(item) : menuDropdownItem(item);;    
+      }
+    }
+
+    const getLoginUrl = (item: NavMenuItemType, menuClassName: string) => {
+      return (
+        <MenuItem key={item.key} onClick={handleCloseNavMenu}>
+        <Button
+          key={item.key}
+          onClick={handleCloseNavMenu}
+          sx={{ my: 2, color: 'white', display: 'block' }}>
+            <Typography textAlign="center">
+              <a href={item.navLink} className={classes[menuClassName]}>{item.value}</a>                  
+            </Typography>
+        </Button>
+      </MenuItem>
+      );
+    }
+
+    const getDropdownLoginUrl = (item: NavMenuItemType, menuClassName: string) => {
+      return (
+        <MenuItem key={item.key} onClick={handleCloseNavMenu}>
+          <Typography textAlign="center">
+            <a href={item.navLink} className={classes[menuClassName]}>{item.value}</a>                  
+          </Typography>
+        </MenuItem> 
+      );
+    }
+
+    const menuDropdownItem = (item: NavMenuItemType) => {
+      return (
+        <MenuItem key={item.key} onClick={handleCloseNavMenu}>
+        <Typography textAlign="center">
+            <Link to={item.navLink} className={classes["nav-link-menu"]}>
+                {item.value}
+            </Link>
+        </Typography>
+      </MenuItem>
+      );
+    }
+
+    const menuLinkItem = (item: NavMenuItemType) => {
+      return (
+        <Button
+          key={item.key}
+          onClick={handleCloseNavMenu}
+          sx={{ my: 2, color: 'white', display: 'block' }}>
+        <Typography textAlign="center">
+          <Link to={item.navLink} className={classes["nav-link"]}>
+            {item.value}
+          </Link>
+        </Typography>
+      </Button>
+      )
+    }
 
     return(
         <AppBar position="static" className={classes.header}>
@@ -69,67 +193,20 @@ const MainHeader = () => {
                 }}
               >
                 {navMenuItems.map((item) => (
-                  <MenuItem key={item.key} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">
-                        <Link to={item.navLink} className={classes["nav-link-menu"]}>
-                            {item.value}
-                        </Link>
-                    </Typography>
-                  </MenuItem>
+                    mainHeaderMenu(item, true)
                 ))}
               </Menu>
             </Box>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {navMenuItems.map((item) => (
-                <Button
-                  key={item.key}
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  <Typography textAlign="center">
-                      {item.navLink.startsWith("https:") ?
-                          <a href={item.navLink} className={classes["nav-link"]}>{item.value}</a>
-                          :
-                          <Link to={item.navLink} className={classes["nav-link"]}>
-                              {item.value}
-                          </Link>
-                      }
-                  </Typography>
-                </Button>
+
+                  mainHeaderMenu(item, false)
+
               ))}
             </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" 
-                          src="/static/images/avatar/2.jpg" 
-                          className={classes["app-avatar"]}/>
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {rightMenuItems.map((item) => (
-                  <MenuItem key={item.key} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{item.value}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+              {
+                profileMenu()
+              }
           </Toolbar>
       </AppBar>
     );

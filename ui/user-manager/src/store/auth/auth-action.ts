@@ -1,10 +1,20 @@
-import { User } from '../../api/auth-header';
-import { authActions } from './auth-slice';
+import { AccessToken } from '../../api/api-types';
+import { authActions } from '../../store/auth/auth-slice';
 
-export const doAuth = (user: User) => {
-
+export const doAuth = (token : AccessToken) => {
+    return async (dispatch: any) => {
+        dispatch(authActions.setAuthenticated(token));
+    }
 }
 
-export const doLogout = (user: User) => {
+export const doLogout = () => {
+    return async (dispatch: any) => {
+        dispatch(authActions.resetAuthStatus());
+    }
+}
 
+export const doInit = () => {
+    return async (dispatch: any) => {
+        dispatch(authActions.initializeAuthStatus());
+    }
 }

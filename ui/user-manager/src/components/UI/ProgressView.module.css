@@ -1,0 +1,9 @@
+
+.progress-container {
+    margin: 3rem;
+    border: "none";
+    box-shadow: "none";
+    padding: 3rem;
+    align-content: 'center';
+    align-items: 'center';
+}
