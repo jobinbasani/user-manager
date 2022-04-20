@@ -18,7 +18,7 @@ const PastoralMessage = () => {
             <Divider />
             <CardContent>
 
-                <img alt='profile image' 
+                <img alt='profile' 
                      src={String(profileImagePlaceholder)} 
                      className={classes["floated-image"]}/>
                 <Typography textAlign="justify" variant="body1">
