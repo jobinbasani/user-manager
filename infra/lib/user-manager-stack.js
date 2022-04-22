@@ -181,21 +181,11 @@ class UserManagerStack extends cdk.Stack {
       description: 'UserManager Lambda Function Name',
     });
 
-    const userManagerApiGateway = new LambdaRestApi(this, 'userManagerApiGateway', {
-      handler: userManagerLambda,
-      proxy: true,
-    });
-
-    const userManagerApiGatewayUrl = new cdk.CfnOutput(this, 'UserManagerApiGatewayURL', {
-      value: userManagerApiGateway.url,
-      description: 'userManager ApiGateway URL',
-    });
-
     const cloudFrontOAI = new cloudfront.OriginAccessIdentity(this, 'OAI', {
       comment: 'OAI for User Manager website.',
     });
 
-    const apiEndPointDomainName = cdk.Fn.parseDomainName(userManagerApiGateway.url);
+    const apiEndPointDomainName = cdk.Fn.parseDomainName(userManagerLambdaUrl.url);
 
     const userManagerS3Bucket = new s3.Bucket(this, 'user_manager', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
