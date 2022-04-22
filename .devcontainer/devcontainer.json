@@ -1,3 +1,9 @@
 {
-    "dockerFile":"Dockerfile"
+    "dockerFile":"Dockerfile",
+    "extensions": [
+        "amazonwebservices.aws-toolkit-vscode"
+    ],
+    "mounts": [
+        "source=${env:HOME}${env:USERPROFILE}/.aws,target=/root/.aws,type=bind"
+    ]
 }
