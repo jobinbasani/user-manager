@@ -17,14 +17,20 @@ var cfg *config.Config
 
 // Handler is the main entry point for Lambda. Receives a proxy request and
 // returns a proxy response
-func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func Handler(ctx context.Context, req events.LambdaFunctionURLRequest) (events.APIGatewayProxyResponse, error) {
 	if cfg == nil {
 		cfg = config.Configure(ctx)
 	}
 	if gorillaMux == nil {
 		gorillaMux = gorillamux.New(routes.GetRoutes(ctx, cfg))
 	}
-	resp, err := gorillaMux.ProxyWithContext(ctx, *core.NewSwitchableAPIGatewayRequestV1(&req))
+	resp, err := gorillaMux.ProxyWithContext(ctx, *core.NewSwitchableAPIGatewayRequestV1(&events.APIGatewayProxyRequest{
+		Path:                  req.RequestContext.HTTP.Path,
+		HTTPMethod:            req.RequestContext.HTTP.Method,
+		Headers:               req.Headers,
+		QueryStringParameters: req.QueryStringParameters,
+		Body:                  req.Body,
+	}))
 	return *resp.Version1(), err
 }
 
