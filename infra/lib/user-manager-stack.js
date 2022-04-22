@@ -4,6 +4,7 @@ const iam = require('aws-cdk-lib/aws-iam');
 const dynamodb = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cognito = require('aws-cdk-lib/aws-cognito');
+const lambda = require('aws-cdk-lib/aws-lambda');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
 const { GoFunction } = require('@aws-cdk/aws-lambda-go-alpha');
 const { LambdaRestApi } = require('aws-cdk-lib/aws-apigateway');
@@ -166,7 +167,16 @@ class UserManagerStack extends cdk.Stack {
       ],
     }));
 
-    const userManagerLambdaName = new cdk.CfnOutput(this, 'UserManagerLambda', {
+    const userManagerLambdaUrl = userManagerLambda.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    new cdk.CfnOutput(this, 'UserManagerLambdaUrl', {
+      value: userManagerLambdaUrl.url,
+      description: 'UserManager Lambda Function URL',
+    });
+
+    new cdk.CfnOutput(this, 'UserManagerLambda', {
       value: userManagerLambda.functionName,
       description: 'UserManager Lambda Function Name',
     });
