@@ -7,7 +7,6 @@ const cognito = require('aws-cdk-lib/aws-cognito');
 const lambda = require('aws-cdk-lib/aws-lambda');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
 const { GoFunction } = require('@aws-cdk/aws-lambda-go-alpha');
-const { LambdaRestApi } = require('aws-cdk-lib/aws-apigateway');
 const {
   S3Origin,
   HttpOrigin,
@@ -256,14 +255,26 @@ class UserManagerStack extends cdk.Stack {
       },
     });
 
+    const cachePolicy = new cloudfront.CachePolicy(this, 'UserManagerApiCachePolicy', {
+      cachePolicyName: 'usermanagerapicachepolicy',
+      minTtl: cdk.Duration.seconds(0),
+      maxTtl: cdk.Duration.seconds(1),
+      defaultTtl: cdk.Duration.seconds(0),
+      enableAcceptEncodingGzip: true,
+      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
+      queryStringBehavior: cloudfront.CacheQueryStringBehavior.all(),
+      headerBehavior: cloudfront.CacheHeaderBehavior.allowList('Authorization'),
+    });
+
     cloudfrontDistribution.addBehavior('/api/*',
       new HttpOrigin(apiEndPointDomainName, {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       }),
       {
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
-        cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-        originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
+        cachePolicy: {
+          cachePolicyId: cachePolicy.cachePolicyId,
+        },
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       });
 
