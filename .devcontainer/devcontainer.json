@@ -1,7 +1,9 @@
 {
     "dockerFile":"Dockerfile",
     "extensions": [
-        "amazonwebservices.aws-toolkit-vscode"
+        "amazonwebservices.aws-toolkit-vscode",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
     ],
     "mounts": [
         "source=${env:HOME}${env:USERPROFILE}/.aws,target=/root/.aws,type=bind"
