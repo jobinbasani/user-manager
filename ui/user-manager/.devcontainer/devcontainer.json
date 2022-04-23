@@ -3,7 +3,9 @@
     "extensions": [
         "amazonwebservices.aws-toolkit-vscode",
         "eamodio.gitlens",
-        "golang.Go"
+        "eg2.vscode-npm-script",
+        "christian-kohler.npm-intellisense",
+        "VisualStudioExptTeam.vscodeintellicode"
     ],
     "mounts": [
         "source=${env:HOME}${env:USERPROFILE}/.aws,target=/root/.aws,type=bind"
