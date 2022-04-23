@@ -2,9 +2,11 @@
     "dockerFile":"Dockerfile",
     "extensions": [
         "amazonwebservices.aws-toolkit-vscode",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "golang.Go"
     ],
     "mounts": [
         "source=${env:HOME}${env:USERPROFILE}/.aws,target=/root/.aws,type=bind"
-    ]
+    ],
+    "forwardPorts": [3000]
 }

@@ -15,5 +15,10 @@ RUN sudo apt-get update && \
     apt-get remove -y golang-go && \
     apt-get autoremove -y && \
     ln -s /root/.gvm/gos/go1.18/bin/go /usr/bin/go && \
-    ln -s /root/.gvm/gos/go1.18/bin/gofmt /usr/bin/gofmt
+    ln -s /root/.gvm/gos/go1.18/bin/gofmt /usr/bin/gofmt && \
+    go install -v github.com/ramya-rao-a/go-outline@latest && \
+    go install -v golang.org/x/tools/gopls@latest && \
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.45.2 && \
+    go install github.com/go-delve/delve/cmd/dlv@latest && \
+    go install honnef.co/go/tools/cmd/staticcheck@latest
 
