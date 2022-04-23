@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 
@@ -51,5 +50,9 @@ func (jc *UserManagerJwkCache) Set(jwksURL string) error {
 
 // Get returns the JWK keyset from cache
 func (jc *UserManagerJwkCache) Get(ctx context.Context) (jwk.Set, error) {
-	return jc.Cache.Get(ctx, jc.jwksURL)
+	s, err := jc.Cache.Get(ctx, jc.jwksURL)
+	if err == nil && (s == nil || s.Len() == 0) {
+		return jc.Cache.Refresh(ctx, jc.jwksURL)
+	}
+	return s, err
 }
