@@ -256,7 +256,7 @@ class UserManagerStack extends cdk.Stack {
     });
 
     const cachePolicy = new cloudfront.CachePolicy(this, 'UserManagerApiCachePolicy', {
-      cachePolicyName: 'usermanagerapicachepolicy',
+      cachePolicyName: 'UserManagerAPI_CachePolicy',
       minTtl: cdk.Duration.seconds(0),
       maxTtl: cdk.Duration.seconds(1),
       defaultTtl: cdk.Duration.seconds(0),
