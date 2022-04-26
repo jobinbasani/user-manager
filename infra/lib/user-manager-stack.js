@@ -98,33 +98,10 @@ class UserManagerStack extends cdk.Stack {
         phoneNumberVerified: false,
       });
 
-    const userPoolClient = new cognito.UserPoolClient(this, 'user-manager-userpool-client', {
-      userPool,
-      oAuth: {
-        flows: {
-          implicitCodeGrant: true,
-        },
-        callbackUrls: [
-          'http://localhost:3000/callback',
-        ],
-      },
-      supportedIdentityProviders: [
-        cognito.UserPoolClientIdentityProvider.COGNITO,
-      ],
-      readAttributes: clientReadAttributes,
-      writeAttributes: clientWriteAttributes,
-    });
-
     const domain = userPool.addDomain('user-pool-domain', {
       cognitoDomain: {
         domainPrefix: 'user-manager',
       },
-    });
-
-    const signInUrl = new cdk.CfnOutput(this, 'CognitoSignInURL', {
-      // eslint-disable-next-line max-len
-      value: `${domain.baseUrl()}/oauth2/authorize?client_id=${userPoolClient.userPoolClientId}&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&scope=openid&response_type=token`,
-      description: 'Sign in URL',
     });
 
     const jwksUrl = new cdk.CfnOutput(this, 'CognitoJWKS', {
@@ -277,6 +254,36 @@ class UserManagerStack extends cdk.Stack {
         },
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       });
+
+    const userPoolClient = new cognito.UserPoolClient(this, 'user-manager-userpool-client', {
+      userPool,
+      oAuth: {
+        flows: {
+          implicitCodeGrant: true,
+        },
+        callbackUrls: [
+          'http://localhost:3000/callback',
+          `https://${cloudfrontDistribution.distributionDomainName}/main/callback`,
+          `https://${cloudfrontDistribution.distributionDomainName}/front-end/callback`,
+        ],
+      },
+      supportedIdentityProviders: [
+        cognito.UserPoolClientIdentityProvider.COGNITO,
+      ],
+      readAttributes: clientReadAttributes,
+      writeAttributes: clientWriteAttributes,
+    });
+
+    const signInUrl = new cdk.CfnOutput(this, 'CognitoSignInURL', {
+      // eslint-disable-next-line max-len
+      value: `${domain.baseUrl()}/oauth2/authorize?client_id=${userPoolClient.userPoolClientId}&scope=aws.cognito.signin.user.admin+openid&response_type=token&redirect_uri=`,
+      description: 'Sign in URL',
+    });
+
+    const callbackUrlPath = new cdk.CfnOutput(this, 'CallbackUrlPath', {
+      value: '/callback',
+      description: 'Cognito callback URL path',
+    });
 
     const cdnUrl = new cdk.CfnOutput(this, 'CdnUrl', {
       value: `https://${cloudfrontDistribution.distributionDomainName}/`,
