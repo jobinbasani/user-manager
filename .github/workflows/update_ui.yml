@@ -42,7 +42,7 @@ jobs:
         cdnUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnUrl'].OutputValue" | jq -r '.[0]')
         callbackUrl=$(echo "${cdnUrl}${branchName}${callbackUrlPath}" | jq -rR @uri)
         completeSignInUrl="${partialSignInUrl}${callbackUrl}"
-        sed -i '' "s/LOGIN_URL.*=.*[\"].*[\"];/LOGIN_URL = \"$completeSignInUrl\";/g" src/constants/ApiConstants.ts
+        sed -i "s/LOGIN_URL.*=.*[\"].*[\"];/LOGIN_URL = \"$completeSignInUrl\";/g" src/constants/ApiConstants.ts
     - name: Build app
       run: |
         npm ci
