@@ -19,12 +19,10 @@ class UserManagerStack extends cdk.Stack {
     const userTable = new dynamodb.Table(this, id, {
       tableName: 'UserDetails',
       billingMode: dynamodb.BillingMode.PROVISIONED,
+      readCapacity: 2,
+      writeCapacity: 2,
       partitionKey: {
-        name: 'email',
-        type: dynamodb.AttributeType.STRING,
-      },
-      sortKey: {
-        name: 'rec_type',
+        name: 'id',
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -36,6 +34,31 @@ class UserManagerStack extends cdk.Stack {
         name: 'family_id',
         type: dynamodb.AttributeType.STRING,
       },
+      projectionType: dynamodb.ProjectionType.KEYS_ONLY,
+      readCapacity: 2,
+      writeCapacity: 2,
+    });
+
+    userTable.addGlobalSecondaryIndex({
+      indexName: 'emailIndex',
+      partitionKey: {
+        name: 'email_id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      projectionType: dynamodb.ProjectionType.KEYS_ONLY,
+      readCapacity: 2,
+      writeCapacity: 2,
+    });
+
+    userTable.addGlobalSecondaryIndex({
+      indexName: 'subIndex',
+      partitionKey: {
+        name: 'sub',
+        type: dynamodb.AttributeType.STRING,
+      },
+      projectionType: dynamodb.ProjectionType.KEYS_ONLY,
+      readCapacity: 2,
+      writeCapacity: 2,
     });
 
     const userPool = new cognito.UserPool(this, 'userpool', {
@@ -115,6 +138,7 @@ class UserManagerStack extends cdk.Stack {
       environment: {
         USERMANAGER_JWKS_URL: `https://cognito-idp.${cdk.Stack.of(this).region}.amazonaws.com/${userPool.userPoolId}/.well-known/jwks.json`,
         USERMANAGER_USER_POOL_ID: userPool.userPoolId,
+        USERMANAGER_TABLE_NAME: userTable.tableName,
       },
     });
 
@@ -197,7 +221,9 @@ class UserManagerStack extends cdk.Stack {
               // Check whether the URI is missing a file name.
               if (uri.endsWith('/')) {
                   request.uri += 'index.html';
-              } 
+              } else if (uri.includes('/callback')){
+                  return request;
+              }
               // Check whether the URI is missing a file extension.
               else if (!uri.includes('.')) {
                   var response = {
