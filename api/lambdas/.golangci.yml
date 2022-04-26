@@ -7,3 +7,6 @@ linters:
     - goimports
     - gofmt
   fast: false
+run:
+  skip-dirs:
+    - user_manager/openapi

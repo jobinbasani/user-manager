@@ -206,14 +206,21 @@ components:
     User:
       type: object
       required:
+        - id
         - displayName
         - firstName
         - email
       properties:
+        id:
+          description: A unique identifier
+          type: string
         displayName:
           description: Display name of the user
           type: string
         firstName:
+          type: string
+          description: First name
+        lastName:
           type: string
           description: First name
         email:
