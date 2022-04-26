@@ -28,16 +28,25 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: '16.13.0'
-    - name: Build app
-      run: |
-        npm ci
-        npm run build --if-present
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: ${{ secrets.USER_MANAGER_AWS_DEPLOY_ROLE_ARN }}
         role-session-name: githubdeploysession
         aws-region: ${{ env.AWS_REGION }}
+    - name: Update sign in url
+      run: |
+        branchName=${GITHUB_REF##*/}
+        callbackUrlPath=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CallbackUrlPath'].OutputValue" | jq -r '.[0]')
+        partialSignInUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CognitoSignInURL'].OutputValue" | jq -r '.[0]')
+        cdnUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnUrl'].OutputValue" | jq -r '.[0]')
+        callbackUrl=$(echo "${cdnUrl}${branchName}${callbackUrlPath}" | jq -rR @uri)
+        completeSignInUrl="${partialSignInUrl}${callbackUrl}"
+        sed -i '' "s/LOGIN_URL.*=.*[\"].*[\"];/LOGIN_URL = \"$completeSignInUrl\";/g" src/constants/ApiConstants.ts
+    - name: Build app
+      run: |
+        npm ci
+        npm run build --if-present
     - name: update app
       run: |
         s3bucket=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='WebAppBucketName'].OutputValue" | jq -r '.[0]')
