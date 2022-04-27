@@ -1,4 +1,5 @@
 import { AccessToken, getEmptyToken } from './api-types';
+import jwtDecode from "jwt-decode";
 
 export class UserAuth {
 
@@ -13,6 +14,16 @@ export class UserAuth {
             switch (factors[0]) {
                 case "id_token":
                     accessToken.idToken = factors[1];
+                    const decoded: any = jwtDecode(accessToken.idToken);
+                    if (decoded) {
+                        if (decoded["email"]) {
+                            accessToken.userInfo.userEmail = decoded["email"]
+                        }
+                        if (decoded["given_name"] && decoded["family_name"]) {
+                            accessToken.userInfo.firstName = decoded["given_name"];
+                            accessToken.userInfo.lastName = decoded["family_name"];
+                        }
+                    }
                     break;
 
                 case "access_token":

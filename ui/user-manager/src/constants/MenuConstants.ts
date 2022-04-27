@@ -16,15 +16,10 @@ export const navMenuItems: Array<NavMenuItemType> = [
     {key: "5", value: "Gallery", navLink: "/gallery", isPrivate: false},
     {key: "6", value: "Register", navLink: "/register", isPrivate: false},
     {key: "7", value: "Login", navLink: LOGIN_URL, isPrivate: false},
-    {key: "8", value: "Dashboard", navLink: "/dashboard", isPrivate: true},
-
 ];
 
 /** Main header right menu items */
 export const rightMenuItems = [
-    {key: "1", value: "Profile", navLink: "/"},
-    {key: "2", value: "Account", navLink: "/"},
-    {key: "3", value: "Settings", navLink: "/"},
-    {key: "4", value: "Dashboard", navLink: "/"},
-    {key: "5", value: "Logout", navLink: "/"}
+    {key: "1", value: "Dashboard", navLink: "/dashboard"},
+    {key: "2", value: "Logout", navLink: "/"}
 ];

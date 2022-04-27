@@ -32,6 +32,7 @@ const Router = () => {
             {path: "login", element: <Login />},
             {path: "register", element: <Register />},
             {path: "callback", element: <Login />},
+            {path: "main", element: <Login />},
             {path: "unauthorized", element: <Unauthorized />},
             {path: "dashboard", element: isLoggedIn? <Dashboard /> : <Navigate to="/unauthorized" />}
         ]
