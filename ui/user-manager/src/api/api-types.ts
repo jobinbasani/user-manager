@@ -6,6 +6,13 @@ export interface AccessToken {
     accessToken: string;
     expiresIn: number;
     tokenType: string;
+    userInfo: User;
+}
+
+export interface User {
+    userEmail: string;
+    firstName: string;
+    lastName: string;
 }
 
 /** Factory method to generate empty object since
@@ -16,5 +23,10 @@ export const getEmptyToken = () => ({
     idToken: '',
     accessToken: '',
     expiresIn: -1,
-    tokenType: ''
+    tokenType: '',
+    userInfo: {
+        firstName: '',
+        lastName: '',
+        userEmail: ''
+    }
 })

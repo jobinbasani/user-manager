@@ -9,6 +9,7 @@ import { AppBar,
          Menu,
          MenuItem,
          Typography} from "@mui/material";
+import { indigo } from '@mui/material/colors';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -22,6 +23,8 @@ import { doLogout } from "../../store/auth/auth-action";
 
 const MainHeader = () => {
     const authStatus = useSelector((state: RootState) => state.auth.isAuthenticated);
+    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -45,6 +48,11 @@ const MainHeader = () => {
         if (menuItem.target.outerText.toLowerCase() === "logout") {
           dispatch(doLogout());
           navigate("/home");
+          return;
+        } 
+
+        if (menuItem.target.outerText.toLowerCase() === "dashboard") {
+          navigate("/dashboard");
         }
     };
 
@@ -54,8 +62,9 @@ const MainHeader = () => {
           <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open User Profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" 
+                  <Avatar alt= {accessToken!.userInfo.firstName + " " + accessToken!.userInfo.lastName}
                           src="/static/images/avatar/2.jpg" 
+                          sx={{ bgcolor: indigo[500] }}
                           className={classes["app-avatar"]}/>
                 </IconButton>
               </Tooltip>
@@ -144,6 +153,14 @@ const MainHeader = () => {
       );
     }
 
+    const welcomeSection = () => {
+      return (
+        <Typography variant="h6">
+          {(authStatus)? "Welcome " + accessToken?.userInfo.firstName : ""}
+        </Typography>
+      );
+    }
+
     const menuLinkItem = (item: NavMenuItemType) => {
       return (
         <Button
@@ -204,6 +221,7 @@ const MainHeader = () => {
 
               ))}
             </Box>
+            { welcomeSection()}
               {
                 profileMenu()
               }
