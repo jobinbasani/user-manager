@@ -221,8 +221,6 @@ class UserManagerStack extends cdk.Stack {
               // Check whether the URI is missing a file name.
               if (uri.endsWith('/')) {
                   request.uri += 'index.html';
-              } else if (uri.includes('/callback')){
-                  return request;
               }
               // Check whether the URI is missing a file extension.
               else if (!uri.includes('.')) {
@@ -289,8 +287,9 @@ class UserManagerStack extends cdk.Stack {
         },
         callbackUrls: [
           'http://localhost:3000/callback',
-          `https://${cloudfrontDistribution.distributionDomainName}/main/callback`,
-          `https://${cloudfrontDistribution.distributionDomainName}/front-end/callback`,
+          'http://localhost:3000/index.html',
+          `https://${cloudfrontDistribution.distributionDomainName}/main/index.html`,
+          `https://${cloudfrontDistribution.distributionDomainName}/front-end/index.html`,
         ],
       },
       supportedIdentityProviders: [
@@ -307,7 +306,7 @@ class UserManagerStack extends cdk.Stack {
     });
 
     const callbackUrlPath = new cdk.CfnOutput(this, 'CallbackUrlPath', {
-      value: '/callback',
+      value: '/index.html',
       description: 'Cognito callback URL path',
     });
 
