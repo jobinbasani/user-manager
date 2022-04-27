@@ -127,6 +127,12 @@ class UserManagerStack extends cdk.Stack {
       },
     });
 
+    new cognito.CfnUserPoolGroup(this, 'AdminsGroup', {
+      groupName: 'admin',
+      userPoolId: userPool.userPoolId,
+      description: 'Members of this group can perform all actions',
+    });
+
     const jwksUrl = new cdk.CfnOutput(this, 'CognitoJWKS', {
       value: `https://cognito-idp.${cdk.Stack.of(this).region}.amazonaws.com/${userPool.userPoolId}/.well-known/jwks.json`,
       description: 'Cognito JWKS URL',
