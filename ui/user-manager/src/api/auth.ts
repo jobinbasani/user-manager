@@ -1,5 +1,5 @@
 import { AccessToken, getEmptyToken } from './api-types';
-import jwtDecode, { JwtPayload } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 export class UserAuth {
 
