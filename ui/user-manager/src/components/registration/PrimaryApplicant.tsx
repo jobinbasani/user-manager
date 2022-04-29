@@ -19,10 +19,26 @@ import { useState } from 'react';
 
 const PrimaryApplicant = () => {
     const [dateOfBirth, setDateOfBirth] = useState(new Date());
+    const [dateOfBaptism, setDateOfBaptism] = useState(new Date());
+    const [dateOfConfirmation, setDateOfConfirmation] = useState(new Date());
+    const [dateOfHolyCommunion, setDateOfHolyCommunion] = useState(new Date());
 
     const handleDOBChange = (newValue: Date | null) => {
           setDateOfBirth(newValue!);
     }
+
+    const handleDateOfBaptism = (newValue: Date | null) => {
+        setDateOfBaptism(newValue!);
+    }
+
+    const handleDateOfConfirmation = (newValue: Date | null) => {
+        setDateOfConfirmation(newValue!);
+    }
+
+    const handleDateOfHolyCommunion = (newValue: Date | null) => {
+        setDateOfHolyCommunion(newValue!);
+    }
+
 
     const submitHandler = () => {
 
@@ -37,10 +53,9 @@ const PrimaryApplicant = () => {
                 <Typography gutterBottom variant="h5" component="div" className={classes["form-title"]}>
                    PART A – PRIMARY APPLICANT INFORMATION
                 </Typography>
-                <Card elevation={3} className={classes["form-container"]}>
-                    <CardContent>
-
-                        <form onSubmit={submitHandler}>
+                <form onSubmit={submitHandler}>
+                    <Card elevation={3} className={classes["form-container"]}>
+                        <CardContent>
                             <div className={classes["form-element"]}>
                                 <TextField
                                     id="first-name"
@@ -102,19 +117,51 @@ const PrimaryApplicant = () => {
                                     </RadioGroup>
                                 </FormControl>
                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        value={dateOfBirth}
+                                        label="Date of Birth"
+                                        renderInput={(params) => <TextField {...params} /> }
+                                        onChange={(date: Date | null) => handleDOBChange(date)}
+                                        inputFormat="dd-MMM-yyyy"
+                                        />
+                                </LocalizationProvider>
+                            </div> 
+                        </CardContent>
+                    </Card>
+                    <Card elevation={3} className={classes["form-container"]}>
+                        <div className={classes["form-element"]}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
                                 <DatePicker
-                                    value={dateOfBirth}
+                                    value={dateOfBaptism}
+                                    label="Date of Baptism"
                                     renderInput={(params) => <TextField {...params} /> }
-                                    onChange={(date: Date | null) => handleDOBChange(date)}
+                                    onChange={(date: Date | null) => handleDateOfBaptism(date)}
                                     inputFormat="dd-MMM-yyyy"
                                     />
-                                </LocalizationProvider>
-                            </div>
-
-                        </form>
-                        
-                    </CardContent>
-                </Card>
+                            </LocalizationProvider>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DatePicker
+                                    value={dateOfConfirmation}
+                                    label="Date of Confirmation"
+                                    renderInput={(params) => <TextField {...params} /> }
+                                    onChange={(date: Date | null) => handleDateOfConfirmation(date)}
+                                    inputFormat="dd-MMM-yyyy"
+                                    />
+                            </LocalizationProvider>
+                        </div>
+                        <div className={classes["form-element"]}>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DatePicker
+                                    value={dateOfHolyCommunion}
+                                    label="Date of Holy Communion"
+                                    renderInput={(params) => <TextField {...params} /> }
+                                    onChange={(date: Date | null) => handleDateOfHolyCommunion(date)}
+                                    inputFormat="dd-MMM-yyyy"
+                                    />
+                            </LocalizationProvider> 
+                        </div>
+                    </Card>
+                </form>
             </Box>
     );
 }

@@ -2,19 +2,18 @@
 import HomeCarousel from '../../components/carousel/HomeCarousel';
 import {Grid, Card} from '@mui/material';
 import PastoralMessage from '../../components/message/PastoralMessage';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { UserAuth } from '../../api/auth';
 import { AccessToken } from '../../api/api-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { doAuth } from '../../store/auth/auth-action';
 
 const Home = () => {
-  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const token:AccessToken | null = UserAuth.getAccessTokenFromUrl(location.hash);
+  const currentLocation = useState(window.location.href);
 
   const updateToken = useCallback((accessToken: AccessToken) => {
       dispatch(doAuth(accessToken));
@@ -22,10 +21,11 @@ const Home = () => {
   },[dispatch, navigate]);
 
   useEffect(() => {
-    if (token?.accessToken) {
-        updateToken(token);
+    const token:AccessToken | null = UserAuth.getAccessTokenFromUrl(currentLocation.toString());
+    if (token && token.expiresIn > 0) {
+      updateToken(token);
     }
-  }, [token, updateToken]);
+  }, [currentLocation, updateToken]);
 
   return(
       <div>
