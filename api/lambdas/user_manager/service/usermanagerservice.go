@@ -40,7 +40,7 @@ func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData [
 }
 
 // NewUserManagerService creates a new UserManagerService
-func NewUserManagerService(cfg *config.Config, authService AuthService, dataService DataService) openapi.UserManagementApiServicer {
+func NewUserManagerService(cfg *config.Config, authService AuthService, dataService DataService) *UserManagerService {
 	return &UserManagerService{
 		config:      cfg,
 		authService: authService,

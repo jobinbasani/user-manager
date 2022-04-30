@@ -18,9 +18,14 @@ import (
 func GetRoutes(ctx context.Context, cfg *config.Config) *mux.Router {
 	authService := service.NewAuthService(cfg)
 	dataService := service.NewDataService(cfg)
+
 	UserManagementAPIService := service.NewUserManagerService(cfg, authService, dataService)
-	UserManagementAPIController := openapi.NewUserManagementApiController(UserManagementAPIService)
-	r := openapi.NewRouter(UserManagementAPIController)
+
+	familyManagementAPIController := openapi.NewFamilyManagementApiController(UserManagementAPIService)
+	userManagementAPIController := openapi.NewUserManagementApiController(UserManagementAPIService)
+
+	r := openapi.NewRouter(userManagementAPIController, familyManagementAPIController)
 	r.Use(middleware.DoAuth(ctx, cfg))
+
 	return r
 }

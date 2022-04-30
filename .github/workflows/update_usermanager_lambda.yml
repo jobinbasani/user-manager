@@ -1,4 +1,4 @@
-name: Update Web App
+name: Update User Manager lambda function
 
 on:
   push:
