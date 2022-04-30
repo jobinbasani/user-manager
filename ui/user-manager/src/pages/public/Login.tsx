@@ -1,5 +1,5 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
 import ProgressView from '../../components/UI/ProgressView';
 import React from 'react';
 import { useDispatch } from 'react-redux';
@@ -8,22 +8,23 @@ import { AccessToken } from '../../api/api-types';
 import { doAuth } from '../../store/auth/auth-action';
 
 const Login = () => {
-    const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
-    const token:AccessToken | null = UserAuth.getAccessTokenFromUrl(location.hash);
+
+    const currentLocation = useState(window.location.href);
 
     const updateToken = useCallback((accessToken: AccessToken) => {
         dispatch(doAuth(accessToken));
         navigate("/dashboard");
     },[dispatch, navigate]);
-
+  
     useEffect(() => {
-        if (token?.accessToken) {
-            updateToken(token);
-        }
-    }, [token, updateToken]);
+      const token:AccessToken | null = UserAuth.getAccessTokenFromUrl(currentLocation[0].toString());
+      if (token && token.expiresIn > 0) {
+        updateToken(token);
+      }
+    }, [currentLocation, updateToken]);
 
     return(
         <React.Fragment>

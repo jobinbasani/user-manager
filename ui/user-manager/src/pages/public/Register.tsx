@@ -1,12 +1,10 @@
-import ComingSoon from "../../components/unspported/ComingSoon";
+import PrimaryApplicant from "../../components/registration/PrimaryApplicant";
+
 
 const Register = () => {
     return (
-        <div>
-            <h4>Registration form</h4>
-            <ComingSoon/>
-        </div>
-    )
+        <PrimaryApplicant/>
+    );
 }
 
 export default Register;
