@@ -69,7 +69,7 @@ func (c CognitoService) cognitoUserOutputToUserRecord(attributes []types.Attribu
 			user.LastName = *attribute.Value
 		case "email":
 			user.Email = *attribute.Value
-		case "custom:isApproved":
+		case "custom:approved_user":
 			if attribute.Value != nil && *attribute.Value == "true" {
 				user.IsApproved = true
 			}

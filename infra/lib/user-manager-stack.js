@@ -82,6 +82,8 @@ class UserManagerStack extends cdk.Stack {
       },
       customAttributes: {
         isAdmin: new cognito.StringAttribute({ mutable: true }),
+        isApproved: new cognito.StringAttribute({ mutable: true }),
+        approved_user: new cognito.BooleanAttribute({ mutable: true }),
       },
       passwordPolicy: {
         minLength: 8,
@@ -112,7 +114,7 @@ class UserManagerStack extends cdk.Stack {
 
     const clientReadAttributes = new cognito.ClientAttributes()
       .withStandardAttributes(standardCognitoAttributes)
-      .withCustomAttributes(...['isAdmin']);
+      .withCustomAttributes(...['approved_user']);
 
     const clientWriteAttributes = new cognito.ClientAttributes()
       .withStandardAttributes({
