@@ -9,7 +9,7 @@ security:
   - bearer: [ ]
 
 paths:
-  /api/v1/user:
+  /api/v1/user/profile:
     get:
       operationId: getUser
       summary: Provides user profile information
@@ -30,6 +30,32 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/user/family:
+    post:
+      operationId: addUpdateUserFamily
+      summary: Add/update user family details
+      requestBody:
+        description: Array of family member user data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDataArray'
+      tags:
+        - Family Management
+      responses:
+        201:
+          description: created
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
 
 components:
   responses:
@@ -229,3 +255,78 @@ components:
         isApproved:
           type: boolean
           description: Indicates whether the user is approved in the system
+
+    UserData:
+      type: object
+      required:
+        - firstName
+        - email
+        - isPrimary
+      properties:
+        id:
+          description: A unique identifier
+          type: string
+        displayName:
+          description: Display name of the user
+          type: string
+        firstName:
+          type: string
+          description: First name
+          example: John
+        lastName:
+          type: string
+          description: First name
+          example: Doe
+        email:
+          type: string
+          description: Email ID of user
+          example: john.doe@example.com
+        isPrimary:
+          type: boolean
+          description: Indicates primary user
+          example: true
+        relation:
+          type: string
+          enum:
+            - spouse
+            - child
+            - parent
+            - grandparent
+            - sibling
+            - other
+        addressLine1:
+          type: string
+          description: Address Line 1
+        addressLine2:
+          type: string
+          description: Address Line 2
+        city:
+          type: string
+          description: City
+        province:
+          type: string
+          enum:
+            - AB
+            - BC
+            - MB
+            - NB
+            - NL
+            - NT
+            - NS
+            - NU
+            - ON
+            - PE
+            - QC
+            - SK
+            - YT
+          description: Province
+          example: NS
+        postalCode:
+          type: string
+          description: Postal Code
+          example: HOH OHO
+
+    UserDataArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/UserData'

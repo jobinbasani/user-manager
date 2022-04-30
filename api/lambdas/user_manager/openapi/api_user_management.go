@@ -50,7 +50,7 @@ func (c *UserManagementApiController) Routes() Routes {
 		{
 			"GetUser",
 			strings.ToUpper("Get"),
-			"/api/v1/user",
+			"/api/v1/user/profile",
 			c.GetUser,
 		},
 	}

@@ -21,7 +21,7 @@ func Test(t *testing.T) {
 				RequestContext: events.LambdaFunctionURLRequestContext{
 					HTTP: events.LambdaFunctionURLRequestContextHTTPDescription{
 						Method: http.MethodGet,
-						Path:   "/api/v1/user",
+						Path:   "/api/v1/user/profile",
 					},
 				},
 			},
