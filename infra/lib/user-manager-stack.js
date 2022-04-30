@@ -285,6 +285,7 @@ class UserManagerStack extends cdk.Stack {
           cachePolicyId: cachePolicy.cachePolicyId,
         },
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
       });
 
     const userPoolClient = new cognito.UserPoolClient(this, 'user-manager-userpool-client', {
