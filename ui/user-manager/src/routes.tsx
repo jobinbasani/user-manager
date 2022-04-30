@@ -24,6 +24,7 @@ const Router = () => {
         [
             {path: "*", element: <NotFound />},
             {path: "/", element: <Home />},
+            {path: "main", element: <Home />},
             {path: "home", element: <Home />},
             {path: "committee", element: <Committee />},
             {path: "services", element: <Services/>},
@@ -32,7 +33,6 @@ const Router = () => {
             {path: "login", element: <Login />},
             {path: "register", element: <Register />},
             {path: "callback", element: <Login />},
-            {path: "main", element: <Login />},
             {path: "unauthorized", element: <Unauthorized />},
             {path: "dashboard", element: isLoggedIn? <Dashboard /> : <Navigate to="/unauthorized" />}
         ]
