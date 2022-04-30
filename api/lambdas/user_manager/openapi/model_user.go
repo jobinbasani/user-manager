@@ -25,6 +25,9 @@ type User struct {
 
 	// Email ID of user
 	Email string `json:"email"`
+
+	// Indicates whether the user is approved in the system
+	IsApproved bool `json:"isApproved,omitempty"`
 }
 
 // AssertUserRequired checks if the required fields are not zero-ed

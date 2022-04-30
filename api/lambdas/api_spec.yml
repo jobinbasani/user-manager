@@ -226,3 +226,6 @@ components:
         email:
           type: string
           description: Email ID of user
+        isApproved:
+          type: boolean
+          description: Indicates whether the user is approved in the system
