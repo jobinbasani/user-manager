@@ -36,7 +36,9 @@ func (u *UserManagerService) GetUser(ctx context.Context) (openapi.ImplResponse,
 
 func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData []openapi.UserData) (openapi.ImplResponse, error) {
 
-	return openapi.ImplResponse{}, nil
+	return openapi.ImplResponse{
+		Code: http.StatusCreated,
+	}, nil
 }
 
 // NewUserManagerService creates a new UserManagerService
