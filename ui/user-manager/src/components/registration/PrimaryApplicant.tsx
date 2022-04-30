@@ -22,6 +22,8 @@ const PrimaryApplicant = () => {
     const [dateOfBaptism, setDateOfBaptism] = useState(new Date());
     const [dateOfConfirmation, setDateOfConfirmation] = useState(new Date());
     const [dateOfHolyCommunion, setDateOfHolyCommunion] = useState(new Date());
+    const [dateOfMarriage, setDateOfMarriage] = useState(new Date());
+    const [inCanadaSince, setDuration] = useState(new Date());
 
     const handleDOBChange = (newValue: Date | null) => {
           setDateOfBirth(newValue!);
@@ -39,6 +41,17 @@ const PrimaryApplicant = () => {
         setDateOfHolyCommunion(newValue!);
     }
 
+    const handleDateOfMarriage = (newValue: Date | null) => {
+        setDateOfMarriage(newValue!);
+    }
+
+    const handleDuration = (newValue: Date | null) => {
+        setDuration(newValue!);
+    }
+
+    const handleMaritalStatus = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("Selected: " + (event.target as HTMLInputElement).value);
+    }
 
     const submitHandler = () => {
 
@@ -156,6 +169,69 @@ const PrimaryApplicant = () => {
                                     label="Date of Holy Communion"
                                     renderInput={(params) => <TextField {...params} /> }
                                     onChange={(date: Date | null) => handleDateOfHolyCommunion(date)}
+                                    inputFormat="dd-MMM-yyyy"
+                                    />
+                            </LocalizationProvider> 
+                        </div>
+                        <div className={classes["form-element"]}>
+
+                            <FormControl>
+                                <FormLabel id="demo-radio-buttons-group-label">Marital Status</FormLabel>
+                                    <RadioGroup
+                                        aria-labelledby="demo-radio-buttons-group-label"
+                                        defaultValue="unmarried"
+                                        name="radio-buttons-group"
+                                        onChange={handleMaritalStatus}
+                                        row
+                                        >
+                                            <FormControlLabel value="married" control={<Radio />} label="Married" />
+                                            <FormControlLabel value="unmarried" control={<Radio />} label="Unmarried" />
+                                    </RadioGroup>
+                            </FormControl>
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DatePicker
+                                    value={dateOfMarriage}
+                                    label="Date of Marriage"
+                                    renderInput={(params) => <TextField {...params} /> }
+                                    onChange={(date: Date | null) => handleDateOfMarriage(date)}
+                                    inputFormat="dd-MMM-yyyy"
+                                    />
+                            </LocalizationProvider> 
+                        </div>
+                        <div className={classes["form-element"]}>
+                            <FormControl>
+                            <FormLabel id="demo-radio-buttons-group-label">Status in Canada</FormLabel>
+                                <RadioGroup
+                                    aria-labelledby="demo-radio-buttons-group-label"
+                                    defaultValue="student"
+                                    name="radio-buttons-group"
+                                    onChange={handleMaritalStatus}
+                                    row
+                                >
+                                    <FormControlLabel value="student" control={<Radio />} label="Student" />
+                                    <FormControlLabel value="workpermit" control={<Radio />} label="Work Permit" />
+                                    <FormControlLabel value="pr" control={<Radio />} label="Permanent Resident" />
+                                    <FormControlLabel value="citizen" control={<Radio />} label="Citizen" />
+                                    <FormControlLabel value="visitor" control={<Radio />} label="Visitor" />
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
+                        <div className={classes["form-element"]}>
+                            <TextField
+                                    id="profession"
+                                    label="Profession"
+                                    placeholder="Profession"
+                                    margin="normal"
+                                    style ={{width: '100%'}}
+                                    className={classes["form-text-field"]}
+                                    fullWidth={true}
+                                />
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DatePicker
+                                    value={inCanadaSince}
+                                    label="In Canada Since"
+                                    renderInput={(params) => <TextField {...params} /> }
+                                    onChange={(date: Date | null) => handleDuration(date)}
                                     inputFormat="dd-MMM-yyyy"
                                     />
                             </LocalizationProvider> 
