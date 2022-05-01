@@ -24,15 +24,15 @@ type CognitoService struct {
 	client *cognitoidentityprovider.Client
 }
 
-func (c CognitoService) GetUserInfoByEmail(ctx context.Context, email string) (openapi.User, error) {
+func (c *CognitoService) GetUserInfoByEmail(ctx context.Context, email string) (openapi.User, error) {
 	return c.getUserInfoByAttribute(ctx, fmt.Sprintf("email = \"%s\"", email))
 }
 
-func (c CognitoService) GetUserInfoBySub(ctx context.Context, sub string) (openapi.User, error) {
+func (c *CognitoService) GetUserInfoBySub(ctx context.Context, sub string) (openapi.User, error) {
 	return c.getUserInfoByAttribute(ctx, fmt.Sprintf("sub = \"%s\"", sub))
 }
 
-func (c CognitoService) getUserInfoByAttribute(ctx context.Context, attribute string) (openapi.User, error) {
+func (c *CognitoService) getUserInfoByAttribute(ctx context.Context, attribute string) (openapi.User, error) {
 	output, err := c.client.ListUsers(ctx, &cognitoidentityprovider.ListUsersInput{
 		UserPoolId: aws.String(c.cfg.CognitoUserPoolID),
 		Filter:     aws.String(attribute),
@@ -46,7 +46,7 @@ func (c CognitoService) getUserInfoByAttribute(ctx context.Context, attribute st
 	return c.cognitoUserOutputToUserRecord(output.Users[0].Attributes), nil
 }
 
-func (c CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.User, error) {
+func (c *CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.User, error) {
 	userOutput, err := c.client.GetUser(ctx, &cognitoidentityprovider.GetUserInput{
 		AccessToken: aws.String(util.GetUserAccessTokenFromContext(ctx)),
 	})
@@ -57,7 +57,7 @@ func (c CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.U
 	return c.cognitoUserOutputToUserRecord(userOutput.UserAttributes), nil
 }
 
-func (c CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {
+func (c *CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {
 	var user openapi.User
 	for _, attribute := range attributes {
 		switch *attribute.Name {
@@ -80,7 +80,7 @@ func (c CognitoService) cognitoUserOutputToUserRecord(attributes []types.Attribu
 
 func NewAuthService(cfg *config.Config) AuthService {
 
-	return CognitoService{
+	return &CognitoService{
 		cfg:    cfg,
 		client: cognitoidentityprovider.NewFromConfig(cfg.AwsConfig),
 	}

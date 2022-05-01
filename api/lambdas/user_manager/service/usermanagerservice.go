@@ -35,7 +35,13 @@ func (u *UserManagerService) GetUser(ctx context.Context) (openapi.ImplResponse,
 }
 
 func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData []openapi.UserData) (openapi.ImplResponse, error) {
-
+	err := u.dataService.AddUpdateFamily(ctx, userData)
+	if err != nil {
+		log.Println(err)
+		return openapi.ImplResponse{
+			Code: http.StatusForbidden,
+		}, err
+	}
 	return openapi.ImplResponse{
 		Code: http.StatusCreated,
 	}, nil
