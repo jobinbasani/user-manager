@@ -5,7 +5,6 @@ JJ: Routes definition
 
 import { useSelector } from "react-redux";
 import { Navigate, useRoutes } from "react-router-dom";
-import NotFound from "./components/unspported/NotFound";
 import Unauthorized from "./components/unspported/Unauthorized";
 import Dashboard from "./pages/private/Dashboard";
 import Catechism from "./pages/public/Catechism";
@@ -22,9 +21,6 @@ const Router = () => {
 
     let element = useRoutes(
         [
-            {path: "*", element: <NotFound />},
-            {path: "/", element: <Home />},
-            {path: "main", element: <Home />},
             {path: "home", element: <Home />},
             {path: "committee", element: <Committee />},
             {path: "services", element: <Services/>},
@@ -34,7 +30,8 @@ const Router = () => {
             {path: "register", element: <Register />},
             {path: "callback", element: <Login />},
             {path: "unauthorized", element: <Unauthorized />},
-            {path: "dashboard", element: isLoggedIn? <Dashboard /> : <Navigate to="/unauthorized" />}
+            {path: "dashboard", element: isLoggedIn? <Dashboard /> : <Navigate to="/unauthorized" />},
+            {path: "*", element: <Navigate to="/home" replace/>}
         ]
     );
     return element;
