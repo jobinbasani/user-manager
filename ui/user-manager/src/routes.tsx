@@ -24,7 +24,6 @@ const Router = () => {
         [
             {path: "*", element: <NotFound />},
             {path: "/", element: <Home />},
-            {path: "main", element: <Home />},
             {path: "home", element: <Home />},
             {path: "committee", element: <Committee />},
             {path: "services", element: <Services/>},

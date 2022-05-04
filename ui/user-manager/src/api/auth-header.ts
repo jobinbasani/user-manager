@@ -1,17 +1,20 @@
+import { AxiosRequestHeaders } from 'axios';
+import { AccessToken } from './api-types';
 
 /** Get jwt access token from local storage */
 
-export interface User {
-    email: String;
-    accessToken: String;
-}
-
-export const authHeader = () => {
-    const user: User = JSON.parse(localStorage.getItem("user") || "");
-
-    if (user && user.accessToken) {
-        return {"bearer-token": user.accessToken};
-    } else {
-        return {};
+export const authHeader = ():AxiosRequestHeaders => {
+    let tokenObject: any = localStorage.getItem("token");
+    let returnHeader = {};
+    if (tokenObject) {
+        const token: AccessToken = JSON.parse(tokenObject);
+        if (token && token.accessToken) {
+            returnHeader = {
+                    "accept": "application/json",
+                    "Authorization": "Bearer "+token.accessToken
+                   };
+        }
     }
+    console.dir(returnHeader);
+    return returnHeader;
 }
