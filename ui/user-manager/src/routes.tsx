@@ -5,7 +5,6 @@ JJ: Routes definition
 
 import { useSelector } from "react-redux";
 import { Navigate, useRoutes } from "react-router-dom";
-import NotFound from "./components/unspported/NotFound";
 import Unauthorized from "./components/unspported/Unauthorized";
 import Dashboard from "./pages/private/Dashboard";
 import Catechism from "./pages/public/Catechism";
