@@ -81,8 +81,6 @@ class UserManagerStack extends cdk.Stack {
         },
       },
       customAttributes: {
-        isAdmin: new cognito.StringAttribute({ mutable: true }),
-        isApproved: new cognito.StringAttribute({ mutable: true }),
         approved_user: new cognito.BooleanAttribute({ mutable: true }),
       },
       passwordPolicy: {
@@ -299,6 +297,7 @@ class UserManagerStack extends cdk.Stack {
           'http://localhost:3000/index.html',
           `https://${cloudfrontDistribution.distributionDomainName}/main/index.html`,
           `https://${cloudfrontDistribution.distributionDomainName}/front-end/index.html`,
+          `https://${cloudfrontDistribution.distributionDomainName}/login-path/index.html`,
         ],
       },
       supportedIdentityProviders: [
