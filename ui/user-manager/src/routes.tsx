@@ -30,7 +30,7 @@ const Router = () => {
           {path: "callback", element: <Login/>},
           {path: "unauthorized", element: <Unauthorized/>},
           {path: "dashboard", element: isLoggedIn ? <Dashboard/> : <Navigate to="/home"/>},
-          {path: "*", element: <Navigate to="dashboard" replace/>}
+          {path: "*", element: <Navigate to="/home" replace/>}
         ]
     );
 };
