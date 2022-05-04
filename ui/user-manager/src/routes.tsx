@@ -22,8 +22,6 @@ const Router = () => {
 
     let element = useRoutes(
         [
-            {path: "*", element: <NotFound />},
-            {path: "/", element: <Home />},
             {path: "home", element: <Home />},
             {path: "committee", element: <Committee />},
             {path: "services", element: <Services/>},
@@ -33,7 +31,8 @@ const Router = () => {
             {path: "register", element: <Register />},
             {path: "callback", element: <Login />},
             {path: "unauthorized", element: <Unauthorized />},
-            {path: "dashboard", element: isLoggedIn? <Dashboard /> : <Navigate to="/unauthorized" />}
+            {path: "dashboard", element: isLoggedIn? <Dashboard /> : <Navigate to="/home" />},
+            {path: "*", element: <Navigate to="dashboard" replace />}
         ]
     );
     return element;
