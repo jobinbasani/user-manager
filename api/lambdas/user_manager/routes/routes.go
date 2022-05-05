@@ -2,6 +2,7 @@ package routes
 
 import (
 	"context"
+	"github.com/gorilla/handlers"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/middleware"
 	"lambdas/user_manager/openapi"
@@ -26,6 +27,8 @@ func GetRoutes(ctx context.Context, cfg *config.Config) *mux.Router {
 
 	r := openapi.NewRouter(userManagementAPIController, familyManagementAPIController)
 	r.Use(middleware.DoAuth(ctx, cfg))
+	r.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 	mux.CORSMethodMiddleware(r)
+
 	return r
 }
