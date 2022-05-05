@@ -28,8 +28,8 @@ func GetRoutes(ctx context.Context, cfg *config.Config) *mux.Router {
 	r := openapi.NewRouter(userManagementAPIController, familyManagementAPIController)
 
 	r.Use(mux.CORSMethodMiddleware(r))
+	r.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"}), handlers.AllowedMethods([]string{"OPTIONS", "DELETE", "GET", "HEAD", "POST", "PUT", "PATCH"})))
 	r.Use(middleware.DoAuth(ctx, cfg))
-	r.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
 
 	return r
 }
