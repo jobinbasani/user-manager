@@ -14,6 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.15.3
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider v1.15.3
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.4
+	github.com/gorilla/handlers v1.5.1
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lestrrat-go/jwx/v2 v2.0.0-beta1
@@ -38,7 +39,6 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/goccy/go-json v0.9.6 // indirect
-	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.1 // indirect
 	github.com/lestrrat-go/httpcc v1.0.1 // indirect

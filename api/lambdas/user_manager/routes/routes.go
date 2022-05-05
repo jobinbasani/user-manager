@@ -26,9 +26,10 @@ func GetRoutes(ctx context.Context, cfg *config.Config) *mux.Router {
 	userManagementAPIController := openapi.NewUserManagementApiController(UserManagementAPIService)
 
 	r := openapi.NewRouter(userManagementAPIController, familyManagementAPIController)
+
+	r.Use(mux.CORSMethodMiddleware(r))
 	r.Use(middleware.DoAuth(ctx, cfg))
 	r.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
-	mux.CORSMethodMiddleware(r)
 
 	return r
 }
