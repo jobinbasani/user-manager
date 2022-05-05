@@ -270,7 +270,7 @@ class UserManagerStack extends cdk.Stack {
       enableAcceptEncodingGzip: true,
       cookieBehavior: cloudfront.CacheCookieBehavior.none(),
       queryStringBehavior: cloudfront.CacheQueryStringBehavior.all(),
-      headerBehavior: cloudfront.CacheHeaderBehavior.allowList('Authorization'),
+      headerBehavior: cloudfront.CacheHeaderBehavior.allowList('Authorization', 'Origin'),
     });
 
     cloudfrontDistribution.addBehavior('/api/*',
