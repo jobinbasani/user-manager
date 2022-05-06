@@ -17,6 +17,7 @@ func main() {
 			newGetUserInfoCommand(),
 			newGetUserInfoBySubCommand(),
 			newGetUserInfoByEmailCommand(),
+			newStartServerCommand(),
 		},
 		ErrWriter: os.Stderr,
 	}
