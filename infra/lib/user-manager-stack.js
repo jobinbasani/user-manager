@@ -276,17 +276,6 @@ class UserManagerStack extends cdk.Stack {
       headerBehavior: cloudfront.CacheHeaderBehavior.allowList('Authorization', 'Origin'),
     });
 
-    const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'UserManagerAPICORSResponseHeadersPolicy', {
-      responseHeadersPolicyName: 'UserManagerAPICORSResponseHeadersPolicy',
-      corsBehavior: {
-        accessControlAllowCredentials: false,
-        accessControlAllowHeaders: ['*'],
-        accessControlAllowMethods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-        accessControlAllowOrigins: ['*'],
-        originOverride: false,
-      },
-    });
-
     cloudfrontDistribution.addBehavior('/api/*',
       new HttpOrigin(apiEndPointDomainName, {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
@@ -296,10 +285,8 @@ class UserManagerStack extends cdk.Stack {
         cachePolicy: {
           cachePolicyId: cachePolicy.cachePolicyId,
         },
-        originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER,
-        responseHeadersPolicy: {
-          responseHeadersPolicyId: responseHeadersPolicy.responseHeadersPolicyId,
-        },
+        originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
+        responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       });
 
