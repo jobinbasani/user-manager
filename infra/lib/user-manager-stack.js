@@ -297,9 +297,9 @@ class UserManagerStack extends cdk.Stack {
       corsBehavior: {
         accessControlAllowCredentials: false,
         accessControlAllowHeaders: ['*'],
-        accessControlAllowMethods: ['GET', 'PUT', 'POST', 'PATCH', 'HEAD', 'OPTIONS'],
+        accessControlAllowMethods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
         accessControlAllowOrigins: ['*'],
-        originOverride: true,
+        originOverride: false,
       },
     });
 
