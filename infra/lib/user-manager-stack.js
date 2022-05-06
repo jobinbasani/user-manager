@@ -285,6 +285,24 @@ class UserManagerStack extends cdk.Stack {
       headerBehavior: cloudfront.CacheHeaderBehavior.allowList('Authorization', 'Origin'),
     });
 
+    const originRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'UserManagerAPICORSRequestPolicy', {
+      originRequestPolicyName: 'UserManagerAPICORSRequestPolicy',
+      cookieBehavior: cloudfront.OriginRequestCookieBehavior.none(),
+      headerBehavior: cloudfront.OriginRequestHeaderBehavior.all(),
+      queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
+    });
+
+    const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'UserManagerAPICORSResponseHeadersPolicy', {
+      responseHeadersPolicyName: 'UserManagerAPICORSResponseHeadersPolicy',
+      corsBehavior: {
+        accessControlAllowCredentials: false,
+        accessControlAllowHeaders: ['*'],
+        accessControlAllowMethods: ['GET', 'PUT', 'POST', 'PATCH', 'HEAD', 'OPTIONS'],
+        accessControlAllowOrigins: ['*'],
+        originOverride: true,
+      },
+    });
+
     cloudfrontDistribution.addBehavior('/api/*',
       new HttpOrigin(apiEndPointDomainName, {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
@@ -294,9 +312,13 @@ class UserManagerStack extends cdk.Stack {
         cachePolicy: {
           cachePolicyId: cachePolicy.cachePolicyId,
         },
-        originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
+        originRequestPolicy: {
+          originRequestPolicyId: originRequestPolicy.originRequestPolicyId,
+        },
+        responseHeadersPolicy: {
+          responseHeadersPolicyId: responseHeadersPolicy.responseHeadersPolicyId,
+        },
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT,
       });
 
     const userPoolClient = new cognito.UserPoolClient(this, 'user-manager-userpool-client', {
