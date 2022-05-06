@@ -177,7 +177,7 @@ class UserManagerStack extends cdk.Stack {
       authType: lambda.FunctionUrlAuthType.NONE,
       cors: {
         allowedOrigins: ['*'],
-        allowedHeaders: ['Authorization'],
+        allowedHeaders: ['authorization'],
       },
     });
 
