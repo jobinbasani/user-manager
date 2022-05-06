@@ -342,6 +342,13 @@ class UserManagerStack extends cdk.Stack {
       headerBehavior: cloudfront.CacheHeaderBehavior.allowList('Authorization', 'Origin'),
     });
 
+    const originRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'UserManagerAPICORSRequestPolicy', {
+      originRequestPolicyName: 'UserManagerAPICORSRequestPolicy',
+      cookieBehavior: cloudfront.OriginRequestCookieBehavior.none(),
+      headerBehavior: cloudfront.OriginRequestHeaderBehavior.allowList('Origin'),
+      queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
+    });
+
     cloudfrontDistribution.addBehavior('/api/*',
       new cloudfrontOrigins.HttpOrigin(apiEndPointDomainName, {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
@@ -351,7 +358,9 @@ class UserManagerStack extends cdk.Stack {
         cachePolicy: {
           cachePolicyId: cachePolicy.cachePolicyId,
         },
-        originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_CUSTOM_ORIGIN,
+        originRequestPolicy: {
+          originRequestPolicyId: originRequestPolicy.originRequestPolicyId,
+        },
         responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       });
