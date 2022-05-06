@@ -175,6 +175,9 @@ class UserManagerStack extends cdk.Stack {
 
     const userManagerLambdaUrl = userManagerLambda.addFunctionUrl({
       authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+      },
     });
 
     new cdk.CfnOutput(this, 'UserManagerLambdaUrl', {
