@@ -5,19 +5,21 @@ const dynamodb = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cognito = require('aws-cdk-lib/aws-cognito');
 const lambda = require('aws-cdk-lib/aws-lambda');
+const cloudfrontOrigins = require('aws-cdk-lib/aws-cloudfront-origins');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
 const { GoFunction } = require('@aws-cdk/aws-lambda-go-alpha');
-const {
-  S3Origin,
-  HttpOrigin,
-} = require('aws-cdk-lib/aws-cloudfront-origins');
 
 class UserManagerStack extends cdk.Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
+    const userTableName = 'UserDetails';
+    const familyIndexName = 'familyIndex';
+    const emailIndexName = 'emailIndex';
+    const subIndexName = 'subIndex';
+
     const userTable = new dynamodb.Table(this, id, {
-      tableName: 'UserDetails',
+      tableName: userTableName,
       billingMode: dynamodb.BillingMode.PROVISIONED,
       readCapacity: 2,
       writeCapacity: 2,
@@ -29,7 +31,7 @@ class UserManagerStack extends cdk.Stack {
     });
 
     userTable.addGlobalSecondaryIndex({
-      indexName: 'familyIndex',
+      indexName: familyIndexName,
       partitionKey: {
         name: 'family_id',
         type: dynamodb.AttributeType.STRING,
@@ -40,7 +42,7 @@ class UserManagerStack extends cdk.Stack {
     });
 
     userTable.addGlobalSecondaryIndex({
-      indexName: 'emailIndex',
+      indexName: emailIndexName,
       partitionKey: {
         name: 'email_id',
         type: dynamodb.AttributeType.STRING,
@@ -51,7 +53,7 @@ class UserManagerStack extends cdk.Stack {
     });
 
     userTable.addGlobalSecondaryIndex({
-      indexName: 'subIndex',
+      indexName: subIndexName,
       partitionKey: {
         name: 'sub',
         type: dynamodb.AttributeType.STRING,
@@ -138,13 +140,18 @@ class UserManagerStack extends cdk.Stack {
       description: 'Cognito JWKS URL',
     });
 
-    const userManagerLambda = new GoFunction(this, 'userManagerLambda', {
+    const userManagerLambda = new GoFunction(this, 'userManagerAPIFunction', {
+      description: 'User Manager REST API Lambda',
+      functionName: 'userManagerAPIFunction',
       entry: `${__dirname}/../../api/lambdas/user_manager`,
       timeout: cdk.Duration.seconds(10),
       environment: {
         USERMANAGER_JWKS_URL: `https://cognito-idp.${cdk.Stack.of(this).region}.amazonaws.com/${userPool.userPoolId}/.well-known/jwks.json`,
         USERMANAGER_USER_POOL_ID: userPool.userPoolId,
         USERMANAGER_TABLE_NAME: userTable.tableName,
+        USERMANAGER_FAMILY_INDEX_NAME: familyIndexName,
+        USERMANAGER_EMAIL_INDEX_NAME: emailIndexName,
+        USERMANAGER_SUB_INDEX_NAME: subIndexName,
       },
     });
 
@@ -251,7 +258,7 @@ class UserManagerStack extends cdk.Stack {
       defaultRootObject: 'index.html',
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
       defaultBehavior: {
-        origin: new S3Origin(userManagerS3Bucket, {
+        origin: new cloudfrontOrigins.S3Origin(userManagerS3Bucket, {
           originAccessIdentity: userManagerOAI,
         }),
         compress: true,
@@ -277,7 +284,7 @@ class UserManagerStack extends cdk.Stack {
     });
 
     cloudfrontDistribution.addBehavior('/api/*',
-      new HttpOrigin(apiEndPointDomainName, {
+      new cloudfrontOrigins.HttpOrigin(apiEndPointDomainName, {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       }),
       {
