@@ -5,7 +5,7 @@ tblCount=$(awslocal dynamodb list-tables | jq -r '.TableNames | length')
 if [ "$tblCount" -eq "0" ]; then
    echo "Creating table";
    awslocal dynamodb create-table \
-    --table-name UserTable \
+    --table-name UserDetails \
     --attribute-definitions AttributeName=Id,AttributeType=S \
                             AttributeName=email,AttributeType=S \
                             AttributeName=sub,AttributeType=S \
@@ -15,21 +15,21 @@ if [ "$tblCount" -eq "0" ]; then
     --global-secondary-indexes \
             "[
                 {
-                    \"IndexName\": \"SubIndex\",
+                    \"IndexName\": \"subIndex\",
                     \"KeySchema\": [{\"AttributeName\":\"sub\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"KEYS_ONLY\"
                     }
                 },
                 {
-                    \"IndexName\": \"EmailIndex\",
+                    \"IndexName\": \"emailIndex\",
                     \"KeySchema\": [{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"KEYS_ONLY\"
                     }
                 },
                 {
-                    \"IndexName\": \"FamilyIndex\",
+                    \"IndexName\": \"familyIndex\",
                     \"KeySchema\": [{\"AttributeName\":\"familyId\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"KEYS_ONLY\"

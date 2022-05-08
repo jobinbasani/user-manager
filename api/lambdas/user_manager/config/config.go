@@ -18,9 +18,14 @@ type UserManagerJwkCache struct {
 
 // Config contains the application level configuration, which can be overridden by environment variables
 type Config struct {
-	AwsConfig         aws.Config
-	JwkCache          *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
-	CognitoUserPoolID string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
+	AwsConfig           aws.Config
+	JwkCache            *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
+	CognitoUserPoolID   string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
+	UserDataTableName   string               `envconfig:"USERMANAGER_TABLE_NAME" required:"true"`
+	EmailIndexName      string               `envconfig:"USERMANAGER_EMAIL_INDEX_NAME" required:"true"`
+	SubIndexName        string               `envconfig:"USERMANAGER_SUB_INDEX_NAME" required:"true"`
+	FamilyIndexName     string               `envconfig:"USERMANAGER_FAMILY_INDEX_NAME" required:"true"`
+	DynamoDBEndpointURL *string              `envconfig:"USERMANAGER_DYNAMODB_ENDPOINT_URL"`
 }
 
 // Configure creates a config by processing the environment variables and default values

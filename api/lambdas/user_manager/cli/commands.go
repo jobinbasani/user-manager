@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 	"github.com/urfave/cli/v2"
 	"github.com/ztrue/shutdown"
@@ -15,6 +16,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -50,6 +52,7 @@ func newGetUserInfoBySubCommand() *cli.Command {
 				Name:     "pool_id",
 				Required: true,
 				Usage:    "Cognito User Pool ID",
+				EnvVars:  []string{"USERMANAGER_USER_POOL_ID"},
 			},
 		},
 	}
@@ -71,6 +74,7 @@ func newGetUserInfoByEmailCommand() *cli.Command {
 				Name:     "pool_id",
 				Required: true,
 				Usage:    "Cognito User Pool ID",
+				EnvVars:  []string{"USERMANAGER_USER_POOL_ID"},
 			},
 		},
 	}
@@ -145,6 +149,15 @@ func getUserInfoByAttribute(c *cli.Context, poolID string, attributeType string,
 }
 
 func getStartServerAction(c *cli.Context) error {
+	r := strings.NewReader("USERMANAGER_DYNAMODB_ENDPOINT_URL=http://localhost:4567")
+	_, err := godotenv.Parse(r)
+	if err != nil {
+		log.Info("Error loading environment variables from Reader", err)
+	}
+	err = godotenv.Load()
+	if err != nil {
+		log.Info("Error loading .env file", err)
+	}
 	cfg := config.Configure(c.Context)
 	srv := &http.Server{
 		Handler: routes.GetRoutes(c.Context, cfg),
@@ -165,7 +178,7 @@ func getStartServerAction(c *cli.Context) error {
 
 	shutdown.Add(func() {
 		fmt.Println("shutting down")
-		ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+		ctx, cancel := context.WithTimeout(c.Context, 60*time.Second)
 		defer cancel()
 		// Doesn't block if no connections, but will otherwise wait
 		// until the timeout deadline.
