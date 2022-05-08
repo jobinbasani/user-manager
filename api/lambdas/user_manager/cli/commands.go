@@ -16,7 +16,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -86,6 +85,16 @@ func newStartServerCommand() *cli.Command {
 		Aliases: []string{},
 		Usage:   "Get User Info by sub",
 		Action:  getStartServerAction,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:  "dynamo_endpoint",
+				Usage: "DynamoDB endpoint URL",
+			},
+			&cli.IntFlag{
+				Name:  "port",
+				Usage: "Port to run the server on",
+			},
+		},
 	}
 }
 
@@ -149,23 +158,27 @@ func getUserInfoByAttribute(c *cli.Context, poolID string, attributeType string,
 }
 
 func getStartServerAction(c *cli.Context) error {
-	r := strings.NewReader("USERMANAGER_DYNAMODB_ENDPOINT_URL=http://localhost:4567")
-	_, err := godotenv.Parse(r)
-	if err != nil {
-		log.Info("Error loading environment variables from Reader", err)
-	}
-	err = godotenv.Load()
+
+	err := godotenv.Load()
 	if err != nil {
 		log.Info("Error loading .env file", err)
 	}
+	endpointUrl := c.String("dynamo_endpoint")
+	if len(endpointUrl) > 0 {
+		os.Setenv("USERMANAGER_DYNAMODB_ENDPOINT_URL", endpointUrl)
+	}
+
+	port := fmt.Sprintf(":%d", c.Int("port"))
+
 	cfg := config.Configure(c.Context)
+
 	srv := &http.Server{
 		Handler: routes.GetRoutes(c.Context, cfg),
 	}
 
 	go func() {
-		fmt.Println("Starting Server")
-		listener, err := net.Listen("tcp", ":0")
+		fmt.Println("Starting Server on port", port)
+		listener, err := net.Listen("tcp", port)
 		if err != nil {
 			panic(err)
 		}
