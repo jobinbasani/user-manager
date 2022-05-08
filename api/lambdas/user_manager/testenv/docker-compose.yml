@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  localstack:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: usermanager_localstack
+    container_name: usermanager_localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=dynamodb
+      - HOST_TMP_FOLDER=/tmp/localstack
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - "./.localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./scripts:/docker-entrypoint-initaws.d"
+
+  dynamodb-gui:
+    image: aaronshaf/dynamodb-admin:4.4.0
+    container_name: usermanager_dynamodb-gui
+    ports:
+      - "8001:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://usermanager_localstack:4566
+
