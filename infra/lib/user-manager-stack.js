@@ -47,7 +47,8 @@ class UserManagerStack extends cdk.Stack {
         name: 'email_id',
         type: dynamodb.AttributeType.STRING,
       },
-      projectionType: dynamodb.ProjectionType.KEYS_ONLY,
+      projectionType: dynamodb.ProjectionType.INCLUDE,
+      nonKeyAttributes: ['family_id'],
       readCapacity: 2,
       writeCapacity: 2,
     });
@@ -58,7 +59,8 @@ class UserManagerStack extends cdk.Stack {
         name: 'sub',
         type: dynamodb.AttributeType.STRING,
       },
-      projectionType: dynamodb.ProjectionType.KEYS_ONLY,
+      projectionType: dynamodb.ProjectionType.INCLUDE,
+      nonKeyAttributes: ['family_id'],
       readCapacity: 2,
       writeCapacity: 2,
     });

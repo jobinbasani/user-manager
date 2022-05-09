@@ -18,14 +18,16 @@ if [ "$tblCount" -eq "0" ]; then
                     \"IndexName\": \"subIndex\",
                     \"KeySchema\": [{\"AttributeName\":\"sub\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
-                        \"ProjectionType\":\"KEYS_ONLY\"
+                        \"ProjectionType\":\"INCLUDE\",
+                        \"NonKeyAttributes\":[\"familyId\"]
                     }
                 },
                 {
                     \"IndexName\": \"emailIndex\",
                     \"KeySchema\": [{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
-                        \"ProjectionType\":\"KEYS_ONLY\"
+                        \"ProjectionType\":\"INCLUDE\",
+                        \"NonKeyAttributes\":[\"familyId\"]
                     }
                 },
                 {

@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 	"github.com/urfave/cli/v2"
 	"github.com/ztrue/shutdown"
@@ -159,24 +159,19 @@ func getUserInfoByAttribute(c *cli.Context, poolID string, attributeType string,
 
 func getStartServerAction(c *cli.Context) error {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Info("Error loading .env file", err)
-	}
+	cfg := config.Configure(c.Context)
+
 	endpointUrl := c.String("dynamo_endpoint")
 	if len(endpointUrl) > 0 {
-		os.Setenv("USERMANAGER_DYNAMODB_ENDPOINT_URL", endpointUrl)
+		cfg.DynamoDBEndpointURL = aws.String(endpointUrl)
 	}
-
-	port := fmt.Sprintf(":%d", c.Int("port"))
-
-	cfg := config.Configure(c.Context)
 
 	srv := &http.Server{
 		Handler: routes.GetRoutes(c.Context, cfg),
 	}
 
 	go func() {
+		port := fmt.Sprintf(":%d", c.Int("port"))
 		fmt.Println("Starting Server on port", port)
 		listener, err := net.Listen("tcp", port)
 		if err != nil {
