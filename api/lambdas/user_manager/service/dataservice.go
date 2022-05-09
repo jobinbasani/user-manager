@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
@@ -27,7 +29,24 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 	if !user.IsApproved {
 		return errors.New(fmt.Sprintf("%s is not an approved user", user.Email))
 	}
-
+	currentFamilyQuery := &dynamodb.QueryInput{
+		TableName:              aws.String(d.cfg.UserDataTableName),
+		IndexName:              aws.String(d.cfg.EmailIndexName),
+		KeyConditionExpression: aws.String("#email_id = :email_id"),
+		ExpressionAttributeNames: map[string]string{
+			"#email_id": "email_id",
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":email_id": &types.AttributeValueMemberS{Value: user.Email},
+		},
+	}
+	currentFamilyQueryOutput, err := d.client.Query(ctx, currentFamilyQuery)
+	if err != nil {
+		return err
+	}
+	if currentFamilyQueryOutput.Count > 0 {
+		fmt.Println("deleting current records")
+	}
 	return nil
 }
 

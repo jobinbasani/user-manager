@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 )
@@ -33,7 +34,14 @@ func Configure(ctx context.Context) *Config {
 	if err != nil {
 		panic(err)
 	}
-	config.AwsConfig, err = awsconfig.LoadDefaultConfig(ctx)
+	config.AwsConfig, err = awsconfig.LoadDefaultConfig(ctx, awsconfig.WithEndpointResolverWithOptions(aws.EndpointResolverWithOptionsFunc(
+		func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+			if config.DynamoDBEndpointURL != nil && service == dynamodb.ServiceID {
+				return aws.Endpoint{URL: *config.DynamoDBEndpointURL}, nil
+			}
+			// returning EndpointNotFoundError will allow the service to fallback to it's default resolution
+			return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+		})))
 	if err != nil {
 		panic(err)
 	}

@@ -6,11 +6,11 @@ if [ "$tblCount" -eq "0" ]; then
    echo "Creating table";
    awslocal dynamodb create-table \
     --table-name UserDetails \
-    --attribute-definitions AttributeName=Id,AttributeType=S \
-                            AttributeName=email,AttributeType=S \
+    --attribute-definitions AttributeName=id,AttributeType=S \
+                            AttributeName=email_id,AttributeType=S \
                             AttributeName=sub,AttributeType=S \
-                            AttributeName=familyId,AttributeType=S \
-    --key-schema AttributeName=Id,KeyType=HASH \
+                            AttributeName=family_id,AttributeType=S \
+    --key-schema AttributeName=id,KeyType=HASH \
     --billing-mode PAY_PER_REQUEST \
     --global-secondary-indexes \
             "[
@@ -19,20 +19,20 @@ if [ "$tblCount" -eq "0" ]; then
                     \"KeySchema\": [{\"AttributeName\":\"sub\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"INCLUDE\",
-                        \"NonKeyAttributes\":[\"familyId\"]
+                        \"NonKeyAttributes\":[\"family_id\"]
                     }
                 },
                 {
                     \"IndexName\": \"emailIndex\",
-                    \"KeySchema\": [{\"AttributeName\":\"email\",\"KeyType\":\"HASH\"}],
+                    \"KeySchema\": [{\"AttributeName\":\"email_id\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"INCLUDE\",
-                        \"NonKeyAttributes\":[\"familyId\"]
+                        \"NonKeyAttributes\":[\"family_id\"]
                     }
                 },
                 {
                     \"IndexName\": \"familyIndex\",
-                    \"KeySchema\": [{\"AttributeName\":\"familyId\",\"KeyType\":\"HASH\"}],
+                    \"KeySchema\": [{\"AttributeName\":\"family_id\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"KEYS_ONLY\"
                     }
