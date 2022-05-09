@@ -16,7 +16,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"time"
 )
 
 func newGetUserInfoCommand() *cli.Command {
@@ -186,11 +185,9 @@ func getStartServerAction(c *cli.Context) error {
 
 	shutdown.Add(func() {
 		fmt.Println("shutting down")
-		ctx, cancel := context.WithTimeout(c.Context, 60*time.Second)
-		defer cancel()
 		// Doesn't block if no connections, but will otherwise wait
 		// until the timeout deadline.
-		_ = srv.Shutdown(ctx)
+		_ = srv.Shutdown(c.Context)
 	})
 	shutdown.Listen(os.Interrupt)
 	return nil
