@@ -10,7 +10,6 @@ import { doInit } from './store/auth/auth-action';
 function App() {
 
   const dispatch = useDispatch();
-
   
   console.log("App initializing ....");
   dispatch(doInit());

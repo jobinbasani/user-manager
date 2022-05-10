@@ -16,10 +16,11 @@ import {RootState} from './store/index';
 import Register from './pages/public/Register';
 
 const Router = () => {
-    const isLoggedIn = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isLoggedIn = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   return useRoutes(
         [
+          {path: "/", element: <Home/>},
           {path: "home", element: <Home/>},
           {path: "committee", element: <Committee/>},
           {path: "services", element: <Services/>},
