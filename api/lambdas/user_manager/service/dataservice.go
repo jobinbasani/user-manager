@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
@@ -27,14 +28,22 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 	if !user.IsApproved {
 		return errors.New(fmt.Sprintf("%s is not an approved user", user.Email))
 	}
-	currentFamilyQuery := fmt.Sprintf(`select * from "%s"."%s" where "email_id" = '%s'`, d.cfg.UserDataTableName, d.cfg.EmailIndexName, user.Email)
+	currentFamilyQuery := fmt.Sprintf(`select * from "%s"."%s" where "emailId" = '%s'`, d.cfg.UserDataTableName, d.cfg.EmailIndexName, user.Email)
 	currentFamilyQueryInput := &dynamodb.ExecuteStatementInput{Statement: &currentFamilyQuery}
 	currentFamilyQueryOutput, err := d.client.ExecuteStatement(ctx, currentFamilyQueryInput)
 	if err != nil {
 		return err
 	}
 	if len(currentFamilyQueryOutput.Items) > 0 {
-		fmt.Println("deleting current records")
+		var familyId string
+		familyIdAttr, exists := currentFamilyQueryOutput.Items[0]["familyId"]
+		if exists {
+			switch v := familyIdAttr.(type) {
+			case *types.AttributeValueMemberS:
+				familyId = v.Value
+			}
+		}
+		fmt.Println("deleting current records", familyId)
 	}
 	return nil
 }
