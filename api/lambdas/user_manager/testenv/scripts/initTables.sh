@@ -7,9 +7,9 @@ if [ "$tblCount" -eq "0" ]; then
    awslocal dynamodb create-table \
     --table-name UserDetails \
     --attribute-definitions AttributeName=id,AttributeType=S \
-                            AttributeName=email_id,AttributeType=S \
+                            AttributeName=emailId,AttributeType=S \
                             AttributeName=sub,AttributeType=S \
-                            AttributeName=family_id,AttributeType=S \
+                            AttributeName=familyId,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH \
     --billing-mode PAY_PER_REQUEST \
     --global-secondary-indexes \
@@ -19,20 +19,20 @@ if [ "$tblCount" -eq "0" ]; then
                     \"KeySchema\": [{\"AttributeName\":\"sub\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"INCLUDE\",
-                        \"NonKeyAttributes\":[\"family_id\"]
+                        \"NonKeyAttributes\":[\"familyId\"]
                     }
                 },
                 {
                     \"IndexName\": \"emailIndex\",
-                    \"KeySchema\": [{\"AttributeName\":\"email_id\",\"KeyType\":\"HASH\"}],
+                    \"KeySchema\": [{\"AttributeName\":\"emailId\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"INCLUDE\",
-                        \"NonKeyAttributes\":[\"family_id\"]
+                        \"NonKeyAttributes\":[\"familyId\"]
                     }
                 },
                 {
                     \"IndexName\": \"familyIndex\",
-                    \"KeySchema\": [{\"AttributeName\":\"family_id\",\"KeyType\":\"HASH\"}],
+                    \"KeySchema\": [{\"AttributeName\":\"familyId\",\"KeyType\":\"HASH\"}],
                     \"Projection\":{
                         \"ProjectionType\":\"KEYS_ONLY\"
                     }

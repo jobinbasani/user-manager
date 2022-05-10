@@ -33,7 +33,7 @@ class UserManagerStack extends cdk.Stack {
     userTable.addGlobalSecondaryIndex({
       indexName: familyIndexName,
       partitionKey: {
-        name: 'family_id',
+        name: 'familyId',
         type: dynamodb.AttributeType.STRING,
       },
       projectionType: dynamodb.ProjectionType.KEYS_ONLY,
@@ -44,11 +44,11 @@ class UserManagerStack extends cdk.Stack {
     userTable.addGlobalSecondaryIndex({
       indexName: emailIndexName,
       partitionKey: {
-        name: 'email_id',
+        name: 'emailId',
         type: dynamodb.AttributeType.STRING,
       },
       projectionType: dynamodb.ProjectionType.INCLUDE,
-      nonKeyAttributes: ['family_id'],
+      nonKeyAttributes: ['familyId'],
       readCapacity: 2,
       writeCapacity: 2,
     });
@@ -60,7 +60,7 @@ class UserManagerStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
       projectionType: dynamodb.ProjectionType.INCLUDE,
-      nonKeyAttributes: ['family_id'],
+      nonKeyAttributes: ['familyId'],
       readCapacity: 2,
       writeCapacity: 2,
     });
