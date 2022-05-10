@@ -29,4 +29,10 @@ export const getEmptyToken = () => ({
         lastName: '',
         userEmail: ''
     }
+});
+
+export const getEmptyUser = () => ({
+    firstName: '',
+    lastName: '',
+    userEmail: ''
 })
