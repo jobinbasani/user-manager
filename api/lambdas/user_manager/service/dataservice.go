@@ -144,8 +144,15 @@ func (d DynamoDBService) getFamilyIDForEmail(ctx context.Context, email string) 
 }
 
 func (d DynamoDBService) getFamilyMemberIDs(ctx context.Context, familyID string) ([]string, error) {
-	familyMembersQuery := fmt.Sprintf(`select * from "%s"."%s" where "familyId" = '%s'`, d.cfg.UserDataTableName, d.cfg.FamilyIndexName, familyID)
-	familyMembersQueryInput := &dynamodb.ExecuteStatementInput{Statement: &familyMembersQuery}
+	familyMembersQueryInput := &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`select * from "%s"."%s" where "%s" = '%s'`,
+			d.cfg.UserDataTableName,
+			d.cfg.FamilyIndexName,
+			familyIdAttribute,
+			familyID,
+		)),
+	}
 	familyMembersQueryOutput, err := d.client.ExecuteStatement(ctx, familyMembersQueryInput)
 	if err != nil {
 		return nil, err
