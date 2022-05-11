@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
-	"github.com/google/uuid"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
 	"strings"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/google/uuid"
 )
 
 const (
@@ -62,7 +63,6 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		return err
 	}
 	if familyID != nil {
-		fmt.Println("Deleting ", *familyID)
 		memberIDs, err := d.getFamilyMemberIDs(ctx, *familyID)
 		if err != nil {
 			return err
@@ -146,7 +146,7 @@ func (d DynamoDBService) getFamilyIDForEmail(ctx context.Context, email string) 
 func (d DynamoDBService) getFamilyMemberIDs(ctx context.Context, familyID string) ([]string, error) {
 	familyMembersQueryInput := &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
-			`select * from "%s"."%s" where "%s" = '%s'`,
+			`SELECT * FROM "%s"."%s" WHERE "%s" = '%s'`,
 			d.cfg.UserDataTableName,
 			d.cfg.FamilyIndexName,
 			familyIdAttribute,
