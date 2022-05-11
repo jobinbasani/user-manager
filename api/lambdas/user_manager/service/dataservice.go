@@ -38,11 +38,12 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		var familyId string
 		familyIdAttr, exists := currentFamilyQueryOutput.Items[0]["familyId"]
 		if exists {
-			switch v := familyIdAttr.(type) {
-			case *types.AttributeValueMemberS:
-				familyId = v.Value
+			familyIdMember, ok := familyIdAttr.(*types.AttributeValueMemberS)
+			if ok {
+				familyId = familyIdMember.Value
 			}
 		}
+
 		fmt.Println("deleting current records", familyId)
 	}
 	return nil
