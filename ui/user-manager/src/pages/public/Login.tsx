@@ -5,17 +5,14 @@ import { useDispatch } from 'react-redux';
 import { UserAuth } from '../../api/auth';
 import { AccessToken } from '../../api/api-types';
 import { doAuth } from '../../store/auth/auth-action';
-import { useLocation } from 'react-router-dom';
-
-
-import { Utils } from '../../utils/utils';
-
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getUserInfo } from '../../store/user/user-action';
 
 const Login = () => {
     const dispatch = useDispatch();
 
     const location = useLocation();
-    
+    const navigate = useNavigate();
 
     const currentLocation = useState(window.location.href);
 
@@ -25,11 +22,10 @@ const Login = () => {
     },[location]);
 
     const updateToken = useCallback((accessToken: AccessToken) => {
-      const theRoot = window.location.href;
         dispatch(doAuth(accessToken));
-        const rootLocation = Utils.getRootUrl(theRoot); 
-        window.location.href = rootLocation;
-    },[dispatch]);
+        dispatch(getUserInfo());
+        navigate("/");
+    },[dispatch, navigate]);
   
     useEffect(() => {
       const token:AccessToken | null = UserAuth.getAccessTokenFromUrl(currentLocation[0].toString());
