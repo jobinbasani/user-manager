@@ -14,6 +14,9 @@ type UserData struct {
 	// A unique identifier
 	Id string `json:"id,omitempty"`
 
+	// Family ID to which user belongs to
+	FamilyId string `json:"familyId,omitempty"`
+
 	// Display name of the user
 	DisplayName string `json:"displayName,omitempty"`
 

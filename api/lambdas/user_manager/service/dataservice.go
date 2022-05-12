@@ -179,7 +179,7 @@ func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string)
 		}
 		familyId := d.getStringValue(resp.Item, familyIdAttribute)
 		if familyId != nil {
-			fmt.Println(familyId)
+			userData.FamilyId = *familyId
 		}
 		userId := d.getStringValue(resp.Item, idAttribute)
 		if userId != nil {

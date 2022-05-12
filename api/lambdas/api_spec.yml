@@ -286,6 +286,9 @@ components:
         id:
           description: A unique identifier
           type: string
+        familyId:
+          description: Family ID to which user belongs to
+          type: string
         displayName:
           description: Display name of the user
           type: string
