@@ -24,6 +24,7 @@ const (
 )
 
 type DataService interface {
+	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
 	AddUpdateFamily(ctx context.Context, userData []openapi.UserData) error
 }
 type DynamoDBService struct {
@@ -44,6 +45,29 @@ func (s stringSet) getAll() string {
 		keys = append(keys, k)
 	}
 	return strings.Join(keys, ",")
+}
+
+func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData, error) {
+	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	familyID, err := d.getFamilyIDForEmail(ctx, user.Email)
+	if err != nil {
+		return nil, err
+	}
+	if familyID == nil {
+		return []openapi.UserData{}, nil
+	}
+	memberIDs, err := d.getFamilyMemberIDs(ctx, *familyID)
+	if err != nil {
+		return nil, err
+	}
+	users, err := d.getUserDetailsForIDs(ctx, memberIDs)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi.UserData) error {
@@ -118,6 +142,52 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		return errors.New(strings.Join(errorMessages, ", "))
 	}
 	return nil
+}
+
+func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {
+	if len(ids) == 0 {
+		return nil, errors.New("no user id's were provided")
+	}
+	statements := make([]types.BatchStatementRequest, len(ids))
+	for i, id := range ids {
+		statements[i] = types.BatchStatementRequest{
+			Statement: aws.String(fmt.Sprintf(
+				`SELECT * FROM "%s" WHERE "%s" = '%s'`,
+				d.cfg.UserDataTableName,
+				idAttribute,
+				id,
+			)),
+		}
+	}
+
+	batchExecutionOutput, err := d.client.BatchExecuteStatement(ctx, &dynamodb.BatchExecuteStatementInput{
+		Statements: statements,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var users []openapi.UserData
+	for _, resp := range batchExecutionOutput.Responses {
+		infoJson := d.getStringValue(resp.Item, infoAttribute)
+		if infoJson == nil {
+			continue
+		}
+		var userData openapi.UserData
+		err := json.Unmarshal([]byte(*infoJson), &userData)
+		if err != nil {
+			return nil, err
+		}
+		familyId := d.getStringValue(resp.Item, familyIdAttribute)
+		if familyId != nil {
+			fmt.Println(familyId)
+		}
+		userId := d.getStringValue(resp.Item, idAttribute)
+		if userId != nil {
+			userData.Id = *userId
+		}
+		users = append(users, userData)
+	}
+	return users, nil
 }
 
 func (d DynamoDBService) getFamilyIDForEmail(ctx context.Context, email string) (*string, error) {

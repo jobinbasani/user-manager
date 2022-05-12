@@ -47,6 +47,20 @@ func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData [
 	}, nil
 }
 
+func (u *UserManagerService) GetUserFamily(ctx context.Context) (openapi.ImplResponse, error) {
+	members, err := u.dataService.GetUserFamily(ctx)
+	if err != nil {
+		log.Println(err)
+		return openapi.ImplResponse{
+			Code: http.StatusInternalServerError,
+		}, err
+	}
+	return openapi.ImplResponse{
+		Code: http.StatusOK,
+		Body: members,
+	}, nil
+}
+
 // NewUserManagerService creates a new UserManagerService
 func NewUserManagerService(cfg *config.Config, authService AuthService, dataService DataService) *UserManagerService {
 	return &UserManagerService{
