@@ -167,9 +167,13 @@ class UserManagerStack extends cdk.Stack {
         'dynamodb:BatchGetItem',
         'dynamodb:BatchWriteItem',
         'dynamodb:ConditionCheckItem',
+        'dynamodb:PartiQLSelect',
+        'dynamodb:PartiQLInsert',
+        'dynamodb:PartiQLDelete',
       ],
       resources: [
         userTable.tableArn,
+        `${userTable.tableArn}/index/*`,
       ],
     }));
 
