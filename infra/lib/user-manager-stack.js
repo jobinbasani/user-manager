@@ -203,6 +203,41 @@ class UserManagerStack extends cdk.Stack {
       description: 'UserManager Lambda Function Name',
     });
 
+    const postSignupLambda = new GoFunction(this, 'postSignupFunction', {
+      description: 'Post sign up trigger',
+      functionName: 'postSignupFunction',
+      entry: `${__dirname}/../../api/lambdas/post_signup`,
+      timeout: cdk.Duration.seconds(10),
+      environment: {
+        USERMANAGER_TABLE_NAME: userTable.tableName,
+        USERMANAGER_EMAIL_INDEX_NAME: emailIndexName,
+        USERMANAGER_APPROVED_USER_ATTRIBUTE: 'custom:approved_user',
+      },
+      initialPolicy: [
+        new iam.PolicyStatement({
+          actions: [
+            'dynamodb:PartiQLSelect',
+            'dynamodb:PartiQLInsert',
+            'dynamodb:PartiQLDelete',
+          ],
+          resources: [
+            userTable.tableArn,
+            `${userTable.tableArn}/index/*`,
+          ],
+        }),
+        new iam.PolicyStatement({
+          actions: [
+            'cognito-idp:AdminUpdateUserAttributes',
+          ],
+          resources: [
+            `arn:aws:cognito-idp:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:userpool/*`,
+          ],
+        }),
+      ],
+    });
+
+    userPool.addTrigger(cognito.UserPoolOperation.POST_CONFIRMATION, postSignupLambda);
+
     const cloudFrontOAI = new cloudfront.OriginAccessIdentity(this, 'OAI', {
       comment: 'OAI for User Manager website.',
     });
