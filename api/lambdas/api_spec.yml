@@ -67,6 +67,10 @@ paths:
       responses:
         201:
           description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyId'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -353,3 +357,11 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/UserData'
+
+    FamilyId:
+      type: object
+      properties:
+        familyId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000

@@ -35,7 +35,7 @@ func (u *UserManagerService) GetUser(ctx context.Context) (openapi.ImplResponse,
 }
 
 func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData []openapi.UserData) (openapi.ImplResponse, error) {
-	err := u.dataService.AddUpdateFamily(ctx, userData)
+	familyId, err := u.dataService.AddUpdateFamily(ctx, userData)
 	if err != nil {
 		log.Println(err)
 		return openapi.ImplResponse{
@@ -44,6 +44,7 @@ func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData [
 	}
 	return openapi.ImplResponse{
 		Code: http.StatusCreated,
+		Body: familyId,
 	}, nil
 }
 

@@ -25,7 +25,7 @@ const (
 
 type DataService interface {
 	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
-	AddUpdateFamily(ctx context.Context, userData []openapi.UserData) error
+	AddUpdateFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
 }
 type DynamoDBService struct {
 	cfg         *config.Config
@@ -70,26 +70,26 @@ func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData,
 	return users, nil
 }
 
-func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi.UserData) error {
+func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
 	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
 	if err != nil {
-		return err
+		return openapi.FamilyId{}, err
 	}
 	if !user.IsApproved {
-		return errors.New(fmt.Sprintf("%s is not an approved user", user.Email))
+		return openapi.FamilyId{}, errors.New(fmt.Sprintf("%s is not an approved user", user.Email))
 	}
 	if len(userData) == 0 {
-		return errors.New("at least one user is needed in a family")
+		return openapi.FamilyId{}, errors.New("at least one user is needed in a family")
 	}
 	var statements []types.BatchStatementRequest
 	familyID, err := d.getFamilyIDForEmail(ctx, user.Email)
 	if err != nil {
-		return err
+		return openapi.FamilyId{}, err
 	}
 	if familyID != nil {
 		memberIDs, err := d.getFamilyMemberIDs(ctx, *familyID)
 		if err != nil {
-			return err
+			return openapi.FamilyId{}, err
 		}
 		for _, memberID := range memberIDs {
 			statements = append(statements, types.BatchStatementRequest{
@@ -102,14 +102,14 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 	}
 	for _, u := range userData {
 		if len(u.Email) == 0 {
-			return errors.New("a valid email id is needed or all users")
+			return openapi.FamilyId{}, errors.New("a valid email id is needed or all users")
 		}
 		emails := make(stringSet)
 		emails.add(user.Email)
 		emails.add(u.Email)
 		userDataJson, err := json.Marshal(u)
 		if err != nil {
-			return err
+			return openapi.FamilyId{}, err
 		}
 		statements = append(statements, types.BatchStatementRequest{
 			Statement: aws.String(fmt.Sprintf(
@@ -130,7 +130,7 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		Statements: statements,
 	})
 	if err != nil {
-		return err
+		return openapi.FamilyId{}, err
 	}
 	var errorMessages []string
 	for _, o := range batchExecutionOutput.Responses {
@@ -139,9 +139,11 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		}
 	}
 	if len(errorMessages) > 0 {
-		return errors.New(strings.Join(errorMessages, ", "))
+		return openapi.FamilyId{}, errors.New(strings.Join(errorMessages, ", "))
 	}
-	return nil
+	return openapi.FamilyId{
+		FamilyId: *familyID,
+	}, nil
 }
 
 func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {

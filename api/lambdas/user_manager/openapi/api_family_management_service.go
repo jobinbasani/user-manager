@@ -31,8 +31,8 @@ func (s *FamilyManagementApiService) AddUpdateUserFamily(ctx context.Context, us
 	// TODO - update AddUpdateUserFamily with the required logic for this service method.
 	// Add api_family_management_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 
-	//TODO: Uncomment the next line to return response Response(201, {}) or use other options such as http.Ok ...
-	//return Response(201, nil),nil
+	//TODO: Uncomment the next line to return response Response(201, FamilyId{}) or use other options such as http.Ok ...
+	//return Response(201, FamilyId{}), nil
 
 	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
 	//return Response(401, UnauthorizedError{}), nil
