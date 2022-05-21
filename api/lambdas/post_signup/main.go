@@ -13,7 +13,6 @@ import (
 var cfg *signupconfig.Config
 
 func handler(ctx context.Context, event events.CognitoEventUserPoolsPostConfirmation) (events.CognitoEventUserPoolsPostConfirmation, error) {
-	fmt.Printf("PostConfirmation for user: %s\n", event.UserName)
 	if cfg == nil {
 		cfg = signupconfig.Configure(ctx)
 	}
@@ -23,6 +22,7 @@ func handler(ctx context.Context, event events.CognitoEventUserPoolsPostConfirma
 	if !ok {
 		return event, errors.New("email field could not be extracted")
 	}
+	fmt.Printf("PostConfirmation for user: %s\n", email)
 	isPresent, err := signupDataService.IsEmailPresent(ctx, email)
 	if err != nil {
 		return event, err
