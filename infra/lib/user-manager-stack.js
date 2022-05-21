@@ -275,9 +275,27 @@ class UserManagerStack extends cdk.Stack {
               var request = event.request;
               var uri = request.uri;
               
+              if (uri.length == 0){
+                  var response = {
+                      statusCode: 302,
+                      statusDescription: 'Found',
+                      headers:
+                          { "location": { "value": uri+'/' } }
+                  }
+                  return response;
+              }
+              if ((uri.match(/\\//g) || []).length == 1){
+                if (uri.endsWith('/')) {
+                  request.uri += 'main/index.html';
+                }else{
+                  request.uri = '/main'+uri;
+                }
+              }
               // Check whether the URI is missing a file name.
-              if (uri.endsWith('/')) {
+              else if (uri.endsWith('/')) {
                   request.uri += 'index.html';
+              }else if (uri.startsWith('/static')){
+                  request.uri = '/main'+uri;
               }
               // Check whether the URI is missing a file extension.
               else if (!uri.includes('.')) {
