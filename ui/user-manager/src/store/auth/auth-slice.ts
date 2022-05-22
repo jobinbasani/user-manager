@@ -1,6 +1,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AccessToken } from '../../api/api-types';
+import {UserAuth} from "../../api/auth";
 
 interface AuthState {
     initialized: boolean;
@@ -8,11 +9,21 @@ interface AuthState {
     accessToken: AccessToken | null | undefined;
 };
 
-const initialAuthState: AuthState = {
-    initialized: false,
-    isAuthenticated: false,
-    accessToken: null
-};
+function getInitialState(): AuthState {
+    const token:AccessToken | null = UserAuth.getAccessTokenFromUrl(window.location.href);
+    if (token && token.expiresIn > 0) {
+        return {
+            initialized: true,
+            isAuthenticated: true,
+            accessToken: token
+        }
+    }
+    return {
+        initialized: false,
+        isAuthenticated: false,
+        accessToken: null
+    }
+}
 
 let logoutTimer: any;
 
@@ -30,9 +41,9 @@ const loginHandler = (token: AccessToken) => {
 const calculateRemainingTime = (expirationTime: Date): number => {
     const currentTime = new Date().getTime();
     const adjExpirationTime = new Date(expirationTime).getTime();
-  
+
     const remainingDuration = adjExpirationTime - currentTime;
-  
+
     return remainingDuration;
 }
 
@@ -61,13 +72,13 @@ const logoutHandler = () => {
 
 const authSlice = createSlice({
     name: 'authentication',
-    initialState: initialAuthState,
+    initialState: getInitialState(),
     reducers: {
         setAuthenticated: (state: AuthState, action: PayloadAction<AccessToken>) => {
             state.isAuthenticated = true;
             let token: AccessToken = action.payload;
             loginHandler(token);
-            
+
             state.accessToken = token;
             state.isAuthenticated = true;
             state.initialized = true;
