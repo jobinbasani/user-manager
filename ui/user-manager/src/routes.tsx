@@ -20,7 +20,6 @@ const Router = () => {
 
   return useRoutes(
         [
-          {path: "/", element: <Home/>},
           {path: "/", element: <Home />},
           {path: "main", element: <Home />},
           {path: "home", element: <Home/>},
@@ -28,11 +27,11 @@ const Router = () => {
           {path: "services", element: <Services/>},
           {path: "catechism", element: <Catechism/>},
           {path: "gallery", element: <Gallery/>},
-          {path: "login", element: <Login/>},
           {path: "register", element: <Register/>},
           {path: "callback", element: <Login/>},
           {path: "unauthorized", element: <Unauthorized/>},
           {path: "dashboard", element: isLoggedIn ? <Dashboard/> : <Navigate to="/home"/>},
+          {path: "*", element: <Home />},
         ]
     );
 };
