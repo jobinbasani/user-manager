@@ -18,8 +18,8 @@ import { navMenuItems, rightMenuItems, NavMenuItemType } from '../../constants/M
 import classes from "./MainHeader.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import {logo} from '../../assets/images';
-import { RootState } from '../../store/index';
-import { doLogout } from "../../store/auth/auth-action";
+import { RootState } from '../../store';
+import {resetAuthStatus} from '../../store/auth/auth-slice';
 
 const MainHeader = () => {
     const authStatus = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -46,10 +46,10 @@ const MainHeader = () => {
         setAnchorElUser(null);
         console.log("Menu Item: " + menuItem);
         if (menuItem.target.outerText.toLowerCase() === "logout") {
-          dispatch(doLogout());
+          dispatch(resetAuthStatus());
           navigate("/home");
           return;
-        } 
+        }
 
         if (menuItem.target.outerText.toLowerCase() === "dashboard") {
           navigate("/dashboard");
@@ -63,7 +63,7 @@ const MainHeader = () => {
               <Tooltip title="Open User Profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt= {accessToken!.userInfo.firstName + " " + accessToken!.userInfo.lastName}
-                          src="/static/images/avatar/2.jpg" 
+                          src="/static/images/avatar/2.jpg"
                           sx={{ bgcolor: indigo[500] }}
                           className={classes["app-avatar"]}/>
                 </IconButton>
@@ -103,7 +103,7 @@ const MainHeader = () => {
       if (item.navLink.startsWith("https:") ) {
         if (!authStatus)
           return isDropdown ? getDropdownLoginUrl(item, menuClassName) : getLoginUrl(item, menuClassName);
-        else 
+        else
           return null;
       } else if (item.isPrivate) {
           if (authStatus) {
@@ -112,7 +112,7 @@ const MainHeader = () => {
             return null;
           }
       } else {
-        return !isDropdown? menuLinkItem(item) : menuDropdownItem(item);;    
+        return !isDropdown? menuLinkItem(item) : menuDropdownItem(item);;
       }
     }
 
@@ -124,7 +124,7 @@ const MainHeader = () => {
           onClick={handleCloseNavMenu}
           sx={{ my: 2, color: 'white', display: 'block' }}>
             <Typography textAlign="center">
-              <a href={item.navLink} className={classes[menuClassName]}>{item.value}</a>                  
+              <a href={item.navLink} className={classes[menuClassName]}>{item.value}</a>
             </Typography>
         </Button>
       </MenuItem>
@@ -135,9 +135,9 @@ const MainHeader = () => {
       return (
         <MenuItem key={item.key} onClick={handleCloseNavMenu}>
           <Typography textAlign="center">
-            <a href={item.navLink} className={classes[menuClassName]}>{item.value}</a>                  
+            <a href={item.navLink} className={classes[menuClassName]}>{item.value}</a>
           </Typography>
-        </MenuItem> 
+        </MenuItem>
       );
     }
 
