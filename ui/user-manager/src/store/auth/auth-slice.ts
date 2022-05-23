@@ -12,6 +12,7 @@ interface AuthState {
 function getInitialState(): AuthState {
     const token:AccessToken | null = UserAuth.getAccessTokenFromUrl(window.location.href);
     if (token && token.expiresIn > 0) {
+        localStorage.setItem("token", JSON.stringify(token));
         return {
             initialized: true,
             isAuthenticated: true,
