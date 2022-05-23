@@ -13,6 +13,7 @@ const Dashboard = () => {
     useEffect(()=>{
         if (authStatus) {
             console.log("Dashboard #### ---is authenticated ....");
+            window.history.replaceState(null, '', '/dashboard');
             dispatch(getUserInfo());
         }
     },[authStatus, dispatch]);
