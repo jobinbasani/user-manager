@@ -43,7 +43,7 @@ jobs:
         callbackUrl=$(echo "${cdnUrl}${branchName}${callbackUrlPath}" | jq -rR @uri)
         completeSignInUrl="${partialSignInUrl}${callbackUrl}"
         completeSignInUrl=${completeSignInUrl//&/\\&}
-        sed -i "s@LOGIN_URL.*=.*[\"].*[\"];@LOGIN_URL = \"$completeSignInUrl\";@g" src/constants/ApiConstants.ts
+        sed -i "s@LOGIN_URL.*=.*['].*['];@LOGIN_URL = '$completeSignInUrl';@g" src/constants/ApiConstants.ts
     - name: Build app
       run: |
         npm ci
