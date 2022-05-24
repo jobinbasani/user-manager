@@ -1,0 +1,38 @@
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "airbnb"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "@typescript-eslint/indent": ["error", 2],
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-filename-extension": "off",
+    "no-param-reassign": "off"
+  }
+}
