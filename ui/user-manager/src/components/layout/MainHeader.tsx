@@ -20,10 +20,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import {logo} from '../../assets/images';
 import { RootState } from '../../store';
 import {resetAuthStatus} from '../../store/auth/auth-slice';
+import {UserDetails} from "../../store/user/user-slice";
 
 const MainHeader = () => {
     const authStatus = useSelector((state: RootState) => state.auth.isAuthenticated);
-    const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+    const userDetails:UserDetails = useSelector((state: RootState) => state.user);
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -57,12 +58,12 @@ const MainHeader = () => {
     };
 
     const profileMenu = () => {
-      if (authStatus) {
+      if (userDetails.isLoggedIn) {
         return (
           <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open User Profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt= {accessToken!.userInfo.firstName + " " + accessToken!.userInfo.lastName}
+                  <Avatar alt= {userDetails!.userInfo.firstName + " " + userDetails!.userInfo.lastName}
                           src="/static/images/avatar/2.jpg"
                           sx={{ bgcolor: indigo[500] }}
                           className={classes["app-avatar"]}/>
@@ -156,7 +157,7 @@ const MainHeader = () => {
     const welcomeSection = () => {
       return (
         <Typography variant="h6">
-          {(authStatus)? "Welcome " + accessToken?.userInfo.firstName : ""}
+          {(userDetails.isLoggedIn)? "Welcome " + userDetails?.userInfo.firstName : ""}
         </Typography>
       );
     }

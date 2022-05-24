@@ -1,22 +1,17 @@
 import ComingSoon from "../../components/unspported/ComingSoon";
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store/index';
+import { useSelector} from 'react-redux';
+import { RootState } from '../../store';
 import { useEffect } from 'react';
-import { getUserInfo } from '../../store/user/user-action';
 
 const Dashboard = () => {
 
-    const authStatus = useSelector((state: RootState) => state.auth.isAuthenticated);
-
-    const dispatch = useDispatch();
+    const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
 
     useEffect(()=>{
-        if (authStatus) {
-            console.log("Dashboard #### ---is authenticated ....");
+        if (isLoggedIn) {
             window.history.replaceState(null, '', '/dashboard');
-            dispatch(getUserInfo());
         }
-    },[authStatus, dispatch]);
+    },[isLoggedIn]);
 
     return(
         <div>

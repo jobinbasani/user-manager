@@ -1,32 +1,43 @@
-import { getEmptyUser } from './../../api/api-types';
 import { User } from '../../api/api-types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import jwtDecode from 'jwt-decode';
 
-interface UserDetails {
+export interface UserDetails {
+    isLoggedIn:boolean
     userInfo: User;
-    loading: 'idle' | 'pending' | 'success' | 'failed';
 }
-
-const initialUserInfo: UserDetails = {
-                                        userInfo: getEmptyUser(), 
-                                        loading: 'idle'
-                                    };
-
 
 const userSlice = createSlice({
     name: 'user',
-    initialState: initialUserInfo,
+    initialState: ({
+        isLoggedIn:false,
+        userInfo: ({
+            firstName: '',
+            lastName: '',
+            userEmail: ''
+        }),
+    }),
     reducers: {
-        getUserDetails: (state: UserDetails, action: PayloadAction<UserDetails>) => {
-            let user: UserDetails = action.payload;
-            state.userInfo.firstName = user.userInfo.firstName;
-            state.userInfo.lastName = user.userInfo.lastName;
-            state.userInfo.userEmail = user.userInfo.userEmail;
-            localStorage.setItem("user", JSON.stringify(user));
-            state.loading = 'success';
+        setUserDetails: (state: UserDetails,action:PayloadAction<string>)=>{
+            const idTokenPattern = /id_token=([\w-]+\.[\w-]+\.[\w-]+)/ig;
+            const matches = idTokenPattern.exec(action.payload);
+            if (matches && matches.length > 1) {
+                state.isLoggedIn = true;
+                const decoded: any = jwtDecode(matches[1]);
+                if (decoded) {
+                    if (decoded["email"]) {
+                        state.userInfo.userEmail = decoded["email"]
+                    }
+                    if (decoded["given_name"] && decoded["family_name"]) {
+                        state.userInfo.firstName = decoded["given_name"];
+                        state.userInfo.lastName = decoded["family_name"];
+                    }
+                }
+            }
         }
     }
 });
 
-export const userActions = userSlice.actions;
-export default userSlice;
+export const {setUserDetails} = userSlice.actions;
+
+export default userSlice.reducer;

@@ -13,6 +13,7 @@ import Home from "./pages/public/Home";
 import Services from "./pages/public/Services";
 import {RootState} from './store/index';
 import Register from './pages/public/Register';
+import LandingPage from "./pages/public/LandingPage";
 
 const Router = () => {
   const isLoggedIn = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -28,7 +29,7 @@ const Router = () => {
           {path: "register", element: <Register/>},
           {path: "unauthorized", element: <Unauthorized/>},
           {path: "dashboard", element: isLoggedIn ? <Dashboard/> : <Navigate to="/home"/>},
-          {path: "*", element: isLoggedIn ? <Dashboard/> : <Navigate to="/home"/>},
+          {path: "*", element: <LandingPage/>},
         ]
     );
 };
