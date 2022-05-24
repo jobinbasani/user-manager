@@ -8,13 +8,13 @@ import Home from "./Home";
 export default function LandingPage(){
 
   const dispatch = useDispatch()
-  const userDetails:UserDetails = useSelector((state: RootState) => state.user);
+  const user:UserDetails = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     dispatch(setUserDetails(window.location.href));
   }, [dispatch]);
 
   return (
-      userDetails.isLoggedIn ? <Dashboard/> : <Home/>
+      user.isLoggedIn ? <Dashboard/> : <Home/>
   );
 }

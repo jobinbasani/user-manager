@@ -19,12 +19,10 @@ import classes from "./MainHeader.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import {logo} from '../../assets/images';
 import { RootState } from '../../store';
-import {resetAuthStatus} from '../../store/auth/auth-slice';
-import {UserDetails} from "../../store/user/user-slice";
+import {logoutUser, UserDetails} from "../../store/user/user-slice";
 
 const MainHeader = () => {
-    const authStatus = useSelector((state: RootState) => state.auth.isAuthenticated);
-    const userDetails:UserDetails = useSelector((state: RootState) => state.user);
+    const user:UserDetails = useSelector((state: RootState) => state.user);
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -47,7 +45,7 @@ const MainHeader = () => {
         setAnchorElUser(null);
         console.log("Menu Item: " + menuItem);
         if (menuItem.target.outerText.toLowerCase() === "logout") {
-          dispatch(resetAuthStatus());
+          dispatch(logoutUser());
           navigate("/home");
           return;
         }
@@ -58,12 +56,12 @@ const MainHeader = () => {
     };
 
     const profileMenu = () => {
-      if (userDetails.isLoggedIn) {
+      if (user.isLoggedIn) {
         return (
           <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open User Profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt= {userDetails!.userInfo.firstName + " " + userDetails!.userInfo.lastName}
+                  <Avatar alt= {user!.userInfo.firstName + " " + user!.userInfo.lastName}
                           src="/static/images/avatar/2.jpg"
                           sx={{ bgcolor: indigo[500] }}
                           className={classes["app-avatar"]}/>
@@ -102,18 +100,18 @@ const MainHeader = () => {
     const mainHeaderMenu = (item: NavMenuItemType, isDropdown: boolean) => {
       const menuClassName = isDropdown? "nav-link-menu":"nav-link";
       if (item.navLink.startsWith("https:") ) {
-        if (!authStatus)
+        if (!user.isLoggedIn)
           return isDropdown ? getDropdownLoginUrl(item, menuClassName) : getLoginUrl(item, menuClassName);
         else
           return null;
       } else if (item.isPrivate) {
-          if (authStatus) {
+          if (user.isLoggedIn) {
             return !isDropdown? menuLinkItem(item) : menuDropdownItem(item);
           } else {
             return null;
           }
       } else {
-        return !isDropdown? menuLinkItem(item) : menuDropdownItem(item);;
+        return !isDropdown? menuLinkItem(item) : menuDropdownItem(item);
       }
     }
 
@@ -157,7 +155,7 @@ const MainHeader = () => {
     const welcomeSection = () => {
       return (
         <Typography variant="h6">
-          {(userDetails.isLoggedIn)? "Welcome " + userDetails?.userInfo.firstName : ""}
+          {(user.isLoggedIn)? "Welcome " + user?.userInfo.firstName : ""}
         </Typography>
       );
     }

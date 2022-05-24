@@ -4,13 +4,24 @@ import jwtDecode from 'jwt-decode';
 
 export interface UserDetails {
     isLoggedIn:boolean
+    accessToken:string
     userInfo: User;
+}
+
+function getTokenValueFromURL(param:string, inputString:string){
+    const tokenRegexp = new RegExp(param+"=([\\w-]+\\.[\\w-]+\\.[\\w-]+)", "ig");
+    const matches = tokenRegexp.exec(inputString);
+    if (matches && matches.length > 1) {
+        return matches[1];
+    }
+    return null;
 }
 
 const userSlice = createSlice({
     name: 'user',
     initialState: ({
         isLoggedIn:false,
+        accessToken:'',
         userInfo: ({
             firstName: '',
             lastName: '',
@@ -19,11 +30,11 @@ const userSlice = createSlice({
     }),
     reducers: {
         setUserDetails: (state: UserDetails,action:PayloadAction<string>)=>{
-            const idTokenPattern = /id_token=([\w-]+\.[\w-]+\.[\w-]+)/ig;
-            const matches = idTokenPattern.exec(action.payload);
-            if (matches && matches.length > 1) {
+            const idToken = getTokenValueFromURL("id_token",action.payload);
+            const accessToken = getTokenValueFromURL("access_token", action.payload);
+            if (idToken) {
                 state.isLoggedIn = true;
-                const decoded: any = jwtDecode(matches[1]);
+                const decoded: any = jwtDecode(idToken);
                 if (decoded) {
                     if (decoded["email"]) {
                         state.userInfo.userEmail = decoded["email"]
@@ -34,10 +45,20 @@ const userSlice = createSlice({
                     }
                 }
             }
+            if (accessToken) {
+                state.accessToken = accessToken;
+                localStorage.setItem("token", accessToken);
+            }
+        },
+        logoutUser: (state: UserDetails)=>{
+            state.isLoggedIn = false;
+            state.accessToken = '';
+            state.userInfo={firstName: "", lastName: "", userEmail: ""}
+            localStorage.removeItem("token");
         }
     }
 });
 
-export const {setUserDetails} = userSlice.actions;
+export const {setUserDetails, logoutUser} = userSlice.actions;
 
 export default userSlice.reducer;
