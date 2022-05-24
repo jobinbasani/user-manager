@@ -1,11 +1,13 @@
-import ComingSoon from "../../components/unspported/ComingSoon";
+import ComingSoon from '../../components/unspported/ComingSoon';
 
-
-const Services = () => {
-    return(
-        <div> <ComingSoon/> </div>
-    );
-
+function Services() {
+  return (
+    <div>
+      {' '}
+      <ComingSoon />
+      {' '}
+    </div>
+  );
 }
 
 export default Services;

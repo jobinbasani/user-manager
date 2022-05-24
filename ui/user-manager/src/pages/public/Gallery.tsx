@@ -1,11 +1,13 @@
-import ComingSoon from "../../components/unspported/ComingSoon";
+import ComingSoon from '../../components/unspported/ComingSoon';
 
-
-const Gallery = () => {
-    return(
-        <div> <ComingSoon /> </div>
-    );
-
+function Gallery() {
+  return (
+    <div>
+      {' '}
+      <ComingSoon />
+      {' '}
+    </div>
+  );
 }
 
 export default Gallery;

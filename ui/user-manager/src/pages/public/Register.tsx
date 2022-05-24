@@ -1,10 +1,9 @@
-import PrimaryApplicant from "../../components/registration/PrimaryApplicant";
+import PrimaryApplicant from '../../components/registration/PrimaryApplicant';
 
-
-const Register = () => {
-    return (
-        <PrimaryApplicant/>
-    );
+function Register() {
+  return (
+    <PrimaryApplicant />
+  );
 }
 
 export default Register;

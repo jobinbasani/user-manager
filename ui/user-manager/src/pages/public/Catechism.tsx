@@ -1,12 +1,11 @@
-import ComingSoon from "../../components/unspported/ComingSoon";
+import ComingSoon from '../../components/unspported/ComingSoon';
 
-const Catechism = () => {
-    return(
-        <div>
-            <ComingSoon />
-        </div>
-    );
-
+function Catechism() {
+  return (
+    <div>
+      <ComingSoon />
+    </div>
+  );
 }
 
 export default Catechism;

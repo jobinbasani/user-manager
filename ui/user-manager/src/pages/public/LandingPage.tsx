@@ -1,13 +1,12 @@
-import {useEffect} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {setUserDetails, UserDetails} from "../../store/user/user-slice";
-import {RootState} from "../../store";
-import Dashboard from "../private/Dashboard";
-import Home from "./Home";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserDetails, UserDetails } from '../../store/user/user-slice';
+import { RootState } from '../../store';
+import Dashboard from '../private/Dashboard';
+import Home from './Home';
 
-export default function LandingPage(){
-
-  const dispatch = useDispatch()
+export default function LandingPage() {
+  const dispatch = useDispatch();
   const user:UserDetails = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
@@ -15,6 +14,6 @@ export default function LandingPage(){
   }, [dispatch]);
 
   return (
-      user.isLoggedIn ? <Dashboard/> : <Home/>
+    user.isLoggedIn ? <Dashboard /> : <Home />
   );
 }

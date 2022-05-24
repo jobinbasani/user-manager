@@ -1,10 +1,12 @@
-import ComingSoon from "../../components/unspported/ComingSoon";
+import ComingSoon from '../../components/unspported/ComingSoon';
 
-const Committee = () => {
-    return(
-        <div><ComingSoon /> </div>
-    );
-
+function Committee() {
+  return (
+    <div>
+      <ComingSoon />
+      {' '}
+    </div>
+  );
 }
 
 export default Committee;
