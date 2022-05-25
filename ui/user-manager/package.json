@@ -35,17 +35,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "prepare": "cd ../../ && husky install ./ui/user-manager/.husky",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "openapi-gen": "scripts/generate-openapi-bindings.sh"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npx lint-staged"
-    }
   },
   "lint-staged": {
     "{src,test}/**/*.{js,ts,jsx,tsx}": [
