@@ -39,7 +39,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix"
+    "lint-and-fix": "eslint . --ext .ts --fix",
+    "openapi-gen": "scripts/generate-openapi-bindings.sh"
   },
   "husky": {
     "hooks": {
