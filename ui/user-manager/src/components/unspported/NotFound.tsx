@@ -5,24 +5,24 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import classes from './NotFound.module.css';
 
-const NotFound = () => {
-    return(
-        <Card className={classes["notfound-container"]}>
-            <Container maxWidth="sm">
-                <CardMedia>
-                    <Typography gutterBottom variant="h5" component="div">
-                        Page Not Found
-                    </Typography>
-                </CardMedia>
-                <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                        Looks like you followed a broken link or entered a URL that doesn't exist on this site.
-                    </Typography>
-                </CardContent>
-            </Container>
-        </Card>
-    );
-
+function NotFound() {
+  return (
+    <Card className={classes['notfound-container']}>
+      <Container maxWidth="sm">
+        <CardMedia>
+          <Typography gutterBottom variant="h5" component="div">
+            Page Not Found
+          </Typography>
+        </CardMedia>
+        <CardContent>
+          <Typography variant="body2" color="text.secondary">
+            {/* eslint-disable-next-line max-len */}
+            Looks like you followed a broken link or entered a URL that doesn&apos;t exist on this site.
+          </Typography>
+        </CardContent>
+      </Container>
+    </Card>
+  );
 }
 
 export default NotFound;

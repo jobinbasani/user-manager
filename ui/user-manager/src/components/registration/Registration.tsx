@@ -1,10 +1,9 @@
-
-const Registration = () => {
-    return (
-        <div>
-            Registration form
-        </div>
-    )
+function Registration() {
+  return (
+    <div>
+      Registration form
+    </div>
+  );
 }
 
 export default Registration;
