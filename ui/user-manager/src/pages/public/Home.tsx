@@ -13,6 +13,8 @@ function Home() {
         <Grid item xs={4}>
           <Card elevation={3}>xs=4</Card>
         </Grid>
+              <Grid item xs={4}><Card elevation={3}>xs=4</Card>
+ </Grid>
       </Grid>
     </div>
   );
