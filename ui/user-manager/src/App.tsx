@@ -1,19 +1,28 @@
-import { BrowserRouter } from 'react-router-dom';
-import Router from './routes';
-
 import './App.css';
-import MainHeader from './components/layout/MainHeader';
-import Footer from './components/layout/Footer';
+
+import { Box, Stack } from '@mui/material';
+import Sidebar from './components/layout/Sidebar';
+import Feed from './components/layout/Feed';
+import Rightbar from './components/layout/Rightbar';
+import Navbar from './components/layout/Navbar';
 
 function App() {
   return (
-    <div className="App">
+  /*     <div className="App">
       <BrowserRouter>
         <MainHeader />
         <Router />
         <Footer />
       </BrowserRouter>
-    </div>
+    </div> */
+    <Box>
+      <Navbar />
+      <Stack direction="row" spacing={2} justifyContent="space-between">
+        <Sidebar />
+        <Feed />
+        <Rightbar />
+      </Stack>
+    </Box>
   );
 }
 
