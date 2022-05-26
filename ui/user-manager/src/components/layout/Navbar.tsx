@@ -19,10 +19,12 @@ export default function Navbar() {
   return (
     <AppBar position="sticky">
       <StyledToolbar>
-        <ChurchIcon sx={{ display: { xs: 'block', sm: 'none' } }} />
-        <Typography variant="h6" sx={{ display: { xs: 'none', sm: 'block' } }}>
-          Holy Family Catholic Church
-        </Typography>
+        <ChurchIcon />
+        <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
+          <Typography variant="h6" sx={{ display: { xs: 'none', sm: 'block' } }}>
+            Holy Family Catholic Church
+          </Typography>
+        </Box>
         <UserInfo>
           <Typography sx={{ display: { xs: 'none', sm: 'block' } }}>Jobin Basani</Typography>
           <Avatar>JB</Avatar>
