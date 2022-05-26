@@ -11,7 +11,9 @@ export default function ContactCard() {
       <ImageList>
         {ContactInfoItems.map((contact) => (
           <ImageListItem key={contact.key}>
-            <contact.Image />
+            <a href={contact.link} target="_blank" rel="noreferrer">
+              <contact.Image />
+            </a>
           </ImageListItem>
         ))}
       </ImageList>

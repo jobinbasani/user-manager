@@ -17,7 +17,7 @@ function App() {
     </div> */
     <Box>
       <Navbar />
-      <Stack direction="row" spacing={2} justifyContent="space-between">
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between">
         <Sidebar />
         <Feed />
         <Rightbar />

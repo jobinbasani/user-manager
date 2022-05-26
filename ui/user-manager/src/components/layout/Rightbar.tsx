@@ -1,12 +1,19 @@
-import { Box } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import ContactCard from '../contact/ContactCard';
+
+const RightbarBox = styled(Box)(({ theme }) => ({
+  position: 'static',
+  [theme.breakpoints.up('sm')]: {
+    position: 'fixed',
+  },
+}));
 
 export default function Rightbar() {
   return (
-    <Box flex={2} p={2} sx={{ display: { xs: 'none', sm: 'block' } }}>
-      <Box position="fixed">
+    <Box flex={2} p={2}>
+      <RightbarBox>
         <ContactCard />
-      </Box>
+      </RightbarBox>
     </Box>
   );
 }
