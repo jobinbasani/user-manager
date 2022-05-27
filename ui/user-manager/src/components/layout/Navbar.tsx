@@ -55,7 +55,7 @@ export default function Navbar() {
       <StyledToolbar>
         <ChurchIcon />
         <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
-          <Typography variant="h6" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Typography variant="h6" sx={{ fontSize: { xs: 12, sm: 16 } }}>
             Holy Family Catholic Church
           </Typography>
         </Box>
