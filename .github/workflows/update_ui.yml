@@ -39,11 +39,19 @@ jobs:
         branchName=${GITHUB_REF##*/}
         callbackUrlPath=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CallbackUrlPath'].OutputValue" | jq -r '.[0]')
         partialSignInUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CognitoSignInURL'].OutputValue" | jq -r '.[0]')
+        partialSignUpUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CognitoSignUpURL'].OutputValue" | jq -r '.[0]')
+        partialLogoutUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CognitoLogoutURL'].OutputValue" | jq -r '.[0]')
         cdnUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnUrl'].OutputValue" | jq -r '.[0]')
         callbackUrl=$(echo "${cdnUrl}${branchName}${callbackUrlPath}" | jq -rR @uri)
         completeSignInUrl="${partialSignInUrl}${callbackUrl}"
         completeSignInUrl=${completeSignInUrl//&/\\&}
+        completeSignUpUrl="${partialSignUpUrl}${callbackUrl}"
+        completeSignUpUrl=${completeSignUpUrl//&/\\&}
+        completeLogoutUrl="${partialLogoutUrl}${callbackUrl}"
+        completeLogoutUrl=${completeLogoutUrl//&/\\&}
         sed -i "s@LOGIN_URL.*=.*['].*['];@LOGIN_URL = '$completeSignInUrl';@g" src/constants/ApiConstants.ts
+        sed -i "s@SIGNUP_URL.*=.*['].*['];@SIGNUP_URL = '$completeSignUpUrl';@g" src/constants/ApiConstants.ts
+        sed -i "s@SIGNOUT_URL.*=.*['].*['];@SIGNOUT_URL = '$completeLogoutUrl';@g" src/constants/ApiConstants.ts
     - name: Build app
       run: |
         npm ci
