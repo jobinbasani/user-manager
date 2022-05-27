@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, UserDetails } from '../../store/user/user-slice';
 import { RootState } from '../../store';
-import Dashboard from '../private/Dashboard';
-import Home from './Home';
+import Feed from '../../components/layout/Feed';
+import MyAccount from '../private/MyAccount';
 
 export default function LandingPage() {
   const dispatch = useDispatch();
@@ -14,6 +14,6 @@ export default function LandingPage() {
   }, [dispatch]);
 
   return (
-    user.isLoggedIn ? <Dashboard /> : <Home />
+    user.isLoggedIn ? <MyAccount /> : <Feed />
   );
 }

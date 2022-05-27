@@ -3,6 +3,9 @@ import {
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ChurchIcon from '@mui/icons-material/Church';
+import { useSelector } from 'react-redux';
+import { UserDetails } from '../../store/user/user-slice';
+import { RootState } from '../../store';
 
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
@@ -45,6 +48,8 @@ function stringAvatar(name:string) {
 }
 
 export default function Navbar() {
+  const user:UserDetails = useSelector((state: RootState) => state.user);
+
   return (
     <AppBar position="sticky">
       <StyledToolbar>
@@ -54,10 +59,21 @@ export default function Navbar() {
             Holy Family Catholic Church
           </Typography>
         </Box>
-        <UserInfo>
-          <Typography sx={{ display: { xs: 'none', sm: 'block' } }}>Jobin Basani</Typography>
-          <Avatar {...stringAvatar('Jobin Basani')} />
-        </UserInfo>
+        {user?.isLoggedIn
+          && (
+            <UserInfo>
+              <Typography sx={{
+                display: {
+                  xs: 'none',
+                  sm: 'block',
+                },
+              }}
+              >
+                {`${user?.userInfo.firstName} ${user?.userInfo.lastName}`}
+              </Typography>
+              <Avatar {...stringAvatar(`${user?.userInfo.firstName} ${user?.userInfo.lastName}`)} />
+            </UserInfo>
+          )}
       </StyledToolbar>
     </AppBar>
   );
