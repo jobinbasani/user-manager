@@ -12,7 +12,6 @@ import Register from './pages/public/Register';
 import LandingPage from './pages/public/LandingPage';
 import Dashboard from './pages/private/Dashboard';
 import Feed from './components/layout/Feed';
-import Logout from './pages/private/Logout';
 import MyAccount from './pages/private/MyAccount';
 
 const Router = () => useRoutes(
@@ -28,7 +27,6 @@ const Router = () => useRoutes(
     { path: 'gallery', element: <Gallery /> },
     { path: 'register', element: <Register /> },
     { path: 'unauthorized', element: <Unauthorized /> },
-    { path: 'logout', element: <Logout /> },
     { path: '*', element: <LandingPage /> },
   ],
 );

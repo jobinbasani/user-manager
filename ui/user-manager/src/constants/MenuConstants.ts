@@ -8,7 +8,7 @@ import BookIcon from '@mui/icons-material/Book';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LoginIcon from '@mui/icons-material/Login';
-import { LOGIN_URL, SIGNUP_URL } from './ApiConstants';
+import { LOGIN_URL, SIGNOUT_URL, SIGNUP_URL } from './ApiConstants';
 
 export interface NavMenuItemType {
   key: string;
@@ -46,7 +46,7 @@ export const navMenuItems: Array<NavMenuItemType> = [
     key: '8', value: 'My Account', navLink: '/myaccount', isPrivate: false, Icon: AccountBoxIcon, visibility: 'loggedin',
   },
   {
-    key: '9', value: 'Logout', navLink: '/logout', isPrivate: false, Icon: LogoutIcon, visibility: 'loggedin',
+    key: '9', value: 'Logout', navLink: SIGNOUT_URL, isPrivate: false, Icon: LogoutIcon, visibility: 'loggedin',
   },
 ];
 

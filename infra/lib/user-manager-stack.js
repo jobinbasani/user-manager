@@ -372,11 +372,12 @@ class UserManagerStack extends cdk.Stack {
           implicitCodeGrant: true,
         },
         callbackUrls: [
-          'http://localhost:3000/callback',
           'http://localhost:3000/index.html',
           `https://${cloudfrontDistribution.distributionDomainName}/main/index.html`,
-          `https://${cloudfrontDistribution.distributionDomainName}/front-end/index.html`,
-          `https://${cloudfrontDistribution.distributionDomainName}/login-path/index.html`,
+        ],
+        logoutUrls: [
+          'http://localhost:3000/',
+          `https://${cloudfrontDistribution.distributionDomainName}/main/index.html`,
         ],
       },
       supportedIdentityProviders: [
