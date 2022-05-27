@@ -13,12 +13,14 @@ import LandingPage from './pages/public/LandingPage';
 import Dashboard from './pages/private/Dashboard';
 import Feed from './components/layout/Feed';
 import Logout from './pages/private/Logout';
+import MyAccount from './pages/private/MyAccount';
 
 const Router = () => useRoutes(
   [
     { path: '/', element: <Feed /> },
     { path: 'home', element: <Feed /> },
     { path: 'feed', element: <Feed /> },
+    { path: 'myaccount', element: <MyAccount /> },
     { path: 'dashboard', element: <Dashboard /> },
     { path: 'committee', element: <Committee /> },
     { path: 'services', element: <Services /> },
