@@ -34,7 +34,7 @@ export default function Footer() {
           bottom: 0,
           left: 0,
           right: 0,
-          display: { xs: 'block', sm: 'none' },
+          display: { xs: 'block', lg: 'none' },
         }}
         elevation={3}
       >
