@@ -1,12 +1,13 @@
 import './App.css';
 
-import { Box, Stack } from '@mui/material';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
+import {
+  Box, Stack,
+} from '@mui/material';
 import Sidebar from './components/layout/Sidebar';
 import Feed from './components/layout/Feed';
 import Rightbar from './components/layout/Rightbar';
 import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
 
 function App() {
   return (
@@ -26,9 +27,7 @@ function App() {
           <Rightbar />
         </Stack>
       </Box>
-      <Container sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ fontSize: 12, paddingBottom: 2 }}>&copy; Holy Family Syro Malabar Church</Typography>
-      </Container>
+      <Footer />
     </Box>
   );
 }
