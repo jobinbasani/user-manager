@@ -1,5 +1,18 @@
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import {
+  Avatar,
+  Box,
+  CardHeader,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+} from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import { RootState } from '../../store';
 
 export default function MyAccount() {
@@ -12,6 +25,36 @@ export default function MyAccount() {
   }, [isLoggedIn]);
 
   return (
-    <div>My Account</div>
+    <Box bgcolor="grey" flex={4} p={2}>
+      <Card>
+        <CardHeader title="My Family" />
+        <CardContent>
+          <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            {[0, 1, 2, 3].map((value) => {
+              const labelId = `checkbox-list-secondary-label-${value}`;
+              return (
+                <ListItem
+                  key={value}
+                  secondaryAction={(
+                    <InfoIcon />
+                  )}
+                  disablePadding
+                >
+                  <ListItemButton>
+                    <ListItemAvatar>
+                      <Avatar
+                        alt={`Avatar n°${value + 1}`}
+                        src={`/static/images/avatar/${value + 1}.jpg`}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
