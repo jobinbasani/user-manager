@@ -12,11 +12,13 @@ import Register from './pages/public/Register';
 import LandingPage from './pages/public/LandingPage';
 import Dashboard from './pages/private/Dashboard';
 import Feed from './components/layout/Feed';
+import Logout from './pages/private/Logout';
 
 const Router = () => useRoutes(
   [
     { path: '/', element: <Feed /> },
     { path: 'home', element: <Feed /> },
+    { path: 'feed', element: <Feed /> },
     { path: 'dashboard', element: <Dashboard /> },
     { path: 'committee', element: <Committee /> },
     { path: 'services', element: <Services /> },
@@ -24,6 +26,7 @@ const Router = () => useRoutes(
     { path: 'gallery', element: <Gallery /> },
     { path: 'register', element: <Register /> },
     { path: 'unauthorized', element: <Unauthorized /> },
+    { path: 'logout', element: <Logout /> },
     { path: '*', element: <LandingPage /> },
   ],
 );
