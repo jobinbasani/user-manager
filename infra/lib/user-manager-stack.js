@@ -6,6 +6,7 @@ const s3 = require('aws-cdk-lib/aws-s3');
 const cognito = require('aws-cdk-lib/aws-cognito');
 const lambda = require('aws-cdk-lib/aws-lambda');
 const cloudfrontOrigins = require('aws-cdk-lib/aws-cloudfront-origins');
+const s3Deploy = require('aws-cdk-lib/aws-s3-deployment');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
 const { GoFunction } = require('@aws-cdk/aws-lambda-go-alpha');
 
@@ -251,6 +252,29 @@ class UserManagerStack extends cdk.Stack {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
+    new s3Deploy.BucketDeployment(this, 'DeployErrorPage', {
+      sources: [s3Deploy.Source.data('onerror.html', `
+      <!DOCTYPE html>
+      <html>
+          <head>
+              <title>Redirecting</title>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+              <script type="text/javascript">
+              function redirect() {
+                  window.location.replace(window.location.origin);
+              }
+              window.onload = redirect;
+              </script>
+          </head>
+          <body>
+          
+          </body>
+      </html>
+      `)],
+      destinationBucket: userManagerS3Bucket,
+      destinationKeyPrefix: 'errorpage',
+    });
+
     const bucketName = new cdk.CfnOutput(this, 'WebAppBucketName', {
       value: userManagerS3Bucket.bucketName,
       description: 'S3 Bucket that holds the web application',
@@ -329,6 +353,12 @@ class UserManagerStack extends cdk.Stack {
           eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
         }],
       },
+      errorResponses: [
+        {
+          responsePagePath: '/errorpage/onerror.html',
+          httpStatus: 403,
+        },
+      ],
     });
 
     const cachePolicy = new cloudfront.CachePolicy(this, 'UserManagerApiCachePolicy', {
