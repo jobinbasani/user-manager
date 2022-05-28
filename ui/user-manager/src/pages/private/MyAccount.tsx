@@ -14,10 +14,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
-import { AxiosResponse } from 'axios';
 import { RootState } from '../../store';
 import { setFamilyDetails } from '../../store/family/family-slice';
-import { Configuration, FamilyManagementApi, UserData } from '../../generated-sources/openapi';
+import { getFamilyManagementAPI } from '../../api/api';
 
 export default function MyAccount() {
   const dispatch = useDispatch();
@@ -33,12 +32,7 @@ export default function MyAccount() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const familyAPI = new FamilyManagementApi(new Configuration({
-        basePath: 'https://d2a7fg2ao5drlg.cloudfront.net',
-        accessToken: user.accessToken,
-      }));
-      const familyDetails: AxiosResponse<Array<UserData>> = await familyAPI.getUserFamily();
-      console.log(familyDetails);
+      const familyDetails = await getFamilyManagementAPI(user.accessToken).getUserFamily();
       dispatch(setFamilyDetails(familyDetails.data));
     };
     if (user.isLoggedIn) {

@@ -1,23 +1,17 @@
-import axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
+import { Configuration, FamilyManagementApi, UserManagementApi } from '../generated-sources/openapi';
 import { API_URL } from '../constants/ApiConstants';
-import { authHeader } from './auth-header';
 
-const getApiHeader = (): AxiosRequestConfig => {
-  const apiHeader: AxiosRequestHeaders = authHeader();
-  const requestConfig: AxiosRequestConfig = { headers: apiHeader };
-
-  return requestConfig;
-};
-
-/** Get user details */
-// eslint-disable-next-line import/prefer-default-export
-export const getUserDetails = async () => {
-  const header = getApiHeader();
-  console.dir(header);
-  axios.get(`${API_URL}user/profile`, header).then((response) => {
-    console.log(response);
-    return response;
-  }).catch((error) => {
-    console.log(error);
+function getApiConfig(accessToken:string):Configuration {
+  return new Configuration({
+    basePath: API_URL,
+    accessToken,
   });
-};
+}
+
+export function getFamilyManagementAPI(accessToken:string):FamilyManagementApi {
+  return new FamilyManagementApi(getApiConfig(accessToken));
+}
+
+export function getUserManagementAPI(accessToken:string):UserManagementApi {
+  return new UserManagementApi(getApiConfig(accessToken));
+}

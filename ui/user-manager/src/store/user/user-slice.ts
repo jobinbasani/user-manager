@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import jwtDecode from 'jwt-decode';
-import { User } from '../../api/api-types';
+
+export interface User {
+  userEmail: string;
+  firstName: string;
+  lastName: string;
+}
 
 export interface UserDetails {
   isLoggedIn: boolean
