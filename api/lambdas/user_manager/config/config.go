@@ -34,6 +34,10 @@ func Configure(ctx context.Context) *Config {
 	if err != nil {
 		panic(err)
 	}
+	_, err = config.JwkCache.Get(ctx)
+	if err != nil {
+		panic(err)
+	}
 	config.AwsConfig, err = awsconfig.LoadDefaultConfig(ctx, awsconfig.WithEndpointResolverWithOptions(aws.EndpointResolverWithOptionsFunc(
 		func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 			if config.DynamoDBEndpointURL != nil && service == dynamodb.ServiceID {

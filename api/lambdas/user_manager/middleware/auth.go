@@ -32,7 +32,7 @@ func DoAuth(ctx context.Context, config *config.Config) func(http.Handler) http.
 				http.Error(w, "Invalid token", http.StatusForbidden)
 				return
 			}
-			ctx := context.WithValue(r.Context(), util.UserIDContextKey, t.Subject())
+			ctx := context.WithValue(r.Context(), util.UserAccessTokenParsedContextKey, t)
 			ctx = context.WithValue(ctx, util.UserAccessTokenContextKey, token)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

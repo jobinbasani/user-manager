@@ -2,20 +2,21 @@ package util
 
 import (
 	"context"
+	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
 // ContextKey can be used as a key to add values to Context
 type ContextKey string
 
-// UserIDContextKey is the key used to set the user id in Context
-const UserIDContextKey = "UserInfo"
-
 // UserAccessTokenContextKey is the key used to set the user access token in Context
 const UserAccessTokenContextKey = "UserAccessToken"
 
+// UserAccessTokenParsedContextKey is the Go representation of the access token
+const UserAccessTokenParsedContextKey = "UserAccessTokenParsed"
+
 func GetUserIDFromContext(ctx context.Context) string {
-	userID := ctx.Value(UserIDContextKey).(string)
-	return userID
+	token := ctx.Value(UserAccessTokenParsedContextKey).(jwt.Token)
+	return token.Subject()
 }
 
 func GetUserAccessTokenFromContext(ctx context.Context) string {
