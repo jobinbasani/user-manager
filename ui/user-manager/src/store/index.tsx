@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import user from './user/user-slice';
+import family from './family/family-slice';
 
 const store = configureStore({
   reducer: {
     user,
+    family,
   },
 });
 

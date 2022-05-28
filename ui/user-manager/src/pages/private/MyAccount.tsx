@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import {
   Avatar,
@@ -8,34 +8,58 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemButton,
-  ListItemText,
+  ListItemText, Skeleton,
 } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import EditIcon from '@mui/icons-material/Edit';
 import Button from '@mui/material/Button';
+import { AxiosResponse } from 'axios';
 import { RootState } from '../../store';
+import { setFamilyDetails } from '../../store/family/family-slice';
+import { Configuration, FamilyManagementApi, UserData } from '../../generated-sources/openapi';
 
 export default function MyAccount() {
-  const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
+  const dispatch = useDispatch();
+
+  const user = useSelector((state: RootState) => state.user);
+  const family = useSelector((state: RootState) => state.family);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (user) {
       window.history.replaceState(null, '', '/myaccount');
     }
-  }, [isLoggedIn]);
+  }, [user]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const familyAPI = new FamilyManagementApi(new Configuration({
+        basePath: 'https://d2a7fg2ao5drlg.cloudfront.net',
+        accessToken: user.accessToken,
+      }));
+      const familyDetails: AxiosResponse<Array<UserData>> = await familyAPI.getUserFamily();
+      console.log(familyDetails);
+      dispatch(setFamilyDetails(familyDetails.data));
+    };
+    if (user.isLoggedIn) {
+      fetchData();
+    }
+  }, [dispatch, user]);
 
   return (
     <Box bgcolor="grey" flex={4} p={2}>
       <Card>
         <CardHeader title="My Family" />
         <CardContent>
+
+          {family.isLoading
+          && <Skeleton variant="rectangular" />}
           <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-            {[0, 1, 2, 3].map((value) => {
-              const labelId = `checkbox-list-secondary-label-${value}`;
+            {family.members.map((member, idx) => {
+              const labelId = `checkbox-list-secondary-label-${idx}`;
               return (
                 <ListItem
-                  key={value}
+                  key={member.firstName}
                   secondaryAction={(
                     <EditIcon />
                   )}
@@ -44,11 +68,11 @@ export default function MyAccount() {
                   <ListItemButton>
                     <ListItemAvatar>
                       <Avatar
-                        alt={`Avatar n°${value + 1}`}
-                        src={`/static/images/avatar/${value + 1}.jpg`}
+                        alt={`Avatar n°${idx}`}
+                        src={`/static/images/avatar/${idx}.jpg`}
                       />
                     </ListItemAvatar>
-                    <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+                    <ListItemText id={labelId} primary={`${member.firstName} ${member.lastName}`} />
                   </ListItemButton>
                 </ListItem>
               );

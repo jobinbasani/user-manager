@@ -50,15 +50,9 @@ const userSlice = createSlice({
         localStorage.setItem('token', accessToken);
       }
     },
-    logoutUser: (state: UserDetails) => {
-      state.isLoggedIn = false;
-      state.accessToken = '';
-      state.userInfo = { firstName: '', lastName: '', userEmail: '' };
-      localStorage.removeItem('token');
-    },
   },
 });
 
-export const { setUserDetails, logoutUser } = userSlice.actions;
+export const { setUserDetails } = userSlice.actions;
 
 export default userSlice.reducer;
