@@ -395,12 +395,12 @@ class UserManagerStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'CognitoSignUpURL', {
       // eslint-disable-next-line max-len
-      value: `${domain.baseUrl()}/oauth2/signup?client_id=${userPoolClient.userPoolClientId}&scope=aws.cognito.signin.user.admin+openid&response_type=token&redirect_uri=`,
+      value: `${domain.baseUrl()}/signup?client_id=${userPoolClient.userPoolClientId}&scope=aws.cognito.signin.user.admin+openid&response_type=token&redirect_uri=`,
       description: 'Signup URL',
     });
 
     new cdk.CfnOutput(this, 'CognitoLogoutURL', {
-      value: `${domain.baseUrl()}/oauth2/logout?client_id=${userPoolClient.userPoolClientId}&logout_uri=`,
+      value: `${domain.baseUrl()}/logout?client_id=${userPoolClient.userPoolClientId}&logout_uri=`,
       description: 'Logout URL',
     });
 
