@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import {
   Avatar,
-  Box,
+  Box, CardActions,
   CardHeader,
   List,
   ListItem,
@@ -10,9 +10,10 @@ import {
   ListItemButton,
   ListItemText,
 } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import EditIcon from '@mui/icons-material/Edit';
+import Button from '@mui/material/Button';
 import { RootState } from '../../store';
 
 export default function MyAccount() {
@@ -36,7 +37,7 @@ export default function MyAccount() {
                 <ListItem
                   key={value}
                   secondaryAction={(
-                    <InfoIcon />
+                    <EditIcon />
                   )}
                   disablePadding
                 >
@@ -54,6 +55,9 @@ export default function MyAccount() {
             })}
           </List>
         </CardContent>
+        <CardActions>
+          <Button size="small">Add Member</Button>
+        </CardActions>
       </Card>
     </Box>
   );
