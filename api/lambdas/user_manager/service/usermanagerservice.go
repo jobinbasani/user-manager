@@ -13,6 +13,7 @@ import (
 type UserManagerService struct {
 	openapi.UserManagementApiService
 	openapi.FamilyManagementApiService
+	openapi.AdminApiService
 	config      *config.Config
 	authService AuthService
 	dataService DataService
@@ -59,6 +60,13 @@ func (u *UserManagerService) GetUserFamily(ctx context.Context) (openapi.ImplRes
 	return openapi.ImplResponse{
 		Code: http.StatusOK,
 		Body: members,
+	}, nil
+}
+
+func (u *UserManagerService) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (openapi.ImplResponse, error) {
+	return openapi.ImplResponse{
+		Code: http.StatusCreated,
+		Body: "announcement",
 	}, nil
 }
 

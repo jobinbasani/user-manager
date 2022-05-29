@@ -80,6 +80,34 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/announcements:
+    post:
+      operationId: addAnnouncement
+      summary: Add a new announcement
+      requestBody:
+        description: Announcement details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Announcement'
+      tags:
+        - Admin
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementId'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   responses:
@@ -358,10 +386,44 @@ components:
       items:
         $ref: '#/components/schemas/UserData'
 
+    Announcement:
+      type: object
+      required:
+        - id
+        - title
+        - description
+      properties:
+        id:
+          type: string
+          description: Announcement ID
+          example: 123e4567-e89b-12d3-a456-426614174000
+        title:
+          type: string
+          description: Announcement title
+          example: New Announcement
+        subtitle:
+          type: string
+          description: Announcement subtitle
+          example: Announcement short summary is here
+        description:
+          type: string
+          description: Announcement details
+          example: Announcement details are here - Lorem Ipsum
+
     FamilyId:
       type: object
       properties:
         familyId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+
+    AnnouncementId:
+      type: object
+      required:
+        - id
+      properties:
+        id:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000

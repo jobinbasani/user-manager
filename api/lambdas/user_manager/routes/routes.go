@@ -24,8 +24,9 @@ func GetRoutes(ctx context.Context, cfg *config.Config) *mux.Router {
 
 	familyManagementAPIController := openapi.NewFamilyManagementApiController(UserManagementAPIService)
 	userManagementAPIController := openapi.NewUserManagementApiController(UserManagementAPIService)
+	adminAPIController := openapi.NewAdminApiController(UserManagementAPIService)
 
-	r := openapi.NewRouter(userManagementAPIController, familyManagementAPIController)
+	r := openapi.NewRouter(userManagementAPIController, familyManagementAPIController, adminAPIController)
 
 	r.Use(middleware.DoAuth(ctx, cfg))
 	r.MethodNotAllowedHandler = methodNotAllowedHandler()
