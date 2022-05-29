@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import EditIcon from '@mui/icons-material/Edit';
+import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
@@ -84,7 +85,7 @@ export default function FamilyDetails() {
         </List>
       </CardContent>
       <CardActions>
-        <Button size="small">Add Member</Button>
+        <Button size="small" startIcon={<AddReactionIcon />} sx={{ marginLeft: 'auto' }}>Add Member</Button>
       </CardActions>
     </Card>
   );
