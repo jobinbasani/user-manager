@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
@@ -68,8 +70,8 @@ func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData,
 		return nil, err
 	}
 	for i := range users {
-		users[i].FirstName = strings.ToTitle(strings.ToLower(users[i].FirstName))
-		users[i].LastName = strings.ToTitle(strings.ToLower(users[i].LastName))
+		users[i].FirstName = cases.Title(language.English).String(users[i].FirstName)
+		users[i].LastName = cases.Title(language.English).String(users[i].LastName)
 		users[i].DisplayName = users[i].FirstName + " " + users[i].LastName
 	}
 	return users, nil

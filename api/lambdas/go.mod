@@ -22,6 +22,7 @@ require (
 	github.com/stretchr/testify v1.7.1
 	github.com/urfave/cli/v2 v2.4.0
 	github.com/ztrue/shutdown v0.1.1
+	golang.org/x/text v0.3.7
 )
 
 require (
