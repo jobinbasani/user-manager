@@ -69,9 +69,10 @@ func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData,
 	if err != nil {
 		return nil, err
 	}
+	titleCaser := cases.Title(language.English)
 	for i := range users {
-		users[i].FirstName = cases.Title(language.English).String(users[i].FirstName)
-		users[i].LastName = cases.Title(language.English).String(users[i].LastName)
+		users[i].FirstName = titleCaser.String(users[i].FirstName)
+		users[i].LastName = titleCaser.String(users[i].LastName)
 		users[i].DisplayName = users[i].FirstName + " " + users[i].LastName
 	}
 	return users, nil
