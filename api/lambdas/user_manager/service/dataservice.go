@@ -67,6 +67,11 @@ func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData,
 	if err != nil {
 		return nil, err
 	}
+	for i := range users {
+		users[i].FirstName = strings.ToTitle(users[i].FirstName)
+		users[i].LastName = strings.ToTitle(users[i].LastName)
+		users[i].DisplayName = users[i].FirstName + " " + users[i].LastName
+	}
 	return users, nil
 }
 
