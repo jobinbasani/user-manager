@@ -17,6 +17,7 @@ import Button from '@mui/material/Button';
 import { RootState } from '../../store';
 import { setFamilyDetails } from '../../store/family/family-slice';
 import { getFamilyManagementAPI } from '../../api/api';
+import { stringAvatar } from '../../util/util';
 
 export default function MyAccount() {
   const dispatch = useDispatch();
@@ -61,9 +62,9 @@ export default function MyAccount() {
                 >
                   <ListItemButton>
                     <ListItemAvatar>
-                      <Avatar
-                        alt={`Avatar n°${idx}`}
-                        src={`/static/images/avatar/${idx}.jpg`}
+                      <Avatar {...stringAvatar(member.displayName
+                        ? member.displayName
+                        : member.firstName)}
                       />
                     </ListItemAvatar>
                     <ListItemText id={labelId} primary={`${member.firstName} ${member.lastName}`} />
