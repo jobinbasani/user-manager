@@ -41,7 +41,16 @@ export default function Footer() {
         <BottomNavigation
           showLabels
         >
-          <BottomNavigationAction label="Menu" icon={<MenuIcon />} onClick={toggleDrawer(true)} />
+          <BottomNavigationAction
+            sx={{
+              '& .MuiBottomNavigationAction-label': {
+                fontWeight: 'bold',
+              },
+            }}
+            label="Menu"
+            icon={<MenuIcon color="primary" />}
+            onClick={toggleDrawer(true)}
+          />
         </BottomNavigation>
         <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
           <Box

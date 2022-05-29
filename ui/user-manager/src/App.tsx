@@ -12,13 +12,6 @@ import Router from './routes';
 
 function App() {
   return (
-  /*     <div className="App">
-      <BrowserRouter>
-        <MainHeader />
-        <Router />
-        <Footer />
-      </BrowserRouter>
-    </div> */
     <Box>
       <BrowserRouter>
         <Navbar />
