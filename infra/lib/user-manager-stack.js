@@ -14,10 +14,9 @@ class UserManagerStack extends cdk.Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
-    const userTableName = 'UserDetails';
+    const userTableName = 'UserManagerData';
     const familyIndexName = 'familyIndex';
     const emailIndexName = 'emailIndex';
-    const subIndexName = 'subIndex';
 
     const userTable = new dynamodb.Table(this, id, {
       tableName: userTableName,
@@ -26,6 +25,10 @@ class UserManagerStack extends cdk.Stack {
       writeCapacity: 2,
       partitionKey: {
         name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: 'recType',
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -46,18 +49,6 @@ class UserManagerStack extends cdk.Stack {
       indexName: emailIndexName,
       partitionKey: {
         name: 'emailId',
-        type: dynamodb.AttributeType.STRING,
-      },
-      projectionType: dynamodb.ProjectionType.INCLUDE,
-      nonKeyAttributes: ['familyId'],
-      readCapacity: 2,
-      writeCapacity: 2,
-    });
-
-    userTable.addGlobalSecondaryIndex({
-      indexName: subIndexName,
-      partitionKey: {
-        name: 'sub',
         type: dynamodb.AttributeType.STRING,
       },
       projectionType: dynamodb.ProjectionType.INCLUDE,
@@ -154,7 +145,6 @@ class UserManagerStack extends cdk.Stack {
         USERMANAGER_TABLE_NAME: userTable.tableName,
         USERMANAGER_FAMILY_INDEX_NAME: familyIndexName,
         USERMANAGER_EMAIL_INDEX_NAME: emailIndexName,
-        USERMANAGER_SUB_INDEX_NAME: subIndexName,
       },
     });
 

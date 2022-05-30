@@ -20,10 +20,14 @@ import (
 
 const (
 	idAttribute       = "id"
+	recTypeAttribute  = "recType"
 	familyIdAttribute = "familyId"
 	emailIdAttribute  = "emailId"
 	infoAttribute     = "info"
+	userRecType       = "USER"
 )
+
+var titleCaser = cases.Title(language.English)
 
 type DataService interface {
 	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
@@ -69,12 +73,6 @@ func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData,
 	if err != nil {
 		return nil, err
 	}
-	titleCaser := cases.Title(language.English)
-	for i := range users {
-		users[i].FirstName = titleCaser.String(users[i].FirstName)
-		users[i].LastName = titleCaser.String(users[i].LastName)
-		users[i].DisplayName = users[i].FirstName + " " + users[i].LastName
-	}
 	return users, nil
 }
 
@@ -101,7 +99,13 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		}
 		for _, memberID := range memberIDs {
 			statements = append(statements, types.BatchStatementRequest{
-				Statement: aws.String(fmt.Sprintf(`DELETE FROM "%s" WHERE "%s" = '%s'`, d.cfg.UserDataTableName, idAttribute, memberID)),
+				Statement: aws.String(fmt.Sprintf(`DELETE FROM "%s" WHERE "%s" = '%s' and "%s" = '%s'`,
+					d.cfg.UserDataTableName,
+					idAttribute,
+					memberID,
+					recTypeAttribute,
+					userRecType,
+				)),
 			})
 		}
 	}
@@ -115,16 +119,21 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		emails := make(stringSet)
 		emails.add(user.Email)
 		emails.add(u.Email)
+		u.FirstName = d.titleCase(u.FirstName)
+		u.LastName = d.titleCase(u.LastName)
+		u.DisplayName = u.FirstName + " " + u.LastName
 		userDataJson, err := json.Marshal(u)
 		if err != nil {
 			return openapi.FamilyId{}, err
 		}
 		statements = append(statements, types.BatchStatementRequest{
 			Statement: aws.String(fmt.Sprintf(
-				`INSERT INTO "%s" VALUE {'%s' : '%s','%s' : '%s', '%s' : '%s', '%s' : '%s'}`,
+				`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s'}`,
 				d.cfg.UserDataTableName,
 				idAttribute,
 				uuid.New().String(),
+				recTypeAttribute,
+				userRecType,
 				familyIdAttribute,
 				*familyID,
 				emailIdAttribute,
@@ -162,10 +171,12 @@ func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string)
 	for i, id := range ids {
 		statements[i] = types.BatchStatementRequest{
 			Statement: aws.String(fmt.Sprintf(
-				`SELECT * FROM "%s" WHERE "%s" = '%s'`,
+				`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
 				d.cfg.UserDataTableName,
 				idAttribute,
 				id,
+				recTypeAttribute,
+				userRecType,
 			)),
 		}
 	}
@@ -256,6 +267,10 @@ func (d DynamoDBService) getStringValue(attrMap map[string]types.AttributeValue,
 		}
 	}
 	return nil
+}
+
+func (d DynamoDBService) titleCase(s string) string {
+	return strings.TrimSpace(titleCaser.String(s))
 }
 
 func NewDataService(cfg *config.Config, authService AuthService) DataService {

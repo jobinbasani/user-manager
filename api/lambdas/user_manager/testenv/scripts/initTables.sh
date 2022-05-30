@@ -7,21 +7,13 @@ if [ "$tblCount" -eq "0" ]; then
    awslocal dynamodb create-table \
     --table-name UserDetails \
     --attribute-definitions AttributeName=id,AttributeType=S \
+                            AttributeName=recType,AttributeType=S \
                             AttributeName=emailId,AttributeType=S \
-                            AttributeName=sub,AttributeType=S \
                             AttributeName=familyId,AttributeType=S \
-    --key-schema AttributeName=id,KeyType=HASH \
+    --key-schema AttributeName=id,KeyType=HASH AttributeName=recType,KeyType=RANGE \
     --billing-mode PAY_PER_REQUEST \
     --global-secondary-indexes \
             "[
-                {
-                    \"IndexName\": \"subIndex\",
-                    \"KeySchema\": [{\"AttributeName\":\"sub\",\"KeyType\":\"HASH\"}],
-                    \"Projection\":{
-                        \"ProjectionType\":\"INCLUDE\",
-                        \"NonKeyAttributes\":[\"familyId\"]
-                    }
-                },
                 {
                     \"IndexName\": \"emailIndex\",
                     \"KeySchema\": [{\"AttributeName\":\"emailId\",\"KeyType\":\"HASH\"}],
