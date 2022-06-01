@@ -1,7 +1,7 @@
 import Card from '@mui/material/Card';
 import {
   Avatar, CardActions,
-  CardHeader, Chip,
+  CardHeader, Chip, Collapse,
   List,
   ListItem,
   ListItemAvatar,
@@ -20,6 +20,7 @@ import { stringAvatar } from '../../util/util';
 import { RootState } from '../../store';
 import { getFamilyManagementAPI } from '../../api/api';
 import { setFamilyDetails } from '../../store/family/family-slice';
+import AddFamilyMember from '../form/AddFamilyMember';
 
 export default function FamilyDetails() {
   const dispatch = useDispatch();
@@ -27,6 +28,11 @@ export default function FamilyDetails() {
   const family = useSelector((state: RootState) => state.family);
   const [isLoading, setLoading] = useState(false);
   const [hasNoMembers, setHasNoMembers] = useState(false);
+  const [formVisible, setFormVisible] = useState(false);
+
+  const handleAddMemberClick = () => {
+    setFormVisible(!formVisible);
+  };
 
   useEffect(() => {
     if (user) {
@@ -88,8 +94,13 @@ export default function FamilyDetails() {
         </List>
       </CardContent>
       <CardActions>
-        <Button size="small" startIcon={<AddReactionIcon />} sx={{ marginLeft: 'auto' }}>Add Member</Button>
+        <Button size="small" onClick={handleAddMemberClick} startIcon={<AddReactionIcon />} sx={{ marginLeft: 'auto' }}>Add Member</Button>
       </CardActions>
+      <Collapse in={formVisible} timeout="auto" unmountOnExit>
+        <CardContent>
+          <AddFamilyMember />
+        </CardContent>
+      </Collapse>
     </Card>
   );
 }
