@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 interface Values {
   firstName: string;
   lastName: string;
+  middleName:string;
 }
 
 export default function AddFamilyMember() {
@@ -14,6 +15,7 @@ export default function AddFamilyMember() {
       initialValues={{
         firstName: '',
         lastName: '',
+        middleName: '',
       }}
       validate={(values) => {
         const errors: Partial<Values> = {};
@@ -39,6 +41,15 @@ export default function AddFamilyMember() {
             label="First Name"
             name="firstName"
             margin="dense"
+            variant="standard"
+          />
+          <br />
+          <Field
+            component={TextField}
+            label="Middle Name"
+            name="middleName"
+            margin="dense"
+            variant="standard"
           />
           <br />
           <Field
@@ -46,6 +57,7 @@ export default function AddFamilyMember() {
             label="Last Name"
             name="lastName"
             margin="dense"
+            variant="standard"
           />
           {isSubmitting && <LinearProgress />}
           <br />
