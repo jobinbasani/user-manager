@@ -53,10 +53,10 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
     post:
-      operationId: addUpdateUserFamily
-      summary: Add/update user family details
+      operationId: addFamilyMembers
+      summary: Add family members
       requestBody:
-        description: Array of family member user data
+        description: Array of family members
         required: true
         content:
           application/json:
@@ -71,6 +71,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FamilyId'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      operationId: deleteFamilyMembers
+      summary: Delete family members
+      requestBody:
+        description: Array of family member id's
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyIdArray'
+      tags:
+        - Family Management
+      responses:
+        200:
+          description: deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyIdArray'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -385,6 +413,11 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/UserData'
+
+    FamilyIdArray:
+      type: array
+      items:
+        type: string
 
     Announcement:
       type: object

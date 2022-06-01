@@ -35,8 +35,8 @@ func (u *UserManagerService) GetUser(ctx context.Context) (openapi.ImplResponse,
 	}, nil
 }
 
-func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData []openapi.UserData) (openapi.ImplResponse, error) {
-	familyId, err := u.dataService.AddUpdateFamily(ctx, userData)
+func (u *UserManagerService) AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.ImplResponse, error) {
+	familyId, err := u.dataService.AddFamilyMembers(ctx, userData)
 	if err != nil {
 		log.Println(err)
 		return openapi.ImplResponse{
@@ -46,6 +46,19 @@ func (u *UserManagerService) AddUpdateUserFamily(ctx context.Context, userData [
 	return openapi.ImplResponse{
 		Code: http.StatusCreated,
 		Body: familyId,
+	}, nil
+}
+
+func (u *UserManagerService) DeleteFamilyMembers(ctx context.Context, memberIds []string) (openapi.ImplResponse, error) {
+	deletedMemberIds, err := u.dataService.DeleteFamilyMembers(ctx, memberIds)
+	if err != nil {
+		return openapi.ImplResponse{
+			Code: http.StatusInternalServerError,
+		}, err
+	}
+	return openapi.ImplResponse{
+		Code: http.StatusOK,
+		Body: deletedMemberIds,
 	}, nil
 }
 

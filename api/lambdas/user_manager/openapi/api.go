@@ -25,7 +25,8 @@ type AdminApiRouter interface {
 // The FamilyManagementApiRouter implementation should parse necessary information from the http request,
 // pass the data to a FamilyManagementApiServicer to perform the required actions, then write the service results to the http response.
 type FamilyManagementApiRouter interface {
-	AddUpdateUserFamily(http.ResponseWriter, *http.Request)
+	AddFamilyMembers(http.ResponseWriter, *http.Request)
+	DeleteFamilyMembers(http.ResponseWriter, *http.Request)
 	GetUserFamily(http.ResponseWriter, *http.Request)
 }
 
@@ -49,7 +50,8 @@ type AdminApiServicer interface {
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type FamilyManagementApiServicer interface {
-	AddUpdateUserFamily(context.Context, []UserData) (ImplResponse, error)
+	AddFamilyMembers(context.Context, []UserData) (ImplResponse, error)
+	DeleteFamilyMembers(context.Context, []string) (ImplResponse, error)
 	GetUserFamily(context.Context) (ImplResponse, error)
 }
 

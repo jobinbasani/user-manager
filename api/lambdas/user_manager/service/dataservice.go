@@ -31,7 +31,8 @@ var titleCaser = cases.Title(language.English)
 
 type DataService interface {
 	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
-	AddUpdateFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
+	AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
+	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
 }
 type DynamoDBService struct {
 	cfg         *config.Config
@@ -76,7 +77,7 @@ func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData,
 	return users, nil
 }
 
-func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
+func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
 	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
 	if err != nil {
 		return openapi.FamilyId{}, err
@@ -87,27 +88,10 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 	if len(userData) == 0 {
 		return openapi.FamilyId{}, errors.New("at least one user is needed in a family")
 	}
-	var statements []types.BatchStatementRequest
+	var statements []types.ParameterizedStatement
 	familyID, err := d.getFamilyIDForEmail(ctx, user.Email)
 	if err != nil {
 		return openapi.FamilyId{}, err
-	}
-	if familyID != nil {
-		memberIDs, err := d.getFamilyMemberIDs(ctx, *familyID)
-		if err != nil {
-			return openapi.FamilyId{}, err
-		}
-		for _, memberID := range memberIDs {
-			statements = append(statements, types.BatchStatementRequest{
-				Statement: aws.String(fmt.Sprintf(`DELETE FROM "%s" WHERE "%s" = '%s' and "%s" = '%s'`,
-					d.cfg.UserDataTableName,
-					idAttribute,
-					memberID,
-					recTypeAttribute,
-					userRecType,
-				)),
-			})
-		}
 	}
 	if familyID == nil {
 		familyID = aws.String(uuid.New().String())
@@ -126,7 +110,7 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 		if err != nil {
 			return openapi.FamilyId{}, err
 		}
-		statements = append(statements, types.BatchStatementRequest{
+		statements = append(statements, types.ParameterizedStatement{
 			Statement: aws.String(fmt.Sprintf(
 				`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s'}`,
 				d.cfg.UserDataTableName,
@@ -143,24 +127,55 @@ func (d DynamoDBService) AddUpdateFamily(ctx context.Context, userData []openapi
 			)),
 		})
 	}
-	batchExecutionOutput, err := d.client.BatchExecuteStatement(ctx, &dynamodb.BatchExecuteStatementInput{
-		Statements: statements,
+	_, err = d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
+		TransactStatements: statements,
 	})
 	if err != nil {
 		return openapi.FamilyId{}, err
 	}
-	var errorMessages []string
-	for _, o := range batchExecutionOutput.Responses {
-		if o.Error != nil {
-			errorMessages = append(errorMessages, *o.Error.Message)
-		}
-	}
-	if len(errorMessages) > 0 {
-		return openapi.FamilyId{}, errors.New(strings.Join(errorMessages, ", "))
-	}
+
 	return openapi.FamilyId{
 		FamilyId: *familyID,
 	}, nil
+}
+
+func (d DynamoDBService) DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error) {
+	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	if !user.IsApproved {
+		return nil, errors.New(fmt.Sprintf("%s is not an approved user", user.Email))
+	}
+	familyID, err := d.getFamilyIDForEmail(ctx, user.Email)
+	if err != nil {
+		return nil, err
+	}
+	if familyID == nil {
+		return nil, errors.New(fmt.Sprintf("unable to locate family for %s", user.Email))
+	}
+	statements := make([]types.ParameterizedStatement, len(memberIds))
+	for i, id := range memberIds {
+		statements[i] = types.ParameterizedStatement{
+			Statement: aws.String(fmt.Sprintf(`DELETE FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s' AND "%s" = '%s'`,
+				d.cfg.UserDataTableName,
+				idAttribute,
+				id,
+				recTypeAttribute,
+				userRecType,
+				familyIdAttribute,
+				*familyID,
+			)),
+		}
+	}
+	_, err = d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
+		TransactStatements: statements,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return memberIds, nil
 }
 
 func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {

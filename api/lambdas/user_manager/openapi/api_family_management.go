@@ -49,10 +49,16 @@ func NewFamilyManagementApiController(s FamilyManagementApiServicer, opts ...Fam
 func (c *FamilyManagementApiController) Routes() Routes {
 	return Routes{
 		{
-			"AddUpdateUserFamily",
+			"AddFamilyMembers",
 			strings.ToUpper("Post"),
 			"/api/v1/user/family",
-			c.AddUpdateUserFamily,
+			c.AddFamilyMembers,
+		},
+		{
+			"DeleteFamilyMembers",
+			strings.ToUpper("Delete"),
+			"/api/v1/user/family",
+			c.DeleteFamilyMembers,
 		},
 		{
 			"GetUserFamily",
@@ -63,8 +69,8 @@ func (c *FamilyManagementApiController) Routes() Routes {
 	}
 }
 
-// AddUpdateUserFamily - Add/update user family details
-func (c *FamilyManagementApiController) AddUpdateUserFamily(w http.ResponseWriter, r *http.Request) {
+// AddFamilyMembers - Add family members
+func (c *FamilyManagementApiController) AddFamilyMembers(w http.ResponseWriter, r *http.Request) {
 	userDataParam := []UserData{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
@@ -78,7 +84,27 @@ func (c *FamilyManagementApiController) AddUpdateUserFamily(w http.ResponseWrite
 			return
 		}
 	}
-	result, err := c.service.AddUpdateUserFamily(r.Context(), userDataParam)
+	result, err := c.service.AddFamilyMembers(r.Context(), userDataParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// DeleteFamilyMembers - Delete family members
+func (c *FamilyManagementApiController) DeleteFamilyMembers(w http.ResponseWriter, r *http.Request) {
+	requestBodyParam := []string{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&requestBodyParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	result, err := c.service.DeleteFamilyMembers(r.Context(), requestBodyParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

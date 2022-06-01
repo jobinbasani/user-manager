@@ -26,9 +26,9 @@ func NewFamilyManagementApiService() FamilyManagementApiServicer {
 	return &FamilyManagementApiService{}
 }
 
-// AddUpdateUserFamily - Add/update user family details
-func (s *FamilyManagementApiService) AddUpdateUserFamily(ctx context.Context, userData []UserData) (ImplResponse, error) {
-	// TODO - update AddUpdateUserFamily with the required logic for this service method.
+// AddFamilyMembers - Add family members
+func (s *FamilyManagementApiService) AddFamilyMembers(ctx context.Context, userData []UserData) (ImplResponse, error) {
+	// TODO - update AddFamilyMembers with the required logic for this service method.
 	// Add api_family_management_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 
 	//TODO: Uncomment the next line to return response Response(201, FamilyId{}) or use other options such as http.Ok ...
@@ -46,7 +46,30 @@ func (s *FamilyManagementApiService) AddUpdateUserFamily(ctx context.Context, us
 	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
 	//return Response(0, InternalServerError{}), nil
 
-	return Response(http.StatusNotImplemented, nil), errors.New("AddUpdateUserFamily method not implemented")
+	return Response(http.StatusNotImplemented, nil), errors.New("AddFamilyMembers method not implemented")
+}
+
+// DeleteFamilyMembers - Delete family members
+func (s *FamilyManagementApiService) DeleteFamilyMembers(ctx context.Context, requestBody []string) (ImplResponse, error) {
+	// TODO - update DeleteFamilyMembers with the required logic for this service method.
+	// Add api_family_management_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, []string{}) or use other options such as http.Ok ...
+	//return Response(200, []string{}), nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("DeleteFamilyMembers method not implemented")
 }
 
 // GetUserFamily - Get user family details
