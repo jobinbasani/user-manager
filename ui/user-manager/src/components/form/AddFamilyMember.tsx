@@ -4,32 +4,31 @@ import { LinearProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 
 interface Values {
-  email: string;
-  password: string;
+  firstName: string;
+  lastName: string;
 }
 
 export default function AddFamilyMember() {
   return (
     <Formik
       initialValues={{
-        email: '',
-        password: '',
+        firstName: '',
+        lastName: '',
       }}
       validate={(values) => {
         const errors: Partial<Values> = {};
-        if (!values.email) {
-          errors.email = 'Required';
-        } else if (
-          !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
-        ) {
-          errors.email = 'Invalid email address';
+        if (!values.firstName) {
+          errors.firstName = 'Required';
+        }
+        if (!values.lastName) {
+          errors.lastName = 'Required';
         }
         return errors;
       }}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {
           setSubmitting(false);
-          alert(JSON.stringify(values, null, 2));
+          console.log(values);
         }, 500);
       }}
     >
@@ -37,16 +36,16 @@ export default function AddFamilyMember() {
         <Form>
           <Field
             component={TextField}
-            name="email"
-            type="email"
-            label="Email"
+            label="First Name"
+            name="firstName"
+            margin="dense"
           />
           <br />
           <Field
             component={TextField}
-            type="password"
-            label="Password"
-            name="password"
+            label="Last Name"
+            name="lastName"
+            margin="dense"
           />
           {isSubmitting && <LinearProgress />}
           <br />
