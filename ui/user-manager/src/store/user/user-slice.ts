@@ -9,6 +9,8 @@ export interface User {
 
 export interface UserDetails {
   isLoggedIn: boolean
+  isApproved:boolean
+  isAdmin:boolean
   accessToken: string
   userInfo: User;
 }
@@ -26,6 +28,8 @@ const userSlice = createSlice({
   name: 'user',
   initialState: ({
     isLoggedIn: false,
+    isApproved: false,
+    isAdmin: false,
     accessToken: '',
     userInfo: ({
       firstName: '',
@@ -41,6 +45,12 @@ const userSlice = createSlice({
         state.isLoggedIn = true;
         const decoded: any = jwtDecode(idToken);
         if (decoded) {
+          if (decoded['custom:approved_user']) {
+            state.isApproved = decoded['custom:approved_user'] === 'true';
+          }
+          if (decoded['cognito:groups']) {
+            state.isAdmin = decoded['cognito:groups'].includes('admin');
+          }
           if (decoded.email) {
             state.userInfo.userEmail = decoded.email;
           }

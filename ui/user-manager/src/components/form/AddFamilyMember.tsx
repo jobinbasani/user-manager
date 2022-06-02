@@ -10,13 +10,14 @@ interface Values {
 }
 
 export default function AddFamilyMember() {
+  const initialValues:Values = {
+    firstName: '',
+    lastName: '',
+    middleName: '',
+  };
   return (
     <Formik
-      initialValues={{
-        firstName: '',
-        lastName: '',
-        middleName: '',
-      }}
+      initialValues={initialValues}
       validate={(values) => {
         const errors: Partial<Values> = {};
         if (!values.firstName) {
