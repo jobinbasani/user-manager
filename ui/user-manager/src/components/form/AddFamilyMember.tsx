@@ -4,9 +4,13 @@ import { LinearProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 
 interface Values {
-  firstName: string;
-  lastName: string;
-  middleName:string;
+  firstName: string
+  lastName: string
+  middleName:string
+  baptismalName:string
+  houseName:string
+  familyUnit:string
+  birthday:Date|null
 }
 
 export default function AddFamilyMember() {
@@ -14,7 +18,21 @@ export default function AddFamilyMember() {
     firstName: '',
     lastName: '',
     middleName: '',
+    baptismalName: '',
+    houseName: '',
+    familyUnit: '',
+    birthday: null,
   };
+
+  const textField = (label:string, name:string) => (
+    <Field
+      component={TextField}
+      label={label}
+      name={name}
+      margin="dense"
+      variant="standard"
+    />
+  );
   return (
     <Formik
       initialValues={initialValues}
@@ -37,29 +55,17 @@ export default function AddFamilyMember() {
     >
       {({ submitForm, isSubmitting }) => (
         <Form>
-          <Field
-            component={TextField}
-            label="First Name"
-            name="firstName"
-            margin="dense"
-            variant="standard"
-          />
+          {textField('First Name', 'firstName')}
           <br />
-          <Field
-            component={TextField}
-            label="Middle Name"
-            name="middleName"
-            margin="dense"
-            variant="standard"
-          />
+          {textField('Middle Name', 'middleName')}
           <br />
-          <Field
-            component={TextField}
-            label="Last Name"
-            name="lastName"
-            margin="dense"
-            variant="standard"
-          />
+          {textField('Last Name', 'lastName')}
+          <br />
+          {textField('Baptismal Name', 'baptismalName')}
+          <br />
+          {textField('House Name', 'houseName')}
+          <br />
+          {textField('Family Unit', 'familyUnit')}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
