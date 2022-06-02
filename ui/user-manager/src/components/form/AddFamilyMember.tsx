@@ -1,7 +1,10 @@
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
+import TextFieldMUI from '@mui/material/TextField';
 import { LinearProgress } from '@mui/material';
 import Button from '@mui/material/Button';
+import { DatePicker, LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 interface Values {
   firstName: string
@@ -10,7 +13,7 @@ interface Values {
   baptismalName:string
   houseName:string
   familyUnit:string
-  birthday:Date|null
+  birthday: number
 }
 
 export default function AddFamilyMember() {
@@ -21,7 +24,7 @@ export default function AddFamilyMember() {
     baptismalName: '',
     houseName: '',
     familyUnit: '',
-    birthday: null,
+    birthday: Date.now(),
   };
 
   const textField = (label:string, name:string) => (
@@ -53,7 +56,9 @@ export default function AddFamilyMember() {
         }, 500);
       }}
     >
-      {({ submitForm, isSubmitting }) => (
+      {({
+        errors, submitForm, isSubmitting, touched, values, setFieldValue,
+      }) => (
         <Form>
           {textField('First Name', 'firstName')}
           <br />
@@ -66,6 +71,24 @@ export default function AddFamilyMember() {
           {textField('House Name', 'houseName')}
           <br />
           {textField('Family Unit', 'familyUnit')}
+          <br />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+              onChange={(value) => setFieldValue('birthday', value, true)}
+              value={values.birthday}
+              renderInput={(params) => (
+                <TextFieldMUI
+                  error={Boolean(touched.birthday && errors.birthday)}
+                  helperText={touched.birthday && errors.birthday}
+                  label="Birthday"
+                  margin="dense"
+                  name="birthday"
+                  variant="standard"
+                  {...params}
+                />
+              )}
+            />
+          </LocalizationProvider>
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
