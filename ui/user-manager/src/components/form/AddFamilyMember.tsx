@@ -1,6 +1,5 @@
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
-import TextFieldMUI from '@mui/material/TextField';
 import { LinearProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
@@ -13,7 +12,8 @@ interface Values {
   baptismalName:string
   houseName:string
   familyUnit:string
-  birthday: number
+  birthday: string
+  baptism:string
 }
 
 export default function AddFamilyMember() {
@@ -24,7 +24,8 @@ export default function AddFamilyMember() {
     baptismalName: '',
     houseName: '',
     familyUnit: '',
-    birthday: Date.now(),
+    birthday: '',
+    baptism: '',
   };
 
   const textField = (label:string, name:string) => (
@@ -35,6 +36,25 @@ export default function AddFamilyMember() {
       margin="dense"
       variant="standard"
     />
+  );
+    // eslint-disable-next-line max-len
+  const dateField = (label:string, name:string, value:string, setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)) => (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DatePicker
+        label={label}
+        onChange={(v) => setFieldValue(name, v, true)}
+        value={value}
+        renderInput={(params) => (
+          <Field
+            component={TextField}
+            margin="dense"
+            name={name}
+            variant="standard"
+            {...params}
+          />
+        )}
+      />
+    </LocalizationProvider>
   );
   return (
     <Formik
@@ -47,6 +67,9 @@ export default function AddFamilyMember() {
         if (!values.lastName) {
           errors.lastName = 'Required';
         }
+        if (!values.birthday) {
+          errors.birthday = 'Required';
+        }
         return errors;
       }}
       onSubmit={(values, { setSubmitting }) => {
@@ -57,7 +80,7 @@ export default function AddFamilyMember() {
       }}
     >
       {({
-        errors, submitForm, isSubmitting, touched, values, setFieldValue,
+        submitForm, isSubmitting, values, setFieldValue,
       }) => (
         <Form>
           {textField('First Name', 'firstName')}
@@ -72,23 +95,9 @@ export default function AddFamilyMember() {
           <br />
           {textField('Family Unit', 'familyUnit')}
           <br />
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              onChange={(value) => setFieldValue('birthday', value, true)}
-              value={values.birthday}
-              renderInput={(params) => (
-                <TextFieldMUI
-                  error={Boolean(touched.birthday && errors.birthday)}
-                  helperText={touched.birthday && errors.birthday}
-                  label="Birthday"
-                  margin="dense"
-                  name="birthday"
-                  variant="standard"
-                  {...params}
-                />
-              )}
-            />
-          </LocalizationProvider>
+          {dateField('Date of Birth', 'birthday', values.birthday, setFieldValue)}
+          <br />
+          {dateField('Date of Baptism', 'baptism', values.baptism, setFieldValue)}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
