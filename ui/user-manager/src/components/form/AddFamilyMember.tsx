@@ -12,8 +12,8 @@ interface Values {
   baptismalName:string
   houseName:string
   familyUnit:string
-  birthday: string
-  baptism:string
+  birthday: string|null
+  baptism:string|null
 }
 
 export default function AddFamilyMember() {
@@ -24,8 +24,8 @@ export default function AddFamilyMember() {
     baptismalName: '',
     houseName: '',
     familyUnit: '',
-    birthday: '',
-    baptism: '',
+    birthday: null,
+    baptism: null,
   };
 
   const textField = (label:string, name:string) => (
@@ -38,7 +38,7 @@ export default function AddFamilyMember() {
     />
   );
     // eslint-disable-next-line max-len
-  const dateField = (label:string, name:string, value:string, setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)) => (
+  const dateField = (label:string, name:string, value:string|null, setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)) => (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePicker
         label={label}
