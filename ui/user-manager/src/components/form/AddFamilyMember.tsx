@@ -6,15 +6,19 @@ import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import * as Yup from 'yup';
 
+type OptionalDate = string|null
+
 interface Values {
   firstName: string
   lastName: string
   middleName:string
+  email:string
   baptismalName:string
   houseName:string
   familyUnit:string
-  birthday: string|null
-  baptism:string|null
+  birthday: OptionalDate
+  baptismDate:OptionalDate
+  confirmationDate:OptionalDate
 }
 
 export default function AddFamilyMember() {
@@ -29,6 +33,8 @@ export default function AddFamilyMember() {
       .required('Required'),
     middleName: Yup.string()
       .max(50, 'Too Long!'),
+    email: Yup.string()
+      .email('Invalid email').required('Required'),
     baptismalName: Yup.string()
       .max(50, 'Too Long!'),
     houseName: Yup.string()
@@ -37,17 +43,21 @@ export default function AddFamilyMember() {
       .max(50, 'Too Long!'),
     birthday: Yup.date()
       .required('Required'),
+    baptismDate: Yup.date(),
+    confirmationDate: Yup.date(),
   });
 
   const initialValues:Values = {
     firstName: '',
     lastName: '',
     middleName: '',
+    email: '',
     baptismalName: '',
     houseName: '',
     familyUnit: '',
     birthday: null,
-    baptism: null,
+    baptismDate: null,
+    confirmationDate: null,
   };
 
   const textField = (label:string, name:string) => (
@@ -99,6 +109,8 @@ export default function AddFamilyMember() {
           <br />
           {textField('Last Name', 'lastName')}
           <br />
+          {textField('Email', 'email')}
+          <br />
           {textField('Baptismal Name', 'baptismalName')}
           <br />
           {textField('House Name', 'houseName')}
@@ -107,7 +119,9 @@ export default function AddFamilyMember() {
           <br />
           {dateField('Date of Birth', 'birthday', values.birthday, setFieldValue)}
           <br />
-          {dateField('Date of Baptism', 'baptism', values.baptism, setFieldValue)}
+          {dateField('Date of Baptism', 'baptismDate', values.baptismDate, setFieldValue)}
+          <br />
+          {dateField('Date of Confirmation', 'confirmationDate', values.confirmationDate, setFieldValue)}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
