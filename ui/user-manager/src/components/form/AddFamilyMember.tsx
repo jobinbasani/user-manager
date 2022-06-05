@@ -4,6 +4,7 @@ import { LinearProgress } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import * as Yup from 'yup';
 
 interface Values {
   firstName: string
@@ -17,6 +18,27 @@ interface Values {
 }
 
 export default function AddFamilyMember() {
+  const userInfoSchema = Yup.object().shape({
+    firstName: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Required'),
+    lastName: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Required'),
+    middleName: Yup.string()
+      .max(50, 'Too Long!'),
+    baptismalName: Yup.string()
+      .max(50, 'Too Long!'),
+    houseName: Yup.string()
+      .max(50, 'Too Long!'),
+    familyUnit: Yup.string()
+      .max(50, 'Too Long!'),
+    birthday: Yup.date()
+      .required('Required'),
+  });
+
   const initialValues:Values = {
     firstName: '',
     lastName: '',
@@ -59,19 +81,7 @@ export default function AddFamilyMember() {
   return (
     <Formik
       initialValues={initialValues}
-      validate={(values) => {
-        const errors: Partial<Values> = {};
-        if (!values.firstName) {
-          errors.firstName = 'Required';
-        }
-        if (!values.lastName) {
-          errors.lastName = 'Required';
-        }
-        if (!values.birthday) {
-          errors.birthday = 'Required';
-        }
-        return errors;
-      }}
+      validationSchema={userInfoSchema}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {
           setSubmitting(false);
