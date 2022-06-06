@@ -62,7 +62,6 @@ const userSlice = createSlice({
       }
       if (accessToken) {
         state.accessToken = accessToken;
-        localStorage.setItem('token', accessToken);
       }
     },
   },

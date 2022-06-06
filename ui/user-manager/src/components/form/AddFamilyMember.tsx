@@ -42,9 +42,12 @@ export default function AddFamilyMember() {
     familyUnit: Yup.string()
       .max(50, 'Too Long!'),
     birthday: Yup.date()
+      .typeError('Please provide a valid date')
       .required('Required'),
-    baptismDate: Yup.date(),
-    confirmationDate: Yup.date(),
+    baptismDate: Yup.date()
+      .typeError('Please provide a valid date'),
+    confirmationDate: Yup.date()
+      .typeError('Please provide a valid date'),
   });
 
   const initialValues:Values = {

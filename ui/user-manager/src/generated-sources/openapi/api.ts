@@ -22,6 +22,50 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from './base';
 
 /**
+ * 
+ * @export
+ * @interface Announcement
+ */
+export interface Announcement {
+    /**
+     * Announcement ID
+     * @type {string}
+     * @memberof Announcement
+     */
+    'id': string;
+    /**
+     * Announcement title
+     * @type {string}
+     * @memberof Announcement
+     */
+    'title': string;
+    /**
+     * Announcement subtitle
+     * @type {string}
+     * @memberof Announcement
+     */
+    'subtitle'?: string;
+    /**
+     * Announcement details
+     * @type {string}
+     * @memberof Announcement
+     */
+    'description': string;
+}
+/**
+ * 
+ * @export
+ * @interface AnnouncementId
+ */
+export interface AnnouncementId {
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnouncementId
+     */
+    'id': string;
+}
+/**
  * The specified content was not found.
  * @export
  * @interface BadRequestError
@@ -274,13 +318,19 @@ export interface UserData {
      * @type {boolean}
      * @memberof UserData
      */
-    'isPrimary': boolean;
+    'isPrimary'?: boolean;
     /**
      * 
      * @type {string}
      * @memberof UserData
      */
     'relation'?: UserDataRelationEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserData
+     */
+    'maritalStatus'?: UserDataMaritalStatusEnum;
     /**
      * Address Line 1
      * @type {string}
@@ -323,6 +373,15 @@ export const UserDataRelationEnum = {
 } as const;
 
 export type UserDataRelationEnum = typeof UserDataRelationEnum[keyof typeof UserDataRelationEnum];
+export const UserDataMaritalStatusEnum = {
+    Single: 'single',
+    Married: 'married',
+    Widowed: 'widowed',
+    Separated: 'separated',
+    Divorced: 'divorced'
+} as const;
+
+export type UserDataMaritalStatusEnum = typeof UserDataMaritalStatusEnum[keyof typeof UserDataMaritalStatusEnum];
 export const UserDataProvinceEnum = {
     Ab: 'AB',
     Bc: 'BC',
@@ -343,6 +402,117 @@ export type UserDataProvinceEnum = typeof UserDataProvinceEnum[keyof typeof User
 
 
 /**
+ * AdminApi - axios parameter creator
+ * @export
+ */
+export const AdminApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Add a new announcement
+         * @param {Announcement} announcement Announcement details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addAnnouncement: async (announcement: Announcement, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'announcement' is not null or undefined
+            assertParamExists('addAnnouncement', 'announcement', announcement)
+            const localVarPath = `/api/v1/admin/announcements`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(announcement, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AdminApi - functional programming interface
+ * @export
+ */
+export const AdminApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AdminApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Add a new announcement
+         * @param {Announcement} announcement Announcement details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addAnnouncement(announcement: Announcement, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AnnouncementId>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addAnnouncement(announcement, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * AdminApi - factory interface
+ * @export
+ */
+export const AdminApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AdminApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Add a new announcement
+         * @param {Announcement} announcement Announcement details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addAnnouncement(announcement: Announcement, options?: any): AxiosPromise<AnnouncementId> {
+            return localVarFp.addAnnouncement(announcement, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AdminApi - object-oriented interface
+ * @export
+ * @class AdminApi
+ * @extends {BaseAPI}
+ */
+export class AdminApi extends BaseAPI {
+    /**
+     * 
+     * @summary Add a new announcement
+     * @param {Announcement} announcement Announcement details
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public addAnnouncement(announcement: Announcement, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).addAnnouncement(announcement, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
  * FamilyManagementApi - axios parameter creator
  * @export
  */
@@ -350,14 +520,14 @@ export const FamilyManagementApiAxiosParamCreator = function (configuration?: Co
     return {
         /**
          * 
-         * @summary Add/update user family details
-         * @param {Array<UserData>} userData Array of family member user data
+         * @summary Add family members
+         * @param {Array<UserData>} userData Array of family members
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addUpdateUserFamily: async (userData: Array<UserData>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        addFamilyMembers: async (userData: Array<UserData>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userData' is not null or undefined
-            assertParamExists('addUpdateUserFamily', 'userData', userData)
+            assertParamExists('addFamilyMembers', 'userData', userData)
             const localVarPath = `/api/v1/user/family`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -382,6 +552,46 @@ export const FamilyManagementApiAxiosParamCreator = function (configuration?: Co
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(userData, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete family members
+         * @param {Array<string>} requestBody Array of family member id\&#39;s
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteFamilyMembers: async (requestBody: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestBody' is not null or undefined
+            assertParamExists('deleteFamilyMembers', 'requestBody', requestBody)
+            const localVarPath = `/api/v1/user/family`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -434,13 +644,24 @@ export const FamilyManagementApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Add/update user family details
-         * @param {Array<UserData>} userData Array of family member user data
+         * @summary Add family members
+         * @param {Array<UserData>} userData Array of family members
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addUpdateUserFamily(userData: Array<UserData>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamilyId>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addUpdateUserFamily(userData, options);
+        async addFamilyMembers(userData: Array<UserData>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FamilyId>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addFamilyMembers(userData, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete family members
+         * @param {Array<string>} requestBody Array of family member id\&#39;s
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteFamilyMembers(requestBody: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteFamilyMembers(requestBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -465,13 +686,23 @@ export const FamilyManagementApiFactory = function (configuration?: Configuratio
     return {
         /**
          * 
-         * @summary Add/update user family details
-         * @param {Array<UserData>} userData Array of family member user data
+         * @summary Add family members
+         * @param {Array<UserData>} userData Array of family members
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addUpdateUserFamily(userData: Array<UserData>, options?: any): AxiosPromise<FamilyId> {
-            return localVarFp.addUpdateUserFamily(userData, options).then((request) => request(axios, basePath));
+        addFamilyMembers(userData: Array<UserData>, options?: any): AxiosPromise<FamilyId> {
+            return localVarFp.addFamilyMembers(userData, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete family members
+         * @param {Array<string>} requestBody Array of family member id\&#39;s
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteFamilyMembers(requestBody: Array<string>, options?: any): AxiosPromise<Array<string>> {
+            return localVarFp.deleteFamilyMembers(requestBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -494,14 +725,26 @@ export const FamilyManagementApiFactory = function (configuration?: Configuratio
 export class FamilyManagementApi extends BaseAPI {
     /**
      * 
-     * @summary Add/update user family details
-     * @param {Array<UserData>} userData Array of family member user data
+     * @summary Add family members
+     * @param {Array<UserData>} userData Array of family members
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FamilyManagementApi
      */
-    public addUpdateUserFamily(userData: Array<UserData>, options?: AxiosRequestConfig) {
-        return FamilyManagementApiFp(this.configuration).addUpdateUserFamily(userData, options).then((request) => request(this.axios, this.basePath));
+    public addFamilyMembers(userData: Array<UserData>, options?: AxiosRequestConfig) {
+        return FamilyManagementApiFp(this.configuration).addFamilyMembers(userData, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete family members
+     * @param {Array<string>} requestBody Array of family member id\&#39;s
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FamilyManagementApi
+     */
+    public deleteFamilyMembers(requestBody: Array<string>, options?: AxiosRequestConfig) {
+        return FamilyManagementApiFp(this.configuration).deleteFamilyMembers(requestBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

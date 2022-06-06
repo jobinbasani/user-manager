@@ -341,7 +341,6 @@ components:
       required:
         - firstName
         - email
-        - isPrimary
       properties:
         id:
           description: A unique identifier
@@ -377,6 +376,14 @@ components:
             - grandparent
             - sibling
             - other
+        maritalStatus:
+          type: string
+          enum:
+            - single
+            - married
+            - widowed
+            - separated
+            - divorced
         addressLine1:
           type: string
           description: Address Line 1
