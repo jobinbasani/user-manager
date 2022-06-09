@@ -400,6 +400,16 @@ components:
         city:
           type: string
           description: City
+        canadianStatus:
+          type: string
+          description: Status in Canada
+          enum:
+            - citizen
+            - permanentResident
+            - visitor
+            - student
+            - workPermit
+          example: citizen
         province:
           type: string
           enum:

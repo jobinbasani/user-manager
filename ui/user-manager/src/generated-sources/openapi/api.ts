@@ -356,6 +356,12 @@ export interface UserData {
      */
     'city'?: string;
     /**
+     * Status in Canada
+     * @type {string}
+     * @memberof UserData
+     */
+    'canadianStatus'?: UserDataCanadianStatusEnum;
+    /**
      * Province
      * @type {string}
      * @memberof UserData
@@ -394,6 +400,15 @@ export const UserDataMaritalStatusEnum = {
 } as const;
 
 export type UserDataMaritalStatusEnum = typeof UserDataMaritalStatusEnum[keyof typeof UserDataMaritalStatusEnum];
+export const UserDataCanadianStatusEnum = {
+    Citizen: 'citizen',
+    PermanentResident: 'permanentResident',
+    Visitor: 'visitor',
+    Student: 'student',
+    WorkPermit: 'workPermit'
+} as const;
+
+export type UserDataCanadianStatusEnum = typeof UserDataCanadianStatusEnum[keyof typeof UserDataCanadianStatusEnum];
 export const UserDataProvinceEnum = {
     Ab: 'AB',
     Bc: 'BC',

@@ -5,7 +5,11 @@ import Button from '@mui/material/Button';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import * as Yup from 'yup';
-import { UserDataGenderEnum, UserDataMaritalStatusEnum } from '../../generated-sources/openapi';
+import {
+  UserDataCanadianStatusEnum,
+  UserDataGenderEnum,
+  UserDataMaritalStatusEnum,
+} from '../../generated-sources/openapi';
 
 type OptionalDate = string|null
 
@@ -22,6 +26,7 @@ interface Values {
   baptismDate:OptionalDate
   confirmationDate:OptionalDate
   maritalStatus:string
+  canadianStatus:string
 }
 
 export default function AddFamilyMember() {
@@ -53,6 +58,8 @@ export default function AddFamilyMember() {
       .typeError('Please provide a valid date'),
     confirmationDate: Yup.date()
       .typeError('Please provide a valid date'),
+    canadianStatus: Yup.string()
+      .required('Required'),
   });
 
   const initialValues:Values = {
@@ -68,6 +75,7 @@ export default function AddFamilyMember() {
     baptismDate: null,
     confirmationDate: null,
     maritalStatus: '',
+    canadianStatus: '',
   };
 
   const textField = (label:string, name:string) => (
@@ -87,6 +95,7 @@ export default function AddFamilyMember() {
         label={label}
         onChange={(v) => setFieldValue(name, v, true)}
         value={value}
+        disableFuture
         renderInput={(params) => (
           <Field
             component={TextField}
@@ -151,6 +160,8 @@ export default function AddFamilyMember() {
           {dateField('Date of Confirmation', 'confirmationDate', values.confirmationDate, setFieldValue)}
           <br />
           {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
+          <br />
+          {selectField('Status in Canada', 'canadianStatus', UserDataCanadianStatusEnum)}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
