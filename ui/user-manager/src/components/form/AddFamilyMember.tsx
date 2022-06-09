@@ -38,6 +38,8 @@ export default function AddFamilyMember() {
       .max(50, 'Too Long!'),
     email: Yup.string()
       .email('Invalid email').required('Required'),
+    gender: Yup.string()
+      .required('Required'),
     baptismalName: Yup.string()
       .max(50, 'Too Long!'),
     houseName: Yup.string()
@@ -106,7 +108,6 @@ export default function AddFamilyMember() {
       sx={{ m: 1, minWidth: 150 }}
       component={Select}
     >
-      <MenuItem value="" disabled />
       {/* eslint-disable-next-line max-len */}
       {Object.keys(value).map((k) => <MenuItem key={k} value={Object.keys(value).indexOf(k)}>{k}</MenuItem>)}
     </Field>
@@ -133,6 +134,8 @@ export default function AddFamilyMember() {
           <br />
           {textField('Last Name', 'lastName')}
           <br />
+          {selectField('Gender', 'gender', UserDataGenderEnum)}
+          <br />
           {textField('Email', 'email')}
           <br />
           {textField('Baptismal Name', 'baptismalName')}
@@ -146,8 +149,6 @@ export default function AddFamilyMember() {
           {dateField('Date of Baptism', 'baptismDate', values.baptismDate, setFieldValue)}
           <br />
           {dateField('Date of Confirmation', 'confirmationDate', values.confirmationDate, setFieldValue)}
-          <br />
-          {selectField('Gender', 'gender', UserDataGenderEnum)}
           <br />
           {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
           {isSubmitting && <LinearProgress />}
