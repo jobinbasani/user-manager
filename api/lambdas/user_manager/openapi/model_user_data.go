@@ -30,9 +30,14 @@ type UserData struct {
 	Email string `json:"email"`
 
 	// Indicates primary user
-	IsPrimary bool `json:"isPrimary"`
+	IsPrimary bool `json:"isPrimary,omitempty"`
+
+	// Gender
+	Gender string `json:"gender"`
 
 	Relation string `json:"relation,omitempty"`
+
+	MaritalStatus string `json:"maritalStatus,omitempty"`
 
 	// Address Line 1
 	AddressLine1 string `json:"addressLine1,omitempty"`
@@ -42,6 +47,9 @@ type UserData struct {
 
 	// City
 	City string `json:"city,omitempty"`
+
+	// Status in Canada
+	CanadianStatus string `json:"canadianStatus,omitempty"`
 
 	// Province
 	Province string `json:"province,omitempty"`
@@ -55,7 +63,7 @@ func AssertUserDataRequired(obj UserData) error {
 	elements := map[string]interface{}{
 		"firstName": obj.FirstName,
 		"email":     obj.Email,
-		"isPrimary": obj.IsPrimary,
+		"gender":    obj.Gender,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
