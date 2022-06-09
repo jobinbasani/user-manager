@@ -320,6 +320,12 @@ export interface UserData {
      */
     'isPrimary'?: boolean;
     /**
+     * Gender
+     * @type {string}
+     * @memberof UserData
+     */
+    'gender': UserDataGenderEnum;
+    /**
      * 
      * @type {string}
      * @memberof UserData
@@ -363,6 +369,12 @@ export interface UserData {
     'postalCode'?: string;
 }
 
+export const UserDataGenderEnum = {
+    Male: 'male',
+    Female: 'female'
+} as const;
+
+export type UserDataGenderEnum = typeof UserDataGenderEnum[keyof typeof UserDataGenderEnum];
 export const UserDataRelationEnum = {
     Spouse: 'spouse',
     Child: 'child',

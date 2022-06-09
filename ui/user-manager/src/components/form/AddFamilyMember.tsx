@@ -1,10 +1,11 @@
 import { Field, Form, Formik } from 'formik';
-import { TextField } from 'formik-mui';
-import { LinearProgress } from '@mui/material';
+import { Select, TextField } from 'formik-mui';
+import { LinearProgress, MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import * as Yup from 'yup';
+import { UserDataGenderEnum, UserDataMaritalStatusEnum } from '../../generated-sources/openapi';
 
 type OptionalDate = string|null
 
@@ -13,12 +14,14 @@ interface Values {
   lastName: string
   middleName:string
   email:string
+  gender:string
   baptismalName:string
   houseName:string
   familyUnit:string
   birthday: OptionalDate
   baptismDate:OptionalDate
   confirmationDate:OptionalDate
+  maritalStatus:string
 }
 
 export default function AddFamilyMember() {
@@ -55,12 +58,14 @@ export default function AddFamilyMember() {
     lastName: '',
     middleName: '',
     email: '',
+    gender: '',
     baptismalName: '',
     houseName: '',
     familyUnit: '',
     birthday: null,
     baptismDate: null,
     confirmationDate: null,
+    maritalStatus: '',
   };
 
   const textField = (label:string, name:string) => (
@@ -72,7 +77,8 @@ export default function AddFamilyMember() {
       variant="standard"
     />
   );
-    // eslint-disable-next-line max-len
+
+  // eslint-disable-next-line max-len
   const dateField = (label:string, name:string, value:string|null, setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)) => (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePicker
@@ -91,6 +97,21 @@ export default function AddFamilyMember() {
       />
     </LocalizationProvider>
   );
+
+  const selectField = (label:string, name:string, value:Record<string, string>) => (
+    <Field
+      label={label}
+      name={name}
+      variant="standard"
+      sx={{ m: 1, minWidth: 150 }}
+      component={Select}
+    >
+      <MenuItem value="" disabled />
+      {/* eslint-disable-next-line max-len */}
+      {Object.keys(value).map((k) => <MenuItem key={k} value={Object.keys(value).indexOf(k)}>{k}</MenuItem>)}
+    </Field>
+  );
+
   return (
     <Formik
       initialValues={initialValues}
@@ -125,6 +146,10 @@ export default function AddFamilyMember() {
           {dateField('Date of Baptism', 'baptismDate', values.baptismDate, setFieldValue)}
           <br />
           {dateField('Date of Confirmation', 'confirmationDate', values.confirmationDate, setFieldValue)}
+          <br />
+          {selectField('Gender', 'gender', UserDataGenderEnum)}
+          <br />
+          {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
