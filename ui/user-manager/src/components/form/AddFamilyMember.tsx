@@ -119,7 +119,7 @@ export default function AddFamilyMember() {
       component={Select}
     >
       {/* eslint-disable-next-line max-len */}
-      {Object.keys(value).map((k) => <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>{k}</MenuItem>)}
+      {Object.keys(value).map((k) => <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>{k.replace(/([a-z])([A-Z])/g, '$1 $2')}</MenuItem>)}
     </Field>
   );
 
