@@ -115,11 +115,16 @@ export default function AddFamilyMember() {
       label={label}
       name={name}
       variant="standard"
-      sx={{ m: 1, minWidth: 150 }}
+      margin="dense"
+      sx={{ minWidth: 200 }}
       component={Select}
     >
-      {/* eslint-disable-next-line max-len */}
-      {Object.keys(value).map((k) => <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>{k.replace(/([a-z])([A-Z])/g, '$1 $2')}</MenuItem>)}
+      {Object.keys(value)
+        .map((k) => (
+          <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>
+            {k.replace(/([a-z])([A-Z])/g, '$1 $2')}
+          </MenuItem>
+        ))}
     </Field>
   );
 
