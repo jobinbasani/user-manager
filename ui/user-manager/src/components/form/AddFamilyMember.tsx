@@ -1,6 +1,8 @@
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-mui';
-import { LinearProgress, MenuItem } from '@mui/material';
+import {
+  LinearProgress, MenuItem,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -27,6 +29,7 @@ interface Values {
   confirmationDate:OptionalDate
   maritalStatus:string
   canadianStatus:string
+  inCanadaSince: OptionalDate
 }
 
 export default function AddFamilyMember() {
@@ -54,10 +57,6 @@ export default function AddFamilyMember() {
     birthday: Yup.date()
       .typeError('Please provide a valid date')
       .required('Required'),
-    baptismDate: Yup.date()
-      .typeError('Please provide a valid date'),
-    confirmationDate: Yup.date()
-      .typeError('Please provide a valid date'),
     canadianStatus: Yup.string()
       .required('Required'),
   });
@@ -76,6 +75,7 @@ export default function AddFamilyMember() {
     confirmationDate: null,
     maritalStatus: '',
     canadianStatus: '',
+    inCanadaSince: null,
   };
 
   const textField = (label:string, name:string) => (
@@ -101,6 +101,7 @@ export default function AddFamilyMember() {
             component={TextField}
             margin="dense"
             name={name}
+            sx={{ '& .MuiFormHelperText-root': { color: '#d32f2f' } }}
             variant="standard"
             {...params}
           />
@@ -118,7 +119,7 @@ export default function AddFamilyMember() {
       component={Select}
     >
       {/* eslint-disable-next-line max-len */}
-      {Object.keys(value).map((k) => <MenuItem key={k} value={Object.keys(value).indexOf(k)}>{k}</MenuItem>)}
+      {Object.keys(value).map((k) => <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>{k}</MenuItem>)}
     </Field>
   );
 
@@ -162,6 +163,8 @@ export default function AddFamilyMember() {
           {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
           <br />
           {selectField('Status in Canada', 'canadianStatus', UserDataCanadianStatusEnum)}
+          <br />
+          {dateField('In Canada since', 'inCanadaSince', values.inCanadaSince, setFieldValue)}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
