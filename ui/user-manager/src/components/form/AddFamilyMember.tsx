@@ -30,6 +30,9 @@ interface Values {
   maritalStatus:string
   canadianStatus:string
   inCanadaSince: OptionalDate
+  homeParish: string
+  dioceseInIndia:string
+  previousParish:string
 }
 
 export default function AddFamilyMember() {
@@ -76,6 +79,9 @@ export default function AddFamilyMember() {
     maritalStatus: '',
     canadianStatus: '',
     inCanadaSince: null,
+    homeParish: '',
+    dioceseInIndia: '',
+    previousParish: '',
   };
 
   const textField = (label:string, name:string) => (
@@ -153,6 +159,8 @@ export default function AddFamilyMember() {
           <br />
           {textField('Email', 'email')}
           <br />
+          {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
+          <br />
           {textField('Baptismal Name', 'baptismalName')}
           <br />
           {textField('House Name', 'houseName')}
@@ -165,11 +173,15 @@ export default function AddFamilyMember() {
           <br />
           {dateField('Date of Confirmation', 'confirmationDate', values.confirmationDate, setFieldValue)}
           <br />
-          {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
-          <br />
           {selectField('Status in Canada', 'canadianStatus', UserDataCanadianStatusEnum)}
           <br />
           {dateField('In Canada since', 'inCanadaSince', values.inCanadaSince, setFieldValue)}
+          <br />
+          {textField('Home Parish', 'homeParish')}
+          <br />
+          {textField('Diocese in India', 'dioceseInIndia')}
+          <br />
+          {textField('Previous Parish in Canada', 'previousParish')}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
