@@ -10,7 +10,7 @@ import * as Yup from 'yup';
 import {
   UserDataCanadianStatusEnum,
   UserDataGenderEnum,
-  UserDataMaritalStatusEnum,
+  UserDataMaritalStatusEnum, UserDataProvinceEnum,
 } from '../../generated-sources/openapi';
 
 type OptionalDate = string|null
@@ -33,6 +33,12 @@ interface Values {
   homeParish: string
   dioceseInIndia:string
   previousParish:string
+  apartment:string
+  street:string
+  city:string
+  province:string
+  postalCode:string
+  cell:string
 }
 
 export default function AddFamilyMember() {
@@ -82,6 +88,12 @@ export default function AddFamilyMember() {
     homeParish: '',
     dioceseInIndia: '',
     previousParish: '',
+    apartment: '',
+    street: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    cell: '',
   };
 
   const textField = (label:string, name:string) => (
@@ -91,6 +103,7 @@ export default function AddFamilyMember() {
       name={name}
       margin="dense"
       variant="standard"
+      sx={{ minWidth: 200 }}
     />
   );
 
@@ -128,7 +141,7 @@ export default function AddFamilyMember() {
       {Object.keys(value)
         .map((k) => (
           <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>
-            {k.replace(/([a-z])([A-Z])/g, '$1 $2')}
+            {k.length === 2 ? k.toUpperCase() : k.replace(/([a-z])([A-Z])/g, '$1 $2')}
           </MenuItem>
         ))}
     </Field>
@@ -182,6 +195,16 @@ export default function AddFamilyMember() {
           {textField('Diocese in India', 'dioceseInIndia')}
           <br />
           {textField('Previous Parish in Canada', 'previousParish')}
+          <br />
+          {textField('Apt #', 'apartment')}
+          <br />
+          {textField('Street # and name', 'street')}
+          <br />
+          {textField('City', 'city')}
+          <br />
+          {selectField('Province', 'province', UserDataProvinceEnum)}
+          <br />
+          {textField('Postal Code', 'postalCode')}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button

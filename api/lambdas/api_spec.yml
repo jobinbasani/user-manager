@@ -421,7 +421,7 @@ components:
             - NT
             - NS
             - NU
-            - ON
+            - "ON"
             - PE
             - QC
             - SK

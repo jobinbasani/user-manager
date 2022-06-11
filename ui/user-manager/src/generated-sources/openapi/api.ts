@@ -418,7 +418,7 @@ export const UserDataProvinceEnum = {
     Nt: 'NT',
     Ns: 'NS',
     Nu: 'NU',
-    True: 'true',
+    On: 'ON',
     Pe: 'PE',
     Qc: 'QC',
     Sk: 'SK',
