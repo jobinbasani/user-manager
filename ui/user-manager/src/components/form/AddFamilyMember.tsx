@@ -68,6 +68,14 @@ export default function AddFamilyMember() {
       .required('Required'),
     canadianStatus: Yup.string()
       .required('Required'),
+    street: Yup.string()
+      .min(4).required('Required'),
+    city: Yup.string()
+      .min(4).required('Required'),
+    province: Yup.string()
+      .required('Required'),
+    postalCode: Yup.string()
+      .min(6).max(7).required('Required'),
   });
 
   const initialValues:Values = {
@@ -205,6 +213,8 @@ export default function AddFamilyMember() {
           {selectField('Province', 'province', UserDataProvinceEnum)}
           <br />
           {textField('Postal Code', 'postalCode')}
+          <br />
+          {textField('Mobile Number', 'cell')}
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
