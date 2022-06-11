@@ -340,8 +340,10 @@ components:
       type: object
       required:
         - firstName
+        - lastName
         - email
         - gender
+        - dateOfBirth
       properties:
         id:
           description: A unique identifier
@@ -356,10 +358,40 @@ components:
           type: string
           description: First name
           example: John
+        middleName:
+          type: string
+          description: Middle name
         lastName:
           type: string
           description: First name
           example: Doe
+        baptismalName:
+          type: string
+          description: Baptismal Name
+        houseName:
+          type: string
+          description: House name
+        familyUnit:
+          type: string
+          description: Family unit
+        dateOfBirth:
+          type: string
+          description: Date of birth
+        dateOfBaptism:
+          type: string
+          description: Date of baptism
+        dateOfConfirmation:
+          type: string
+          description: Date of confirmation
+        homeParish:
+          type: string
+          description: Home parish
+        dioceseInIndia:
+          type: string
+          description: Diocese in India
+        previousParishInCanada:
+          type: string
+          description: Previous Parish in Canada
         email:
           type: string
           description: Email ID of user
@@ -380,7 +412,7 @@ components:
             - spouse
             - child
             - parent
-            - grandparent
+            - grandParent
             - sibling
             - other
         maritalStatus:
@@ -391,12 +423,12 @@ components:
             - widowed
             - separated
             - divorced
-        addressLine1:
+        apartment:
           type: string
-          description: Address Line 1
-        addressLine2:
+          description: Apartment Number
+        street:
           type: string
-          description: Address Line 2
+          description: Street number and name
         city:
           type: string
           description: City
@@ -410,6 +442,9 @@ components:
             - student
             - workPermit
           example: citizen
+        inCanadaSince:
+          type: string
+          description: In Canada since
         province:
           type: string
           enum:
@@ -432,6 +467,9 @@ components:
           type: string
           description: Postal Code
           example: HOH OHO
+        mobile:
+          type: string
+          description: Mobile number
 
     UserDataArray:
       type: array

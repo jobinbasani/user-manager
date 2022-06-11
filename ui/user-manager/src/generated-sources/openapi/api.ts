@@ -302,11 +302,71 @@ export interface UserData {
      */
     'firstName': string;
     /**
+     * Middle name
+     * @type {string}
+     * @memberof UserData
+     */
+    'middleName'?: string;
+    /**
      * First name
      * @type {string}
      * @memberof UserData
      */
-    'lastName'?: string;
+    'lastName': string;
+    /**
+     * Baptismal Name
+     * @type {string}
+     * @memberof UserData
+     */
+    'baptismalName'?: string;
+    /**
+     * House name
+     * @type {string}
+     * @memberof UserData
+     */
+    'houseName'?: string;
+    /**
+     * Family unit
+     * @type {string}
+     * @memberof UserData
+     */
+    'familyUnit'?: string;
+    /**
+     * Date of birth
+     * @type {string}
+     * @memberof UserData
+     */
+    'dateOfBirth': string;
+    /**
+     * Date of baptism
+     * @type {string}
+     * @memberof UserData
+     */
+    'dateOfBaptism'?: string;
+    /**
+     * Date of confirmation
+     * @type {string}
+     * @memberof UserData
+     */
+    'dateOfConfirmation'?: string;
+    /**
+     * Home parish
+     * @type {string}
+     * @memberof UserData
+     */
+    'homeParish'?: string;
+    /**
+     * Diocese in India
+     * @type {string}
+     * @memberof UserData
+     */
+    'dioceseInIndia'?: string;
+    /**
+     * Previous Parish in Canada
+     * @type {string}
+     * @memberof UserData
+     */
+    'previousParishInCanada'?: string;
     /**
      * Email ID of user
      * @type {string}
@@ -338,17 +398,17 @@ export interface UserData {
      */
     'maritalStatus'?: UserDataMaritalStatusEnum;
     /**
-     * Address Line 1
+     * Apartment Number
      * @type {string}
      * @memberof UserData
      */
-    'addressLine1'?: string;
+    'apartment'?: string;
     /**
-     * Address Line 2
+     * Street number and name
      * @type {string}
      * @memberof UserData
      */
-    'addressLine2'?: string;
+    'street'?: string;
     /**
      * City
      * @type {string}
@@ -362,6 +422,12 @@ export interface UserData {
      */
     'canadianStatus'?: UserDataCanadianStatusEnum;
     /**
+     * In Canada since
+     * @type {string}
+     * @memberof UserData
+     */
+    'inCanadaSince'?: string;
+    /**
      * Province
      * @type {string}
      * @memberof UserData
@@ -373,6 +439,12 @@ export interface UserData {
      * @memberof UserData
      */
     'postalCode'?: string;
+    /**
+     * Mobile number
+     * @type {string}
+     * @memberof UserData
+     */
+    'mobile'?: string;
 }
 
 export const UserDataGenderEnum = {
@@ -385,7 +457,7 @@ export const UserDataRelationEnum = {
     Spouse: 'spouse',
     Child: 'child',
     Parent: 'parent',
-    Grandparent: 'grandparent',
+    GrandParent: 'grandParent',
     Sibling: 'sibling',
     Other: 'other'
 } as const;

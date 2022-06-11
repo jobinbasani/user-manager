@@ -8,6 +8,7 @@ import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import * as Yup from 'yup';
 import {
+  UserData,
   UserDataCanadianStatusEnum,
   UserDataGenderEnum,
   UserDataMaritalStatusEnum, UserDataProvinceEnum,
@@ -15,31 +16,15 @@ import {
 
 type OptionalDate = string|null
 
-interface Values {
-  firstName: string
-  lastName: string
-  middleName:string
-  email:string
-  gender:string
-  baptismalName:string
-  houseName:string
-  familyUnit:string
-  birthday: OptionalDate
-  baptismDate:OptionalDate
-  confirmationDate:OptionalDate
-  maritalStatus:string
+type UserRecord = Omit<UserData, 'gender'|'dateOfBirth'|'inCanadaSince'|'dateOfConfirmation'|'dateOfBaptism'|'canadianStatus'|'maritalStatus'> &{
+  dateOfBirth:OptionalDate
+  dateOfConfirmation:OptionalDate
+  dateOfBaptism:OptionalDate
+  inCanadaSince:OptionalDate
   canadianStatus:string
-  inCanadaSince: OptionalDate
-  homeParish: string
-  dioceseInIndia:string
-  previousParish:string
-  apartment:string
-  street:string
-  city:string
-  province:string
-  postalCode:string
-  cell:string
-}
+  maritalStatus:string
+  gender:string
+};
 
 export default function AddFamilyMember() {
   const userInfoSchema = Yup.object().shape({
@@ -63,7 +48,7 @@ export default function AddFamilyMember() {
       .max(50, 'Too Long!'),
     familyUnit: Yup.string()
       .max(50, 'Too Long!'),
-    birthday: Yup.date()
+    dateOfBirth: Yup.date()
       .typeError('Please provide a valid date')
       .required('Required'),
     canadianStatus: Yup.string()
@@ -78,7 +63,7 @@ export default function AddFamilyMember() {
       .min(6).max(7).required('Required'),
   });
 
-  const initialValues:Values = {
+  const initialValues:UserRecord = {
     firstName: '',
     lastName: '',
     middleName: '',
@@ -87,21 +72,21 @@ export default function AddFamilyMember() {
     baptismalName: '',
     houseName: '',
     familyUnit: '',
-    birthday: null,
-    baptismDate: null,
-    confirmationDate: null,
+    dateOfBirth: null,
+    dateOfBaptism: null,
+    dateOfConfirmation: null,
     maritalStatus: '',
     canadianStatus: '',
     inCanadaSince: null,
     homeParish: '',
     dioceseInIndia: '',
-    previousParish: '',
+    previousParishInCanada: '',
     apartment: '',
     street: '',
     city: '',
-    province: '',
+    province: UserDataProvinceEnum.Ns,
     postalCode: '',
-    cell: '',
+    mobile: '',
   };
 
   const textField = (label:string, name:string) => (
@@ -188,11 +173,11 @@ export default function AddFamilyMember() {
           <br />
           {textField('Family Unit', 'familyUnit')}
           <br />
-          {dateField('Date of Birth', 'birthday', values.birthday, setFieldValue)}
+          {dateField('Date of Birth', 'dateOfBirth', values.dateOfBirth, setFieldValue)}
           <br />
-          {dateField('Date of Baptism', 'baptismDate', values.baptismDate, setFieldValue)}
+          {dateField('Date of Baptism', 'dateOfBaptism', values.dateOfBaptism, setFieldValue)}
           <br />
-          {dateField('Date of Confirmation', 'confirmationDate', values.confirmationDate, setFieldValue)}
+          {dateField('Date of Confirmation', 'dateOfConfirmation', values.dateOfConfirmation, setFieldValue)}
           <br />
           {selectField('Status in Canada', 'canadianStatus', UserDataCanadianStatusEnum)}
           <br />

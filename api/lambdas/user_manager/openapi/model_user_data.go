@@ -23,8 +23,38 @@ type UserData struct {
 	// First name
 	FirstName string `json:"firstName"`
 
+	// Middle name
+	MiddleName string `json:"middleName,omitempty"`
+
 	// First name
-	LastName string `json:"lastName,omitempty"`
+	LastName string `json:"lastName"`
+
+	// Baptismal Name
+	BaptismalName string `json:"baptismalName,omitempty"`
+
+	// House name
+	HouseName string `json:"houseName,omitempty"`
+
+	// Family unit
+	FamilyUnit string `json:"familyUnit,omitempty"`
+
+	// Date of birth
+	DateOfBirth string `json:"dateOfBirth"`
+
+	// Date of baptism
+	DateOfBaptism string `json:"dateOfBaptism,omitempty"`
+
+	// Date of confirmation
+	DateOfConfirmation string `json:"dateOfConfirmation,omitempty"`
+
+	// Home parish
+	HomeParish string `json:"homeParish,omitempty"`
+
+	// Diocese in India
+	DioceseInIndia string `json:"dioceseInIndia,omitempty"`
+
+	// Previous Parish in Canada
+	PreviousParishInCanada string `json:"previousParishInCanada,omitempty"`
 
 	// Email ID of user
 	Email string `json:"email"`
@@ -39,11 +69,11 @@ type UserData struct {
 
 	MaritalStatus string `json:"maritalStatus,omitempty"`
 
-	// Address Line 1
-	AddressLine1 string `json:"addressLine1,omitempty"`
+	// Apartment Number
+	Apartment string `json:"apartment,omitempty"`
 
-	// Address Line 2
-	AddressLine2 string `json:"addressLine2,omitempty"`
+	// Street number and name
+	Street string `json:"street,omitempty"`
 
 	// City
 	City string `json:"city,omitempty"`
@@ -51,19 +81,27 @@ type UserData struct {
 	// Status in Canada
 	CanadianStatus string `json:"canadianStatus,omitempty"`
 
+	// In Canada since
+	InCanadaSince string `json:"inCanadaSince,omitempty"`
+
 	// Province
 	Province string `json:"province,omitempty"`
 
 	// Postal Code
 	PostalCode string `json:"postalCode,omitempty"`
+
+	// Mobile number
+	Mobile string `json:"mobile,omitempty"`
 }
 
 // AssertUserDataRequired checks if the required fields are not zero-ed
 func AssertUserDataRequired(obj UserData) error {
 	elements := map[string]interface{}{
-		"firstName": obj.FirstName,
-		"email":     obj.Email,
-		"gender":    obj.Gender,
+		"firstName":   obj.FirstName,
+		"lastName":    obj.LastName,
+		"dateOfBirth": obj.DateOfBirth,
+		"email":       obj.Email,
+		"gender":      obj.Gender,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
