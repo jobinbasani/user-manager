@@ -27,3 +27,13 @@ export function stringAvatar(name:string) {
     children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
   };
 }
+
+export function getEnumIndexByEnumValue(myEnum:Record<string, string>, enumValue:string) {
+  const keys = Object.keys(myEnum);
+  for (let i = 0; i < keys.length; i += 1) {
+    if (myEnum[keys[i]] === enumValue) {
+      return i;
+    }
+  }
+  return -1;
+}

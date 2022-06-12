@@ -1,4 +1,6 @@
-import { Field, Form, Formik } from 'formik';
+import {
+  Field, Form, Formik,
+} from 'formik';
 import { Select, TextField } from 'formik-mui';
 import {
   LinearProgress, MenuItem,
@@ -13,10 +15,19 @@ import {
   UserDataGenderEnum,
   UserDataMaritalStatusEnum, UserDataProvinceEnum,
 } from '../../generated-sources/openapi';
+import { getEnumIndexByEnumValue } from '../../util/util';
 
 type OptionalDate = string|null
 
-type UserRecord = Omit<UserData, 'gender'|'dateOfBirth'|'inCanadaSince'|'dateOfConfirmation'|'dateOfBaptism'|'canadianStatus'|'maritalStatus'> &{
+type UserRecord = Omit<UserData,
+'dateOfBirth'|
+'dateOfConfirmation'|
+'dateOfBaptism'|
+'inCanadaSince'|
+'canadianStatus'|
+'maritalStatus'|
+'gender'
+> &{
   dateOfBirth:OptionalDate
   dateOfConfirmation:OptionalDate
   dateOfBaptism:OptionalDate
@@ -89,6 +100,47 @@ export default function AddFamilyMember() {
     mobile: '',
   };
 
+  // eslint-disable-next-line max-len
+  const saveUserData = async (data:UserRecord, setSubmitting:((isSubmitting: boolean) => void)) => new Promise(() => {
+    setTimeout(() => {
+      const userData:UserData = {
+        apartment: data.apartment,
+        baptismalName: data.baptismalName,
+        canadianStatus: getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus) >= 0
+          ? Object.values(UserDataCanadianStatusEnum)[getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus)]
+          : UserDataCanadianStatusEnum.Citizen,
+        city: data.city,
+        dateOfBaptism: data.dateOfBaptism ? data.dateOfBaptism.toString() : undefined,
+        dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toString() : '',
+        dateOfConfirmation: data.dateOfConfirmation ? data.dateOfConfirmation.toString() : undefined,
+        dioceseInIndia: data.dioceseInIndia,
+        email: data.email,
+        familyUnit: data.familyUnit,
+        firstName: data.firstName,
+        gender: getEnumIndexByEnumValue(UserDataGenderEnum, data.gender) >= 0
+          ? Object.values(UserDataGenderEnum)[getEnumIndexByEnumValue(UserDataGenderEnum, data.gender)]
+          : UserDataGenderEnum.Male,
+        homeParish: data.homeParish,
+        houseName: data.houseName,
+        inCanadaSince: data.inCanadaSince ? data.inCanadaSince.toString() : undefined,
+        lastName: data.lastName,
+        maritalStatus: getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus) >= 0
+          ? Object.values(UserDataMaritalStatusEnum)[getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus)]
+          : undefined,
+        middleName: data.middleName,
+        mobile: data.mobile,
+        postalCode: data.postalCode,
+        previousParishInCanada: data.previousParishInCanada,
+        province: getEnumIndexByEnumValue(UserDataProvinceEnum, data.province ?? 'NS') >= 0
+          ? Object.values(UserDataProvinceEnum)[getEnumIndexByEnumValue(UserDataProvinceEnum, data.province ?? 'NS')]
+          : UserDataProvinceEnum.Ns,
+        street: data.street,
+      };
+      setSubmitting(false);
+      console.log(userData);
+    }, 500);
+  });
+
   const textField = (label:string, name:string) => (
     <Field
       component={TextField}
@@ -144,11 +196,8 @@ export default function AddFamilyMember() {
     <Formik
       initialValues={initialValues}
       validationSchema={userInfoSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          setSubmitting(false);
-          console.log(values);
-        }, 500);
+      onSubmit={async (values, { setSubmitting }) => {
+        await saveUserData(values, setSubmitting);
       }}
     >
       {({
