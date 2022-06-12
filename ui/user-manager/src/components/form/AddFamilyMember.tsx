@@ -100,7 +100,6 @@ export default function AddFamilyMember() {
     mobile: '',
   };
 
-  // eslint-disable-next-line max-len
   const saveUserData = async (data:UserRecord, setSubmitting:((isSubmitting: boolean) => void)) => new Promise(() => {
     setTimeout(() => {
       const userData:UserData = {
@@ -152,7 +151,6 @@ export default function AddFamilyMember() {
     />
   );
 
-  // eslint-disable-next-line max-len
   const dateField = (label:string, name:string, value:string|null, setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)) => (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePicker

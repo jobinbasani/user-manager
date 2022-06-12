@@ -16,7 +16,6 @@ function NotFound() {
         </CardMedia>
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            {/* eslint-disable-next-line max-len */}
             Looks like you followed a broken link or entered a URL that doesn&apos;t exist on this site.
           </Typography>
         </CardContent>

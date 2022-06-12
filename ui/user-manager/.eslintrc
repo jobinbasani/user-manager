@@ -38,6 +38,6 @@
     "react/jsx-props-no-spreading": "off",
     "no-param-reassign": "off",
     "no-console": "off",
-    "max-len": ["error", { "code": 140 }]
+    "max-len": "off"
   }
 }
