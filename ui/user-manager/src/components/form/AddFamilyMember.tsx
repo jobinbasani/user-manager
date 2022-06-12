@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   UserData,
   UserDataCanadianStatusEnum,
@@ -16,6 +17,9 @@ import {
   UserDataMaritalStatusEnum, UserDataProvinceEnum,
 } from '../../generated-sources/openapi';
 import { getEnumIndexByEnumValue } from '../../util/util';
+import { getFamilyManagementAPI } from '../../api/api';
+import { RootState } from '../../store';
+import { setFamilyDetails } from '../../store/family/family-slice';
 
 type OptionalDate = string|null
 
@@ -38,6 +42,9 @@ type UserRecord = Omit<UserData,
 };
 
 export default function AddFamilyMember() {
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
+
   const userInfoSchema = Yup.object().shape({
     firstName: Yup.string()
       .min(2, 'Too Short!')
@@ -100,45 +107,46 @@ export default function AddFamilyMember() {
     mobile: '',
   };
 
-  const saveUserData = async (data:UserRecord, setSubmitting:((isSubmitting: boolean) => void)) => new Promise(() => {
-    setTimeout(() => {
-      const userData:UserData = {
-        apartment: data.apartment,
-        baptismalName: data.baptismalName,
-        canadianStatus: getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus) >= 0
-          ? Object.values(UserDataCanadianStatusEnum)[getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus)]
-          : UserDataCanadianStatusEnum.Citizen,
-        city: data.city,
-        dateOfBaptism: data.dateOfBaptism ? data.dateOfBaptism.toString() : undefined,
-        dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toString() : '',
-        dateOfConfirmation: data.dateOfConfirmation ? data.dateOfConfirmation.toString() : undefined,
-        dioceseInIndia: data.dioceseInIndia,
-        email: data.email,
-        familyUnit: data.familyUnit,
-        firstName: data.firstName,
-        gender: getEnumIndexByEnumValue(UserDataGenderEnum, data.gender) >= 0
-          ? Object.values(UserDataGenderEnum)[getEnumIndexByEnumValue(UserDataGenderEnum, data.gender)]
-          : UserDataGenderEnum.Male,
-        homeParish: data.homeParish,
-        houseName: data.houseName,
-        inCanadaSince: data.inCanadaSince ? data.inCanadaSince.toString() : undefined,
-        lastName: data.lastName,
-        maritalStatus: getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus) >= 0
-          ? Object.values(UserDataMaritalStatusEnum)[getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus)]
-          : undefined,
-        middleName: data.middleName,
-        mobile: data.mobile,
-        postalCode: data.postalCode,
-        previousParishInCanada: data.previousParishInCanada,
-        province: getEnumIndexByEnumValue(UserDataProvinceEnum, data.province ?? 'NS') >= 0
-          ? Object.values(UserDataProvinceEnum)[getEnumIndexByEnumValue(UserDataProvinceEnum, data.province ?? 'NS')]
-          : UserDataProvinceEnum.Ns,
-        street: data.street,
-      };
-      setSubmitting(false);
-      console.log(userData);
-    }, 500);
-  });
+  const saveUserData = async (data:UserRecord, setSubmitting:((isSubmitting: boolean) => void)) => {
+    const userData:UserData = {
+      apartment: data.apartment,
+      baptismalName: data.baptismalName,
+      canadianStatus: getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus) >= 0
+        ? Object.values(UserDataCanadianStatusEnum)[getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus)]
+        : UserDataCanadianStatusEnum.Citizen,
+      city: data.city,
+      dateOfBaptism: data.dateOfBaptism ? data.dateOfBaptism.toString() : undefined,
+      dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toString() : '',
+      dateOfConfirmation: data.dateOfConfirmation ? data.dateOfConfirmation.toString() : undefined,
+      dioceseInIndia: data.dioceseInIndia,
+      email: data.email,
+      familyUnit: data.familyUnit,
+      firstName: data.firstName,
+      gender: getEnumIndexByEnumValue(UserDataGenderEnum, data.gender) >= 0
+        ? Object.values(UserDataGenderEnum)[getEnumIndexByEnumValue(UserDataGenderEnum, data.gender)]
+        : UserDataGenderEnum.Male,
+      homeParish: data.homeParish,
+      houseName: data.houseName,
+      inCanadaSince: data.inCanadaSince ? data.inCanadaSince.toString() : undefined,
+      lastName: data.lastName,
+      maritalStatus: getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus) >= 0
+        ? Object.values(UserDataMaritalStatusEnum)[getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus)]
+        : undefined,
+      middleName: data.middleName,
+      mobile: data.mobile,
+      postalCode: data.postalCode,
+      previousParishInCanada: data.previousParishInCanada,
+      province: getEnumIndexByEnumValue(UserDataProvinceEnum, data.province ?? 'NS') >= 0
+        ? Object.values(UserDataProvinceEnum)[getEnumIndexByEnumValue(UserDataProvinceEnum, data.province ?? 'NS')]
+        : UserDataProvinceEnum.Ns,
+      street: data.street,
+    };
+    console.log(userData);
+    await getFamilyManagementAPI(user.accessToken).addFamilyMembers([userData])
+      .then(() => getFamilyManagementAPI(user.accessToken).getUserFamily())
+      .then((familyDetails) => dispatch(setFamilyDetails(familyDetails.data)))
+      .finally(() => setSubmitting(false));
+  };
 
   const textField = (label:string, name:string) => (
     <Field
