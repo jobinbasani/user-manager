@@ -1,6 +1,7 @@
 package main
 
 import (
+	"lambdas/user_manager/cli/internal"
 	"log"
 	"os"
 
@@ -14,10 +15,10 @@ func main() {
 		Name:        "User Manager CLI",
 		Description: "Tools for managing video streams",
 		Commands: []*cli.Command{
-			newGetUserInfoCommand(),
-			newGetUserInfoBySubCommand(),
-			newGetUserInfoByEmailCommand(),
-			newStartServerCommand(),
+			internal.NewGetUserInfoCommand(),
+			internal.NewGetUserInfoBySubCommand(),
+			internal.NewGetUserInfoByEmailCommand(),
+			internal.NewStartServerCommand(),
 		},
 		ErrWriter: os.Stderr,
 	}

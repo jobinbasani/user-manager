@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 	"os"
 )
 
-func newGetUserInfoCommand() *cli.Command {
+func NewGetUserInfoCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "tokeninfo",
 		Aliases: []string{},
@@ -34,7 +34,7 @@ func newGetUserInfoCommand() *cli.Command {
 	}
 }
 
-func newGetUserInfoBySubCommand() *cli.Command {
+func NewGetUserInfoBySubCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "subinfo",
 		Aliases: []string{},
@@ -56,7 +56,7 @@ func newGetUserInfoBySubCommand() *cli.Command {
 	}
 }
 
-func newGetUserInfoByEmailCommand() *cli.Command {
+func NewGetUserInfoByEmailCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "emailinfo",
 		Aliases: []string{},
@@ -78,7 +78,7 @@ func newGetUserInfoByEmailCommand() *cli.Command {
 	}
 }
 
-func newStartServerCommand() *cli.Command {
+func NewStartServerCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "server",
 		Aliases: []string{},

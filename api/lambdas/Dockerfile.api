@@ -1,0 +1,25 @@
+FROM public.ecr.aws/bitnami/golang:1.18 as builder
+
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+
+WORKDIR /build
+
+COPY . /build/src
+
+RUN cd src && \
+    go build -o ../out/apiserver user_manager/cli/main.go && \
+    cp .env ../out/.env
+
+FROM alpine
+COPY --from=builder /build/out /server
+
+WORKDIR /server
+
+RUN chmod a+x apiserver
+
+ENTRYPOINT ["/server/apiserver", "server"]
+
+CMD ["--port=8989", "--dynamo_endpoint=http://usermanager_localstack:4566"]

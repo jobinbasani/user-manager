@@ -4,7 +4,7 @@ services:
   localstack:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.localstack
     image: usermanager_localstack
     container_name: usermanager_localstack
     ports:
@@ -27,4 +27,13 @@ services:
       - "8001:8001"
     environment:
       - DYNAMO_ENDPOINT=http://usermanager_localstack:4566
+
+  api-server:
+    build:
+      context: ../../
+      dockerfile: Dockerfile.api
+    image: usermanager_api
+    container_name: usermanager_api
+    ports:
+      - "8989:8989"
 
