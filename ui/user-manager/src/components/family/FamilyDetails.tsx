@@ -65,7 +65,7 @@ export default function FamilyDetails() {
       <CardContent>
         {isLoading
                     && <Skeleton variant="rectangular" />}
-        {family.members.length === 0 && <Chip label="No members added yet!" color="error" variant="outlined" />}
+        {family.members.length === 0 && !isLoading && <Chip label="No members added yet!" color="error" variant="outlined" />}
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {family.members.map((member, idx) => {
             const labelId = `checkbox-list-secondary-label-${idx}`;
