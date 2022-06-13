@@ -74,7 +74,7 @@ export default function FamilyDetails() {
           {family.members.map((member, idx) => {
             const panelId = `panel-header-${idx}`;
             return (
-              <Accordion disableGutters>
+              <Accordion disableGutters key={member.id}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   id={panelId}
@@ -86,6 +86,7 @@ export default function FamilyDetails() {
                         : member.firstName)}
                       />
                     )}
+                    sx={{ '& .MuiChip-avatar': { color: '#fff' } }}
                     label={`${member.firstName} ${member.lastName}`}
                     variant="outlined"
                   />
