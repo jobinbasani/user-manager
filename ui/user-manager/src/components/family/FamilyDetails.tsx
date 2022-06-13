@@ -1,21 +1,20 @@
 import Card from '@mui/material/Card';
 import {
+  Accordion,
+  AccordionDetails, AccordionSummary,
   Avatar, CardActions,
   CardHeader, Chip, Collapse,
   List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
   Skeleton,
 } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
-import EditIcon from '@mui/icons-material/Edit';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import PeopleIcon from '@mui/icons-material/People';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from '@mui/material/Typography';
 import { stringAvatar } from '../../util/util';
 import { RootState } from '../../store';
 import { getFamilyManagementAPI } from '../../api/api';
@@ -64,29 +63,39 @@ export default function FamilyDetails() {
 
       <CardContent>
         {isLoading
-                    && <Skeleton variant="rectangular" />}
+          && <Skeleton variant="rectangular" />}
         {family.members.length === 0 && !isLoading && <Chip label="No members added yet!" color="error" variant="outlined" />}
-        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+
+        <List sx={{
+          width: '100%',
+          bgcolor: 'background.paper',
+        }}
+        >
           {family.members.map((member, idx) => {
-            const labelId = `checkbox-list-secondary-label-${idx}`;
+            const panelId = `panel-header-${idx}`;
             return (
-              <ListItem
-                key={member.id}
-                secondaryAction={(
-                  <EditIcon color="primary" />
-                )}
-                disablePadding
-              >
-                <ListItemButton>
-                  <ListItemAvatar>
-                    <Avatar {...stringAvatar(member.displayName
-                      ? member.displayName
-                      : member.firstName)}
-                    />
-                  </ListItemAvatar>
-                  <ListItemText id={labelId} primary={`${member.firstName} ${member.lastName}`} />
-                </ListItemButton>
-              </ListItem>
+              <Accordion disableGutters>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  id={panelId}
+                >
+                  <Chip
+                    avatar={(
+                      <Avatar {...stringAvatar(member.displayName
+                        ? member.displayName
+                        : member.firstName)}
+                      />
+                    )}
+                    label={`${member.firstName} ${member.lastName}`}
+                    variant="outlined"
+                  />
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography>
+                    Member details go here...
+                  </Typography>
+                </AccordionDetails>
+              </Accordion>
             );
           })}
         </List>
