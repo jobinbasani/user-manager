@@ -141,7 +141,6 @@ export default function AddFamilyMember() {
         : UserDataProvinceEnum.Ns,
       street: data.street,
     };
-    console.log(userData);
     await getFamilyManagementAPI(user.accessToken).addFamilyMembers([userData])
       .then(() => getFamilyManagementAPI(user.accessToken).getUserFamily())
       .then((familyDetails) => dispatch(setFamilyDetails(familyDetails.data)))

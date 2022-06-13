@@ -27,7 +27,6 @@ export default function FamilyDetails() {
   const user = useSelector((state: RootState) => state.user);
   const family = useSelector((state: RootState) => state.family);
   const [isLoading, setLoading] = useState(false);
-  const [hasNoMembers, setHasNoMembers] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
 
   const handleAddMemberClick = () => {
@@ -45,7 +44,6 @@ export default function FamilyDetails() {
       setLoading(true);
       const familyDetails = await getFamilyManagementAPI(user.accessToken).getUserFamily();
       dispatch(setFamilyDetails(familyDetails.data));
-      setHasNoMembers(familyDetails.data.length === 0);
     };
     if (user.isLoggedIn) {
       loadFamilyData().finally(() => setLoading(false));
@@ -67,13 +65,13 @@ export default function FamilyDetails() {
       <CardContent>
         {isLoading
                     && <Skeleton variant="rectangular" />}
-        {hasNoMembers && <Chip label="No members added yet!" color="error" variant="outlined" />}
+        {family.members.length === 0 && <Chip label="No members added yet!" color="error" variant="outlined" />}
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {family.members.map((member, idx) => {
             const labelId = `checkbox-list-secondary-label-${idx}`;
             return (
               <ListItem
-                key={member.firstName}
+                key={member.id}
                 secondaryAction={(
                   <EditIcon color="primary" />
                 )}
