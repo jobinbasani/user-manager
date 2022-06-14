@@ -14,12 +14,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import PeopleIcon from '@mui/icons-material/People';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { format } from 'date-fns';
 import { stringAvatar } from '../../util/util';
 import { RootState } from '../../store';
 import { getFamilyManagementAPI } from '../../api/api';
 import { setFamilyDetails } from '../../store/family/family-slice';
 import AddFamilyMember from '../form/AddFamilyMember';
 import TitleAndSubtitle from '../text/TitleAndSubtitle';
+import { UserDataGenderEnum } from '../../generated-sources/openapi';
 
 export default function FamilyDetails() {
   const dispatch = useDispatch();
@@ -92,7 +94,9 @@ export default function FamilyDetails() {
                   />
                 </AccordionSummary>
                 <AccordionDetails>
-                  <TitleAndSubtitle title="Birthday" subtitle="Jan 1" />
+                  <TitleAndSubtitle title="Gender" subtitle={Object.keys(UserDataGenderEnum)[Object.values(UserDataGenderEnum).indexOf(member.gender)]} />
+                  <TitleAndSubtitle title="Birthday" subtitle={format(new Date(member.dateOfBirth), 'MMM d, yyyy')} />
+                  <TitleAndSubtitle title="Email" subtitle={member.email} />
                 </AccordionDetails>
               </Accordion>
             );

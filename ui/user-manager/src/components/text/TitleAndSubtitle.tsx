@@ -15,6 +15,7 @@ function TitleAndSubtitle({ title, subtitle }: TitleAndSubtitleProps) {
       <Typography variant="caption">
         {subtitle}
       </Typography>
+      <br />
     </>
   );
 }
