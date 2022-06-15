@@ -176,7 +176,7 @@ export default function FamilyDetails() {
       </CardActions>
       <Collapse in={formVisible} timeout="auto" unmountOnExit>
         <CardContent>
-          <AddFamilyMember />
+          <AddFamilyMember showFormFn={setFormVisible} />
         </CardContent>
       </Collapse>
     </Card>

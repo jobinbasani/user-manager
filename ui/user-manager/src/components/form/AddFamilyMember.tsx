@@ -10,6 +10,7 @@ import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import {
   UserData,
   UserDataCanadianStatusEnum,
@@ -20,6 +21,10 @@ import { getEnumIndexByEnumValue } from '../../util/util';
 import { getFamilyManagementAPI } from '../../api/api';
 import { RootState } from '../../store';
 import { setFamilyDetails } from '../../store/family/family-slice';
+
+type FormProps = {
+  showFormFn:React.Dispatch<React.SetStateAction<boolean>>
+}
 
 type OptionalDate = string|null
 
@@ -41,7 +46,7 @@ type UserRecord = Omit<UserData,
   gender:string
 };
 
-export default function AddFamilyMember() {
+export default function AddFamilyMember({ showFormFn }:FormProps) {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
 
@@ -144,7 +149,10 @@ export default function AddFamilyMember() {
     await getFamilyManagementAPI(user.accessToken).addFamilyMembers([userData])
       .then(() => getFamilyManagementAPI(user.accessToken).getUserFamily())
       .then((familyDetails) => dispatch(setFamilyDetails(familyDetails.data)))
-      .finally(() => setSubmitting(false));
+      .finally(() => {
+        setSubmitting(false);
+        showFormFn(false);
+      });
   };
 
   const textField = (label:string, name:string) => (
