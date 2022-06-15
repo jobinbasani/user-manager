@@ -1,11 +1,21 @@
 import Card from '@mui/material/Card';
 import {
   Accordion,
-  AccordionDetails, AccordionSummary,
-  Avatar, CardActions,
-  CardHeader, Chip, Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider,
+  AccordionDetails,
+  AccordionSummary,
+  Avatar,
+  CardActions,
+  CardHeader,
+  Chip,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  LinearProgress,
   List,
-  Skeleton,
 } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
@@ -32,14 +42,33 @@ export default function FamilyDetails() {
   const [formVisible, setFormVisible] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteUserName, setDeleteUserName] = useState('');
+  const [deleteUserId, setDeleteUserId] = useState('');
 
-  const showConfirmDialog = (displayName:string) => {
+  const showConfirmDialog = (displayName:string, userId:string) => {
     setDeleteUserName(displayName);
+    setDeleteUserId(userId);
     setConfirmDialogOpen(true);
   };
 
   const closeConfirmDialog = () => {
     setConfirmDialogOpen(false);
+  };
+
+  const loadFamilyData = async () => {
+    setLoading(true);
+    const familyDetails = await getFamilyManagementAPI(user.accessToken).getUserFamily();
+    dispatch(setFamilyDetails(familyDetails.data));
+  };
+
+  const deleteUser = async () => {
+    closeConfirmDialog();
+    if (user.isLoggedIn) {
+      setLoading(true);
+      getFamilyManagementAPI(user.accessToken)
+        .deleteFamilyMembers([deleteUserId])
+        .then(loadFamilyData)
+        .finally(() => setLoading(false));
+    }
   };
 
   const handleAddMemberClick = () => {
@@ -53,11 +82,6 @@ export default function FamilyDetails() {
   }, [user]);
 
   useEffect(() => {
-    const loadFamilyData = async () => {
-      setLoading(true);
-      const familyDetails = await getFamilyManagementAPI(user.accessToken).getUserFamily();
-      dispatch(setFamilyDetails(familyDetails.data));
-    };
     if (user.isLoggedIn) {
       loadFamilyData().finally(() => setLoading(false));
     }
@@ -76,8 +100,7 @@ export default function FamilyDetails() {
       />
 
       <CardContent>
-        {isLoading
-          && <Skeleton variant="rectangular" />}
+        {isLoading && <LinearProgress />}
         {family.members.length === 0 && !isLoading && <Chip label="No members added yet!" color="error" variant="outlined" />}
 
         <Dialog
@@ -96,7 +119,7 @@ export default function FamilyDetails() {
           </DialogContent>
           <DialogActions>
             <Button onClick={closeConfirmDialog}>No</Button>
-            <Button onClick={closeConfirmDialog} autoFocus>
+            <Button onClick={deleteUser} autoFocus>
               Yes
             </Button>
           </DialogActions>
@@ -133,7 +156,15 @@ export default function FamilyDetails() {
                   <TitleAndSubtitle title="Email" subtitle={member.email} />
                   <br />
                   <Divider light />
-                  <Button color="error" size="small" onClick={() => showConfirmDialog(member.displayName ?? '')} startIcon={<PersonRemove />} sx={{ flex: 1 }}>Remove</Button>
+                  <Button
+                    color="error"
+                    size="small"
+                    onClick={() => showConfirmDialog(member.displayName ?? '', member.id ?? '')}
+                    startIcon={<PersonRemove />}
+                    sx={{ flex: 1 }}
+                  >
+                    Remove
+                  </Button>
                 </AccordionDetails>
               </Accordion>
             );
