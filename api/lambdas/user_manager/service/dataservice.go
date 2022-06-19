@@ -19,12 +19,13 @@ import (
 )
 
 const (
-	idAttribute       = "id"
-	recTypeAttribute  = "recType"
-	familyIdAttribute = "familyId"
-	emailIdAttribute  = "emailId"
-	infoAttribute     = "info"
-	userRecType       = "USER"
+	idAttribute         = "id"
+	recTypeAttribute    = "recType"
+	familyIdAttribute   = "familyId"
+	emailIdAttribute    = "emailId"
+	infoAttribute       = "info"
+	userRecType         = "USER"
+	announcementRecType = "ANNOUNCE"
 )
 
 var titleCaser = cases.Title(language.English)
@@ -33,6 +34,7 @@ type DataService interface {
 	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
 	AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
 	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
+	AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error)
 }
 type DynamoDBService struct {
 	cfg         *config.Config
@@ -176,6 +178,33 @@ func (d DynamoDBService) DeleteFamilyMembers(ctx context.Context, memberIds []st
 	}
 
 	return memberIds, nil
+}
+
+func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error) {
+	announcementId := uuid.New().String()
+	announcement.Id = announcementId
+	announcementJson, err := json.Marshal(announcement)
+	if err != nil {
+		return "", err
+	}
+	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s'}`,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			announcementId,
+			recTypeAttribute,
+			announcementRecType,
+			infoAttribute,
+			string(announcementJson),
+		)),
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return announcementId, nil
 }
 
 func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {

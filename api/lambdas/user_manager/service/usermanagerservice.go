@@ -77,9 +77,20 @@ func (u *UserManagerService) GetUserFamily(ctx context.Context) (openapi.ImplRes
 }
 
 func (u *UserManagerService) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (openapi.ImplResponse, error) {
+	id, err := u.dataService.AddAnnouncement(ctx, announcement)
+
+	if err != nil {
+		log.Println(err)
+		return openapi.ImplResponse{
+			Code: http.StatusInternalServerError,
+		}, err
+	}
+
 	return openapi.ImplResponse{
 		Code: http.StatusCreated,
-		Body: "announcement",
+		Body: map[string]string{
+			"id": id,
+		},
 	}, nil
 }
 
