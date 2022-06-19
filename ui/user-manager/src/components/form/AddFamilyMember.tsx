@@ -21,6 +21,7 @@ import { getEnumIndexByEnumValue } from '../../util/util';
 import { getFamilyManagementAPI } from '../../api/api';
 import { RootState } from '../../store';
 import { setFamilyDetails } from '../../store/family/family-slice';
+import { FormTextField } from './FormFields';
 
 type FormProps = {
   showFormFn:React.Dispatch<React.SetStateAction<boolean>>
@@ -155,17 +156,6 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
       });
   };
 
-  const textField = (label:string, name:string) => (
-    <Field
-      component={TextField}
-      label={label}
-      name={name}
-      margin="dense"
-      variant="standard"
-      sx={{ minWidth: 200 }}
-    />
-  );
-
   const dateField = (label:string, name:string, value:string|null, setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)) => (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DatePicker
@@ -217,23 +207,23 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
         submitForm, isSubmitting, values, setFieldValue,
       }) => (
         <Form>
-          {textField('First Name', 'firstName')}
+          <FormTextField label="First Name" name="firstName" />
           <br />
-          {textField('Middle Name', 'middleName')}
+          <FormTextField label="Middle Name" name="middleName" />
           <br />
-          {textField('Last Name', 'lastName')}
+          <FormTextField label="Last Name" name="lastName" />
           <br />
           {selectField('Gender', 'gender', UserDataGenderEnum)}
           <br />
-          {textField('Email', 'email')}
+          <FormTextField label="Email" name="email" />
           <br />
           {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
           <br />
-          {textField('Baptismal Name', 'baptismalName')}
+          <FormTextField label="Baptismal Name" name="baptismalName" />
           <br />
-          {textField('House Name', 'houseName')}
+          <FormTextField label="House Name" name="houseName" />
           <br />
-          {textField('Family Unit', 'familyUnit')}
+          <FormTextField label="Family Unit" name="familyUnit" />
           <br />
           {dateField('Date of Birth', 'dateOfBirth', values.dateOfBirth, setFieldValue)}
           <br />
@@ -245,23 +235,23 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
           <br />
           {dateField('In Canada since', 'inCanadaSince', values.inCanadaSince, setFieldValue)}
           <br />
-          {textField('Home Parish', 'homeParish')}
+          <FormTextField label="Home Parish" name="homeParish" />
           <br />
-          {textField('Diocese in India', 'dioceseInIndia')}
+          <FormTextField label="Diocese in India" name="dioceseInIndia" />
           <br />
-          {textField('Previous Parish in Canada', 'previousParish')}
+          <FormTextField label="Previous Parish in Canada" name="previousParish" />
           <br />
-          {textField('Apt #', 'apartment')}
+          <FormTextField label="Apt #" name="apartment" />
           <br />
-          {textField('Street # and name', 'street')}
+          <FormTextField label="Street # and name" name="street" />
           <br />
-          {textField('City', 'city')}
+          <FormTextField label="City" name="city" />
           <br />
           {selectField('Province', 'province', UserDataProvinceEnum)}
           <br />
-          {textField('Postal Code', 'postalCode')}
+          <FormTextField label="Postal Code" name="postalCode" />
           <br />
-          {textField('Mobile Number', 'cell')}
+          <FormTextField label="Mobile Number" name="cell" />
           {isSubmitting && <LinearProgress />}
           <br />
           <Button
