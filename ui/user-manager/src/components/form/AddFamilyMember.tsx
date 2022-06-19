@@ -1,13 +1,11 @@
 import {
   Field, Form, Formik,
 } from 'formik';
-import { Select, TextField } from 'formik-mui';
+import { Select } from 'formik-mui';
 import {
   LinearProgress, MenuItem,
 } from '@mui/material';
 import Button from '@mui/material/Button';
-import { DatePicker, LocalizationProvider } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import React from 'react';
@@ -21,7 +19,7 @@ import { getEnumIndexByEnumValue } from '../../util/util';
 import { getFamilyManagementAPI } from '../../api/api';
 import { RootState } from '../../store';
 import { setFamilyDetails } from '../../store/family/family-slice';
-import { FormTextField } from './FormFields';
+import { FormDateField, FormTextField } from './FormFields';
 
 type FormProps = {
   showFormFn:React.Dispatch<React.SetStateAction<boolean>>
@@ -156,27 +154,6 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
       });
   };
 
-  const dateField = (label:string, name:string, value:string|null, setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)) => (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DatePicker
-        label={label}
-        onChange={(v) => setFieldValue(name, v, true)}
-        value={value}
-        disableFuture
-        renderInput={(params) => (
-          <Field
-            component={TextField}
-            margin="dense"
-            name={name}
-            sx={{ '& .MuiFormHelperText-root': { color: '#d32f2f' } }}
-            variant="standard"
-            {...params}
-          />
-        )}
-      />
-    </LocalizationProvider>
-  );
-
   const selectField = (label:string, name:string, value:Record<string, string>) => (
     <Field
       label={label}
@@ -225,15 +202,15 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
           <br />
           <FormTextField label="Family Unit" name="familyUnit" />
           <br />
-          {dateField('Date of Birth', 'dateOfBirth', values.dateOfBirth, setFieldValue)}
+          <FormDateField value={values.dateOfBirth} setFieldValue={setFieldValue} label="Date of Birth" name="dateOfBirth" />
           <br />
-          {dateField('Date of Baptism', 'dateOfBaptism', values.dateOfBaptism, setFieldValue)}
+          <FormDateField value={values.dateOfBaptism} setFieldValue={setFieldValue} label="Date of Baptism" name="dateOfBaptism" />
           <br />
-          {dateField('Date of Confirmation', 'dateOfConfirmation', values.dateOfConfirmation, setFieldValue)}
+          <FormDateField value={values.dateOfConfirmation} setFieldValue={setFieldValue} label="Date of Confirmation" name="dateOfConfirmation" />
           <br />
           {selectField('Status in Canada', 'canadianStatus', UserDataCanadianStatusEnum)}
           <br />
-          {dateField('In Canada since', 'inCanadaSince', values.inCanadaSince, setFieldValue)}
+          <FormDateField value={values.inCanadaSince} setFieldValue={setFieldValue} label="In Canada since" name="inCanadaSince" />
           <br />
           <FormTextField label="Home Parish" name="homeParish" />
           <br />
