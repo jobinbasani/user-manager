@@ -137,6 +137,25 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/public/announcements:
+    get:
+      operationId: getAnnouncements
+      summary: Get all announcements
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcements'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
 components:
   responses:
     BadRequest:
@@ -481,6 +500,11 @@ components:
       items:
         type: string
 
+    Announcements:
+      type: array
+      items:
+        $ref: '#/components/schemas/Announcement'
+
     Announcement:
       type: object
       required:
@@ -504,6 +528,9 @@ components:
           type: string
           description: Announcement details
           example: Announcement details are here - Lorem Ipsum
+        expiresOn:
+          type: string
+          description: Day on which this announcement expires
 
     FamilyId:
       type: object

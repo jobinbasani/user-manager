@@ -22,6 +22,9 @@ type Announcement struct {
 
 	// Announcement details
 	Description string `json:"description"`
+
+	// Day on which this announcement expires
+	ExpiresOn string `json:"expiresOn,omitempty"`
 }
 
 // AssertAnnouncementRequired checks if the required fields are not zero-ed

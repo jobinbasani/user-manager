@@ -14,6 +14,7 @@ type UserManagerService struct {
 	openapi.UserManagementApiService
 	openapi.FamilyManagementApiService
 	openapi.AdminApiService
+	openapi.PublicApiService
 	config      *config.Config
 	authService AuthService
 	dataService DataService
@@ -91,6 +92,20 @@ func (u *UserManagerService) AddAnnouncement(ctx context.Context, announcement o
 		Body: map[string]string{
 			"id": id,
 		},
+	}, nil
+}
+
+func (u *UserManagerService) GetAnnouncements(ctx context.Context) (openapi.ImplResponse, error) {
+	data, err := u.dataService.GetAnnouncements(ctx)
+	if err != nil {
+		log.Println(err)
+		return openapi.ImplResponse{
+			Code: http.StatusInternalServerError,
+		}, err
+	}
+	return openapi.ImplResponse{
+		Code: http.StatusOK,
+		Body: data,
 	}, nil
 }
 

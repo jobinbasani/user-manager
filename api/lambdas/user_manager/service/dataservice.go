@@ -11,6 +11,7 @@ import (
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -19,13 +20,14 @@ import (
 )
 
 const (
-	idAttribute         = "id"
-	recTypeAttribute    = "recType"
-	familyIdAttribute   = "familyId"
-	emailIdAttribute    = "emailId"
-	infoAttribute       = "info"
-	userRecType         = "USER"
-	announcementRecType = "ANNOUNCE"
+	idAttribute        = "id"
+	recTypeAttribute   = "recType"
+	createdAtAttribute = "createdAt"
+	familyIdAttribute  = "familyId"
+	emailIdAttribute   = "emailId"
+	infoAttribute      = "info"
+	userRecType        = "USER"
+	announcementId     = "announcements"
 )
 
 var titleCaser = cases.Title(language.English)
@@ -35,6 +37,7 @@ type DataService interface {
 	AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
 	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
 	AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error)
+	GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error)
 }
 type DynamoDBService struct {
 	cfg         *config.Config
@@ -181,22 +184,24 @@ func (d DynamoDBService) DeleteFamilyMembers(ctx context.Context, memberIds []st
 }
 
 func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error) {
-	announcementId := uuid.New().String()
-	announcement.Id = announcementId
+	ts := time.Now().Unix()
+	announcement.Id = fmt.Sprintf("announce-%d", ts)
 	announcementJson, err := json.Marshal(announcement)
 	if err != nil {
 		return "", err
 	}
 	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
-			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s'}`,
+			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : %d}`,
 			d.cfg.UserDataTableName,
 			idAttribute,
 			announcementId,
 			recTypeAttribute,
-			announcementRecType,
+			announcement.Id,
 			infoAttribute,
 			string(announcementJson),
+			createdAtAttribute,
+			ts,
 		)),
 	})
 
@@ -204,7 +209,35 @@ func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement opena
 		return "", err
 	}
 
-	return announcementId, nil
+	return announcement.Id, nil
+}
+
+func (d DynamoDBService) GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error) {
+	data, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(
+			fmt.Sprintf(
+				`SELECT * FROM "%s" WHERE "%s" = '%s' ORDER BY "%s" DESC`,
+				d.cfg.UserDataTableName,
+				idAttribute,
+				announcementId,
+				recTypeAttribute,
+			),
+		),
+	},
+	)
+	if err != nil {
+		return nil, err
+	}
+	announcements := make([]openapi.Announcement, len(data.Items))
+	for i := range data.Items {
+		a := d.getStringValue(data.Items[i], infoAttribute)
+		if a != nil {
+			var announcement openapi.Announcement
+			_ = json.Unmarshal([]byte(*a), &announcement)
+			announcements[i] = announcement
+		}
+	}
+	return announcements, nil
 }
 
 func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {

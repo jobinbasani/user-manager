@@ -30,6 +30,13 @@ type FamilyManagementApiRouter interface {
 	GetUserFamily(http.ResponseWriter, *http.Request)
 }
 
+// PublicApiRouter defines the required methods for binding the api requests to a responses for the PublicApi
+// The PublicApiRouter implementation should parse necessary information from the http request,
+// pass the data to a PublicApiServicer to perform the required actions, then write the service results to the http response.
+type PublicApiRouter interface {
+	GetAnnouncements(http.ResponseWriter, *http.Request)
+}
+
 // UserManagementApiRouter defines the required methods for binding the api requests to a responses for the UserManagementApi
 // The UserManagementApiRouter implementation should parse necessary information from the http request,
 // pass the data to a UserManagementApiServicer to perform the required actions, then write the service results to the http response.
@@ -53,6 +60,14 @@ type FamilyManagementApiServicer interface {
 	AddFamilyMembers(context.Context, []UserData) (ImplResponse, error)
 	DeleteFamilyMembers(context.Context, []string) (ImplResponse, error)
 	GetUserFamily(context.Context) (ImplResponse, error)
+}
+
+// PublicApiServicer defines the api actions for the PublicApi service
+// This interface intended to stay up to date with the openapi yaml used to generate it,
+// while the service implementation can ignored with the .openapi-generator-ignore file
+// and updated with the logic required for the API.
+type PublicApiServicer interface {
+	GetAnnouncements(context.Context) (ImplResponse, error)
 }
 
 // UserManagementApiServicer defines the api actions for the UserManagementApi service

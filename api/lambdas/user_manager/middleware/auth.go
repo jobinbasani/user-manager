@@ -13,16 +13,21 @@ import (
 
 // BearerSchema represents the schema that should be included in the Authorization header
 const (
-	BearerSchema = "Bearer "
-	apiBasePath  = "/api/v1/"
-	adminGroup   = "admin"
-	groupsClaim  = "cognito:groups"
+	BearerSchema  = "Bearer "
+	apiBasePath   = "/api/v1/"
+	adminGroup    = "admin"
+	publicApiPath = apiBasePath + "public"
+	groupsClaim   = "cognito:groups"
 )
 
 // DoAuth verifies that a Bearer token is provided and is valid
 func DoAuth(ctx context.Context, config *config.Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasPrefix(r.URL.Path, publicApiPath) {
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
+			}
 			authHeader := r.Header.Get("Authorization")
 			if len(authHeader) < len(BearerSchema) {
 				http.Error(w, "Missing Authorization header", http.StatusUnauthorized)
