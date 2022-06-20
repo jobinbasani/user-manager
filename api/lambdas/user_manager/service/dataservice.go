@@ -228,6 +228,16 @@ func (d DynamoDBService) GetAnnouncements(ctx context.Context) ([]openapi.Announ
 	if err != nil {
 		return nil, err
 	}
+	if len(data.Items) == 0 {
+		return []openapi.Announcement{
+			{
+				Id:          "default-announcement",
+				Title:       "Welcome!",
+				Subtitle:    "Join our growing community",
+				Description: "Please sign up if you haven't done so!",
+			},
+		}, nil
+	}
 	announcements := make([]openapi.Announcement, len(data.Items))
 	for i := range data.Items {
 		a := d.getStringValue(data.Items[i], infoAttribute)
