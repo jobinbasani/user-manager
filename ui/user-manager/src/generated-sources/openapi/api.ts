@@ -34,6 +34,12 @@ export interface Announcement {
      */
     'id': string;
     /**
+     * Date on which this announcement was created
+     * @type {string}
+     * @memberof Announcement
+     */
+    'createdOn': string;
+    /**
      * Announcement title
      * @type {string}
      * @memberof Announcement
@@ -51,6 +57,12 @@ export interface Announcement {
      * @memberof Announcement
      */
     'description': string;
+    /**
+     * Day on which this announcement expires
+     * @type {string}
+     * @memberof Announcement
+     */
+    'expiresOn'?: string;
 }
 /**
  * 
@@ -855,6 +867,104 @@ export class FamilyManagementApi extends BaseAPI {
      */
     public getUserFamily(options?: AxiosRequestConfig) {
         return FamilyManagementApiFp(this.configuration).getUserFamily(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * PublicApi - axios parameter creator
+ * @export
+ */
+export const PublicApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Get all announcements
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAnnouncements: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/public/announcements`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * PublicApi - functional programming interface
+ * @export
+ */
+export const PublicApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PublicApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Get all announcements
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAnnouncements(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Announcement>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAnnouncements(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * PublicApi - factory interface
+ * @export
+ */
+export const PublicApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PublicApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Get all announcements
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAnnouncements(options?: any): AxiosPromise<Array<Announcement>> {
+            return localVarFp.getAnnouncements(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * PublicApi - object-oriented interface
+ * @export
+ * @class PublicApi
+ * @extends {BaseAPI}
+ */
+export class PublicApi extends BaseAPI {
+    /**
+     * 
+     * @summary Get all announcements
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicApi
+     */
+    public getAnnouncements(options?: AxiosRequestConfig) {
+        return PublicApiFp(this.configuration).getAnnouncements(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

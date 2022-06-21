@@ -7,12 +7,22 @@ import React from 'react';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import Button from '@mui/material/Button';
+import { useSelector } from 'react-redux';
+import { AxiosResponse } from 'axios';
 import { Announcement } from '../../generated-sources/openapi';
 import { FormTextArea, FormTextField } from './FormFields';
+import { getAdminAPI, getPublicAPI } from '../../api/api';
+import { RootState } from '../../store';
 
-export default function AddAnnouncement() {
+type AddAnnouncementProps = {
+  setFeeds: React.Dispatch<React.SetStateAction<Announcement[]>>;
+};
+
+export default function AddAnnouncement({ setFeeds }:AddAnnouncementProps) {
+  const user = useSelector((state: RootState) => state.user);
+
   const initialValues:Announcement = {
-    id: '', description: '', subtitle: '', title: '',
+    id: '', description: '', subtitle: '', title: '', createdOn: '', expiresOn: '',
   };
 
   const announcementSchema = Yup.object().shape({
@@ -30,8 +40,18 @@ export default function AddAnnouncement() {
   });
 
   const saveAnnouncement = async (data:Announcement, setSubmitting:((isSubmitting: boolean) => void)) => {
-    console.log(`saving ${data}`);
-    setSubmitting(false);
+    data.createdOn = Date.now().toString();
+    data.id = 'new';
+    await getAdminAPI(user.accessToken).addAnnouncement(data)
+      .then(() => getPublicAPI().getAnnouncements())
+      .then((feeds: AxiosResponse<Array<Announcement>>) => {
+        if (feeds.data.length > 0) {
+          setFeeds(feeds.data);
+        }
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (

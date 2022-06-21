@@ -14,6 +14,9 @@ type Announcement struct {
 	// Announcement ID
 	Id string `json:"id"`
 
+	// Date on which this announcement was created
+	CreatedOn string `json:"createdOn"`
+
 	// Announcement title
 	Title string `json:"title"`
 
@@ -31,6 +34,7 @@ type Announcement struct {
 func AssertAnnouncementRequired(obj Announcement) error {
 	elements := map[string]interface{}{
 		"id":          obj.Id,
+		"createdOn":   obj.CreatedOn,
 		"title":       obj.Title,
 		"description": obj.Description,
 	}

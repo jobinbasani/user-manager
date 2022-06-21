@@ -511,11 +511,15 @@ components:
         - id
         - title
         - description
+        - createdOn
       properties:
         id:
           type: string
           description: Announcement ID
           example: 123e4567-e89b-12d3-a456-426614174000
+        createdOn:
+          type: string
+          description: Date on which this announcement was created
         title:
           type: string
           description: Announcement title

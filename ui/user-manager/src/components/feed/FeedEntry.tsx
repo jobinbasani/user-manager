@@ -1,22 +1,25 @@
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
+import { Announcement } from '../../generated-sources/openapi';
 
-export default function FeedEntry() {
+export default function FeedEntry({
+  id, title, subtitle, description, expiresOn, createdOn,
+}: Announcement) {
   return (
     <Card sx={{ margin: 5 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          23rd May
+          {createdOn}
         </Typography>
         <Typography variant="h5" component="div">
-          Ascension of Christ
+          {title}
         </Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          Holy Mass at 5:30
+          {subtitle}
         </Typography>
         <Typography variant="body2">
-          All are invited!
+          {description + id + expiresOn}
         </Typography>
       </CardContent>
     </Card>
