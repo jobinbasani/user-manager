@@ -32,7 +32,7 @@ export default function Feed() {
     <Box bgcolor="grey" flex={4} p={2}>
       {isAdmin && <AddAnnouncement setFeeds={setFeeds} />}
       {
-        feeds.map((announcement) => <FeedEntry announcement={announcement} />)
+        feeds.map((announcement) => <FeedEntry announcement={announcement} isAdmin={isAdmin} />)
       }
     </Box>
   );

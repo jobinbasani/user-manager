@@ -558,6 +558,46 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Delete announcements
+         * @param {Array<string>} requestBody Announcement id\&#39;s to delete
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAnnouncements: async (requestBody: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestBody' is not null or undefined
+            assertParamExists('deleteAnnouncements', 'requestBody', requestBody)
+            const localVarPath = `/api/v1/admin/announcements`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -577,6 +617,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
          */
         async addAnnouncement(announcement: Announcement, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AnnouncementId>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addAnnouncement(announcement, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete announcements
+         * @param {Array<string>} requestBody Announcement id\&#39;s to delete
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteAnnouncements(requestBody: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAnnouncements(requestBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -599,6 +650,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         addAnnouncement(announcement: Announcement, options?: any): AxiosPromise<AnnouncementId> {
             return localVarFp.addAnnouncement(announcement, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Delete announcements
+         * @param {Array<string>} requestBody Announcement id\&#39;s to delete
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAnnouncements(requestBody: Array<string>, options?: any): AxiosPromise<Array<string>> {
+            return localVarFp.deleteAnnouncements(requestBody, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -619,6 +680,18 @@ export class AdminApi extends BaseAPI {
      */
     public addAnnouncement(announcement: Announcement, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).addAnnouncement(announcement, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete announcements
+     * @param {Array<string>} requestBody Announcement id\&#39;s to delete
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public deleteAnnouncements(requestBody: Array<string>, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).deleteAnnouncements(requestBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
