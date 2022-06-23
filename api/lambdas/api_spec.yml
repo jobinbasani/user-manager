@@ -89,7 +89,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FamilyIdArray'
+              $ref: '#/components/schemas/StringArray'
       tags:
         - Family Management
       responses:
@@ -98,7 +98,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FamilyIdArray'
+                $ref: '#/components/schemas/StringArray'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -128,6 +128,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AnnouncementId'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      operationId: deleteAnnouncements
+      summary: Delete announcements
+      requestBody:
+        description: Announcement id's to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StringArray'
+      tags:
+        - Admin
+      responses:
+        200:
+          description: deleted id's
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringArray'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -495,7 +522,7 @@ components:
       items:
         $ref: '#/components/schemas/UserData'
 
-    FamilyIdArray:
+    StringArray:
       type: array
       items:
         type: string

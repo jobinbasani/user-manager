@@ -41,6 +41,7 @@ type DataService interface {
 	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
 	AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error)
 	GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error)
+	DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error)
 }
 type DynamoDBService struct {
 	cfg         *config.Config
@@ -258,6 +259,28 @@ func (d DynamoDBService) GetAnnouncements(ctx context.Context) ([]openapi.Announ
 		}
 	}
 	return announcements, nil
+}
+
+func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error) {
+	statements := make([]types.ParameterizedStatement, len(announcementIds))
+	for i, id := range announcementIds {
+		statements[i] = types.ParameterizedStatement{
+			Statement: aws.String(fmt.Sprintf(`DELETE FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
+				d.cfg.UserDataTableName,
+				idAttribute,
+				announcementId,
+				recTypeAttribute,
+				id,
+			)),
+		}
+	}
+	_, err := d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
+		TransactStatements: statements,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return announcementIds, nil
 }
 
 func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {

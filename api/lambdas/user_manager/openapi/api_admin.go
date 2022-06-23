@@ -54,6 +54,12 @@ func (c *AdminApiController) Routes() Routes {
 			"/api/v1/admin/announcements",
 			c.AddAnnouncement,
 		},
+		{
+			"DeleteAnnouncements",
+			strings.ToUpper("Delete"),
+			"/api/v1/admin/announcements",
+			c.DeleteAnnouncements,
+		},
 	}
 }
 
@@ -71,6 +77,26 @@ func (c *AdminApiController) AddAnnouncement(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	result, err := c.service.AddAnnouncement(r.Context(), announcementParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// DeleteAnnouncements - Delete announcements
+func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.Request) {
+	requestBodyParam := []string{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&requestBodyParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	result, err := c.service.DeleteAnnouncements(r.Context(), requestBodyParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

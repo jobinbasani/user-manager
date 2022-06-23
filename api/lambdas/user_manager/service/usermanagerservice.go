@@ -99,11 +99,22 @@ func (u *UserManagerService) GetAnnouncements(ctx context.Context) (openapi.Impl
 	data, err := u.dataService.GetAnnouncements(ctx)
 	if err != nil {
 		log.Println(err)
-		return openapi.Response(0, openapi.InternalServerError{
+		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
 			Message: err.Error(),
 		}), err
 	}
 	return openapi.Response(http.StatusOK, data), nil
+}
+
+func (u *UserManagerService) DeleteAnnouncements(ctx context.Context, announcementIds []string) (openapi.ImplResponse, error) {
+	ids, err := u.dataService.DeleteAnnouncements(ctx, announcementIds)
+	if err != nil {
+		log.Println(err)
+		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
+			Message: err.Error(),
+		}), err
+	}
+	return openapi.Response(http.StatusOK, ids), nil
 }
 
 // NewUserManagerService creates a new UserManagerService
