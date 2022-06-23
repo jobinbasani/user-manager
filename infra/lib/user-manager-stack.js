@@ -17,6 +17,7 @@ class UserManagerStack extends cdk.Stack {
     const userTableName = 'UserManagerData';
     const familyIndexName = 'familyIndex';
     const emailIndexName = 'emailIndex';
+    const ttlAttribute = 'expDate';
 
     const userTable = new dynamodb.Table(this, id, {
       tableName: userTableName,
@@ -31,6 +32,7 @@ class UserManagerStack extends cdk.Stack {
         name: 'recType',
         type: dynamodb.AttributeType.STRING,
       },
+      timeToLiveAttribute: ttlAttribute,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
