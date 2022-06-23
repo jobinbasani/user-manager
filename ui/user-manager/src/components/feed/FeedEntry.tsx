@@ -9,9 +9,10 @@ import { Announcement } from '../../generated-sources/openapi';
 type FeedProps={
   announcement:Announcement
   isAdmin:boolean
+  onDelete:((title: string, announcementId:string) => void)
 }
 
-export default function FeedEntry({ announcement, isAdmin }: FeedProps) {
+export default function FeedEntry({ announcement, isAdmin, onDelete }: FeedProps) {
   return (
     <Card sx={{ margin: 5 }}>
       <CardContent>
@@ -19,9 +20,9 @@ export default function FeedEntry({ announcement, isAdmin }: FeedProps) {
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {announcement.createdOn}
           </Typography>
-          {isAdmin
+          {isAdmin && !announcement.id.startsWith('default')
           && (
-            <IconButton aria-label="delete" color="error">
+            <IconButton aria-label="delete" color="error" onClick={() => onDelete(announcement.title, announcement.id)}>
               <DeleteIcon />
             </IconButton>
           )}

@@ -16,13 +16,14 @@ import { RootState } from '../../store';
 
 type AddAnnouncementProps = {
   setFeeds: React.Dispatch<React.SetStateAction<Announcement[]>>;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function AddAnnouncement({ setFeeds }:AddAnnouncementProps) {
+export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncementProps) {
   const user = useSelector((state: RootState) => state.user);
 
   const initialValues:Announcement = {
-    id: '', description: '', subtitle: '', title: '', createdOn: '', expiresOn: '',
+    id: 'new', description: '', subtitle: '', title: '', createdOn: Date.now().toString(), expiresOn: '',
   };
 
   const announcementSchema = Yup.object().shape({
@@ -40,8 +41,7 @@ export default function AddAnnouncement({ setFeeds }:AddAnnouncementProps) {
   });
 
   const saveAnnouncement = async (data:Announcement, setSubmitting:((isSubmitting: boolean) => void)) => {
-    data.createdOn = Date.now().toString();
-    data.id = 'new';
+    setLoading(true);
     await getAdminAPI(user.accessToken).addAnnouncement(data)
       .then(() => getPublicAPI().getAnnouncements())
       .then((feeds: AxiosResponse<Array<Announcement>>) => {
@@ -51,6 +51,7 @@ export default function AddAnnouncement({ setFeeds }:AddAnnouncementProps) {
       })
       .finally(() => {
         setSubmitting(false);
+        setLoading(false);
       });
   };
 
