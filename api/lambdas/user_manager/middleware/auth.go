@@ -25,7 +25,7 @@ func DoAuth(ctx context.Context, config *config.Config) func(http.Handler) http.
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, publicApiPath) {
-				next.ServeHTTP(w, r.WithContext(ctx))
+				next.ServeHTTP(w, r)
 				return
 			}
 			authHeader := r.Header.Get("Authorization")

@@ -99,14 +99,11 @@ func (u *UserManagerService) GetAnnouncements(ctx context.Context) (openapi.Impl
 	data, err := u.dataService.GetAnnouncements(ctx)
 	if err != nil {
 		log.Println(err)
-		return openapi.ImplResponse{
-			Code: http.StatusInternalServerError,
-		}, err
+		return openapi.Response(0, openapi.InternalServerError{
+			Message: err.Error(),
+		}), err
 	}
-	return openapi.ImplResponse{
-		Code: http.StatusOK,
-		Body: data,
-	}, nil
+	return openapi.Response(http.StatusOK, data), nil
 }
 
 // NewUserManagerService creates a new UserManagerService

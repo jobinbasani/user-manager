@@ -5,13 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
+	"log"
 	"strings"
 	"time"
+
+	"github.com/aws/smithy-go"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -184,8 +187,11 @@ func (d DynamoDBService) DeleteFamilyMembers(ctx context.Context, memberIds []st
 }
 
 func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error) {
-	ts := time.Now().Unix()
+	now := time.Now()
+	ts := now.Unix()
+	today := now.Format("January 2, 2006")
 	announcement.Id = fmt.Sprintf("announce-%d", ts)
+	announcement.CreatedOn = today
 	announcementJson, err := json.Marshal(announcement)
 	if err != nil {
 		return "", err
@@ -226,6 +232,10 @@ func (d DynamoDBService) GetAnnouncements(ctx context.Context) ([]openapi.Announ
 	},
 	)
 	if err != nil {
+		var oe *smithy.OperationError
+		if errors.As(err, &oe) {
+			log.Printf("failed to call service: %s, operation: %s, error: %v", oe.Service(), oe.Operation(), oe.Unwrap())
+		}
 		return nil, err
 	}
 	if len(data.Items) == 0 {
