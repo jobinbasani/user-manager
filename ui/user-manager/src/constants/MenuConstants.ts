@@ -2,7 +2,6 @@ import SvgIcon from '@mui/material/SvgIcon/SvgIcon';
 import HomeIcon from '@mui/icons-material/Home';
 import RoomServiceIcon from '@mui/icons-material/RoomService';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
-import CollectionsIcon from '@mui/icons-material/Collections';
 import GroupIcon from '@mui/icons-material/Group';
 import BookIcon from '@mui/icons-material/Book';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -34,9 +33,6 @@ export const navMenuItems: Array<NavMenuItemType> = [
     key: '4', value: 'Catechism', navLink: '/catechism', isPrivate: false, Icon: BookIcon, visibility: 'all',
   },
   {
-    key: '5', value: 'Gallery', navLink: '/gallery', isPrivate: false, Icon: CollectionsIcon, visibility: 'all',
-  },
-  {
     key: '6', value: 'Sign Up', navLink: SIGNUP_URL, isPrivate: false, Icon: HowToRegIcon, visibility: 'loggedout',
   },
   {
@@ -48,10 +44,4 @@ export const navMenuItems: Array<NavMenuItemType> = [
   {
     key: '9', value: 'Logout', navLink: SIGNOUT_URL, isPrivate: false, Icon: LogoutIcon, visibility: 'loggedin',
   },
-];
-
-/** Main header right menu items */
-export const rightMenuItems = [
-  { key: '1', value: 'Dashboard', navLink: '/dashboard' },
-  { key: '2', value: 'Logout', navLink: '/' },
 ];
