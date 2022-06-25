@@ -15,7 +15,7 @@ function App() {
     <Box>
       <BrowserRouter>
         <Navbar />
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1, bgcolor: '#F0F2F5' }}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between">
             <Sidebar />
             <Router />

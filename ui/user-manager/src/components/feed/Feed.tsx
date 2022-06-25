@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { AxiosResponse } from 'axios';
 import Button from '@mui/material/Button';
-import FeedEntry from '../feed/FeedEntry';
+import FeedEntry from './FeedEntry';
 import AddAnnouncement from '../form/AddAnnouncement';
 import { RootState } from '../../store';
 import { Announcement } from '../../generated-sources/openapi';

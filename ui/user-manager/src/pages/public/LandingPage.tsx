@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserDetails, UserDetails } from '../../store/user/user-slice';
 import { RootState } from '../../store';
-import Feed from '../../components/layout/Feed';
+import Feed from '../../components/feed/Feed';
 import MyAccount from '../private/MyAccount';
 
 export default function LandingPage() {
