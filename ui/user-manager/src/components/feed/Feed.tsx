@@ -64,7 +64,7 @@ export default function Feed() {
   }, [isAdmin]);
 
   return (
-    <Box bgcolor="grey" flex={4} p={2}>
+    <Box height="85vh" flex={4} p={2}>
       <Dialog
         open={confirmDialogOpen}
         onClose={closeConfirmDialog}

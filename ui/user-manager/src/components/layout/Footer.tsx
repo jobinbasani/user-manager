@@ -26,7 +26,7 @@ export default function Footer() {
   return (
     <>
       <Container sx={{ textAlign: 'center' }}>
-        <Typography variant="h6" sx={{ fontSize: 12, paddingBottom: 2 }}>&copy; Holy Family Syro Malabar Church</Typography>
+        <Typography variant="h6" sx={{ fontSize: 12, padding: 2 }}>&copy; Holy Family Syro Malabar Church</Typography>
       </Container>
       <Paper
         sx={{
