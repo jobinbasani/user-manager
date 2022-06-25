@@ -48,13 +48,17 @@ export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncement
 
   const saveAnnouncement = async (data:AnnouncementRecord, setSubmitting:((isSubmitting: boolean) => void)) => {
     setLoading(true);
+    let expiresOn = 0;
+    if (data.expiresOn) {
+      expiresOn = Math.floor(new Date(data.expiresOn).getTime() / 1000);
+    }
     const announcement:Announcement = {
       id: data.id,
       title: data.title,
       subtitle: data.subtitle,
       description: data.description,
       createdOn: data.createdOn,
-      expiresOn: data.expiresOn ? data.expiresOn.toString() : '',
+      expiresOn: expiresOn.toString(),
     };
     await getAdminAPI(user.accessToken).addAnnouncement(announcement)
       .then(() => getPublicAPI().getAnnouncements())

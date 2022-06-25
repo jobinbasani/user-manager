@@ -9,6 +9,7 @@ import (
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,6 +32,7 @@ const (
 	infoAttribute      = "info"
 	userRecType        = "USER"
 	announcementId     = "announcements"
+	ttlAttribute       = "expDate"
 )
 
 var titleCaser = cases.Title(language.English)
@@ -194,12 +196,18 @@ func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement opena
 	announcement.Id = fmt.Sprintf("announce-%d", ts)
 	announcement.CreatedOn = today
 	announcementJson, err := json.Marshal(announcement)
+	var expiry int
+	if len(announcement.ExpiresOn) > 0 {
+		if s, err := strconv.Atoi(announcement.ExpiresOn); err == nil {
+			expiry = s
+		}
+	}
 	if err != nil {
 		return "", err
 	}
 	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
-			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : %d}`,
+			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : %d, '%s' : %d}`,
 			d.cfg.UserDataTableName,
 			idAttribute,
 			announcementId,
@@ -209,6 +217,8 @@ func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement opena
 			string(announcementJson),
 			createdAtAttribute,
 			ts,
+			ttlAttribute,
+			expiry,
 		)),
 	})
 
