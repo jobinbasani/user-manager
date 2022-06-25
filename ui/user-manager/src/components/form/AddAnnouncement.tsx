@@ -10,7 +10,9 @@ import Button from '@mui/material/Button';
 import { useSelector } from 'react-redux';
 import { AxiosResponse } from 'axios';
 import { Announcement } from '../../generated-sources/openapi';
-import { FormTextArea, FormTextField } from './FormFields';
+import {
+  FormDateTimeField, FormTextArea, FormTextField, OptionalDate,
+} from './FormFields';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
 import { RootState } from '../../store';
 
@@ -19,11 +21,15 @@ type AddAnnouncementProps = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+type AnnouncementRecord = Omit<Announcement, 'expiresOn'> & {
+  expiresOn: OptionalDate
+}
+
 export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncementProps) {
   const user = useSelector((state: RootState) => state.user);
 
-  const initialValues:Announcement = {
-    id: 'new', description: '', subtitle: '', title: '', createdOn: Date.now().toString(), expiresOn: '',
+  const initialValues:AnnouncementRecord = {
+    id: 'new', description: '', subtitle: '', title: '', createdOn: Date.now().toString(), expiresOn: null,
   };
 
   const announcementSchema = Yup.object().shape({
@@ -40,9 +46,17 @@ export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncement
       .required('Required'),
   });
 
-  const saveAnnouncement = async (data:Announcement, setSubmitting:((isSubmitting: boolean) => void)) => {
+  const saveAnnouncement = async (data:AnnouncementRecord, setSubmitting:((isSubmitting: boolean) => void)) => {
     setLoading(true);
-    await getAdminAPI(user.accessToken).addAnnouncement(data)
+    const announcement:Announcement = {
+      id: data.id,
+      title: data.title,
+      subtitle: data.subtitle,
+      description: data.description,
+      createdOn: data.createdOn,
+      expiresOn: data.expiresOn ? data.expiresOn.toString() : '',
+    };
+    await getAdminAPI(user.accessToken).addAnnouncement(announcement)
       .then(() => getPublicAPI().getAnnouncements())
       .then((feeds: AxiosResponse<Array<Announcement>>) => {
         if (feeds.data.length > 0) {
@@ -72,7 +86,7 @@ export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncement
           }}
         >
           {({
-            submitForm, isSubmitting,
+            submitForm, isSubmitting, values, setFieldValue,
           }) => (
             <Form>
               <FormTextField label="Title" name="title" />
@@ -80,6 +94,9 @@ export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncement
               <FormTextField label="Subtitle" name="subtitle" />
               <br />
               <FormTextArea label="Message" name="description" minRows={5} />
+              <br />
+              <FormDateTimeField label="Expires on" name="expiresOn" value={values.expiresOn} setFieldValue={setFieldValue} />
+              <br />
               <br />
               <Button
                 variant="contained"

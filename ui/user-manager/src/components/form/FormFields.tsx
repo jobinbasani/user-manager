@@ -2,7 +2,7 @@ import { TextField } from 'formik-mui';
 import { Field } from 'formik';
 import React from 'react';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { DatePicker, LocalizationProvider } from '@mui/lab';
+import { DatePicker, DateTimePicker, LocalizationProvider } from '@mui/lab';
 
 type TextFieldProps = {
   label: string;
@@ -17,6 +17,8 @@ type DateFieldProps = {
   value:string|null
   setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)
 } & TextFieldProps
+
+export type OptionalDate = string|null
 
 export function FormTextField({ label, name }: TextFieldProps) {
   return (
@@ -56,6 +58,31 @@ export function FormDateField({
         onChange={(v) => setFieldValue(name, v, true)}
         value={value}
         disableFuture
+        renderInput={(params) => (
+          <Field
+            component={TextField}
+            margin="dense"
+            name={name}
+            sx={{ '& .MuiFormHelperText-root': { color: '#d32f2f' } }}
+            variant="standard"
+            {...params}
+          />
+        )}
+      />
+    </LocalizationProvider>
+  );
+}
+
+export function FormDateTimeField({
+  label, name, value, setFieldValue,
+}: DateFieldProps) {
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DateTimePicker
+        label={label}
+        onChange={(v) => setFieldValue(name, v, true)}
+        value={value}
+        disablePast
         renderInput={(params) => (
           <Field
             component={TextField}

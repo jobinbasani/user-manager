@@ -19,13 +19,11 @@ import { getEnumIndexByEnumValue } from '../../util/util';
 import { getFamilyManagementAPI } from '../../api/api';
 import { RootState } from '../../store';
 import { setFamilyDetails } from '../../store/family/family-slice';
-import { FormDateField, FormTextField } from './FormFields';
+import { FormDateField, FormTextField, OptionalDate } from './FormFields';
 
 type FormProps = {
   showFormFn:React.Dispatch<React.SetStateAction<boolean>>
 }
-
-type OptionalDate = string|null
 
 type UserRecord = Omit<UserData,
 'dateOfBirth'|
