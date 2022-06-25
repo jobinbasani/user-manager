@@ -33,7 +33,7 @@ export default function FeedEntry({ announcement, isAdmin, onDelete }: FeedProps
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
           {announcement.subtitle}
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
           {announcement.description}
         </Typography>
       </CardContent>
