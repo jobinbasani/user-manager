@@ -8,7 +8,7 @@ import Sidebar from './components/layout/Sidebar';
 import Rightbar from './components/layout/Rightbar';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import Router from './routes';
+import Router from './components/layout/ContentArea';
 
 function App() {
   return (
