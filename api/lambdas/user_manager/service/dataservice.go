@@ -207,19 +207,23 @@ func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement opena
 	}
 	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
-			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : %d, '%s' : %d}`,
+			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : ?, '%s' : %d, '%s' : %d}`,
 			d.cfg.UserDataTableName,
 			idAttribute,
 			announcementId,
 			recTypeAttribute,
 			announcement.Id,
 			infoAttribute,
-			string(announcementJson),
 			createdAtAttribute,
 			ts,
 			ttlAttribute,
 			expiry,
 		)),
+		Parameters: []types.AttributeValue{
+			&types.AttributeValueMemberS{
+				Value: string(announcementJson),
+			},
+		},
 	})
 
 	if err != nil {
