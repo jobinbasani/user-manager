@@ -17,7 +17,7 @@ type AuthService interface {
 	GetUserInfoByAccessToken(ctx context.Context) (openapi.User, error)
 	GetUserInfoBySub(ctx context.Context, sub string) (openapi.User, error)
 	GetUserInfoByEmail(ctx context.Context, email string) (openapi.User, error)
-	GetAdmins(ctx context.Context) ([]openapi.User, error)
+	GetAdmins(ctx context.Context) (openapi.BasicUserInfoList, error)
 }
 
 type CognitoService struct {
@@ -58,19 +58,22 @@ func (c *CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.
 	return c.cognitoUserOutputToUserRecord(userOutput.UserAttributes), nil
 }
 
-func (c *CognitoService) GetAdmins(ctx context.Context) ([]openapi.User, error) {
+func (c *CognitoService) GetAdmins(ctx context.Context) (openapi.BasicUserInfoList, error) {
 	var users []openapi.User
 	userOutput, err := c.client.ListUsersInGroup(ctx, &cognitoidentityprovider.ListUsersInGroupInput{
 		GroupName:  c.cfg.CognitoAdminGroup,
 		UserPoolId: aws.String(c.cfg.CognitoUserPoolID),
 	})
 	if err != nil {
-		return nil, err
+		return openapi.BasicUserInfoList{}, err
 	}
 	for _, u := range userOutput.Users {
 		users = append(users, c.cognitoUserOutputToUserRecord(u.Attributes))
 	}
-	return users, nil
+	return openapi.BasicUserInfoList{
+		Total: int32(len(users)),
+		Items: users,
+	}, nil
 }
 
 func (c *CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {

@@ -105,6 +105,25 @@ export interface BadRequestError {
 /**
  * 
  * @export
+ * @interface BasicUserInfoList
+ */
+export interface BasicUserInfoList {
+    /**
+     * 
+     * @type {number}
+     * @memberof BasicUserInfoList
+     */
+    'total': number;
+    /**
+     * 
+     * @type {Array<User>}
+     * @memberof BasicUserInfoList
+     */
+    'items': Array<User>;
+}
+/**
+ * 
+ * @export
  * @interface FamilyId
  */
 export interface FamilyId {
@@ -598,6 +617,40 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary List of users with Admin access
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAdmins: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/admins`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -630,6 +683,16 @@ export const AdminApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAnnouncements(requestBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary List of users with Admin access
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAdmins(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicUserInfoList>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAdmins(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -659,6 +722,15 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         deleteAnnouncements(requestBody: Array<string>, options?: any): AxiosPromise<Array<string>> {
             return localVarFp.deleteAnnouncements(requestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary List of users with Admin access
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAdmins(options?: any): AxiosPromise<BasicUserInfoList> {
+            return localVarFp.getAdmins(options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -692,6 +764,17 @@ export class AdminApi extends BaseAPI {
      */
     public deleteAnnouncements(requestBody: Array<string>, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).deleteAnnouncements(requestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary List of users with Admin access
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public getAdmins(options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).getAdmins(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -120,7 +120,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BasicUserInfoArray'
+                $ref: '#/components/schemas/BasicUserInfoList'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -544,10 +544,19 @@ components:
       items:
         $ref: '#/components/schemas/UserData'
 
-    BasicUserInfoArray:
-      type: array
-      items:
-        $ref: '#/components/schemas/User'
+    BasicUserInfoList:
+      type: object
+      required:
+        - total
+        - items
+      properties:
+        total:
+          type: integer
+          example: 1
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
 
     StringArray:
       type: array

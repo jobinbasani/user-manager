@@ -77,8 +77,8 @@ func (s *AdminApiService) GetAdmins(ctx context.Context) (ImplResponse, error) {
 	// TODO - update GetAdmins with the required logic for this service method.
 	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 
-	//TODO: Uncomment the next line to return response Response(200, []User{}) or use other options such as http.Ok ...
-	//return Response(200, []User{}), nil
+	//TODO: Uncomment the next line to return response Response(200, BasicUserInfoList{}) or use other options such as http.Ok ...
+	//return Response(200, BasicUserInfoList{}), nil
 
 	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
 	//return Response(401, UnauthorizedError{}), nil
