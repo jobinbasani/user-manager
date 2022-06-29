@@ -7,6 +7,7 @@ import BookIcon from '@mui/icons-material/Book';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LoginIcon from '@mui/icons-material/Login';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { LOGIN_URL, SIGNOUT_URL, SIGNUP_URL } from './ApiConstants';
 
 export interface NavMenuItemType {
@@ -15,7 +16,7 @@ export interface NavMenuItemType {
   navLink: string;
   isPrivate: boolean;
   Icon: typeof SvgIcon
-  visibility: 'all'|'loggedout'|'loggedin'
+  visibility: 'all'|'loggedout'|'loggedin'|'admin'
 }
 
 /** Main header navigation items */
@@ -31,6 +32,9 @@ export const navMenuItems: Array<NavMenuItemType> = [
   },
   {
     key: '4', value: 'Catechism', navLink: '/catechism', isPrivate: false, Icon: BookIcon, visibility: 'all',
+  },
+  {
+    key: '5', value: 'Admin', navLink: '/admin', isPrivate: false, Icon: AdminPanelSettingsIcon, visibility: 'admin',
   },
   {
     key: '6', value: 'Sign Up', navLink: SIGNUP_URL, isPrivate: false, Icon: HowToRegIcon, visibility: 'loggedout',

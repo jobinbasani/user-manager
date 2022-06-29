@@ -5,6 +5,7 @@ import Services from '../../pages/public/Services';
 import LandingPage from '../../pages/public/LandingPage';
 import Feed from '../feed/Feed';
 import MyAccount from '../../pages/private/MyAccount';
+import Admin from '../../pages/private/Admin';
 
 const Router = () => useRoutes(
   [
@@ -15,6 +16,7 @@ const Router = () => useRoutes(
     { path: 'committee', element: <Committee /> },
     { path: 'services', element: <Services /> },
     { path: 'catechism', element: <Catechism /> },
+    { path: 'admin', element: <Admin /> },
     { path: '*', element: <LandingPage /> },
   ],
 );

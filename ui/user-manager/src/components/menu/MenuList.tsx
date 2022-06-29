@@ -16,6 +16,7 @@ export default function MenuList() {
         item.visibility === 'all'
         || (user.isLoggedIn && item.visibility === 'loggedin')
         || (!user.isLoggedIn && item.visibility === 'loggedout')
+        || (user.isAdmin && item.visibility === 'admin')
       ))
         .map((item) => (
           <ListItem key={item.key} sx={{ paddingLeft: 1 }}>
