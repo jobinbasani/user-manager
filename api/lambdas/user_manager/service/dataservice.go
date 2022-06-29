@@ -27,6 +27,7 @@ const (
 	idAttribute        = "id"
 	recTypeAttribute   = "recType"
 	createdAtAttribute = "createdAt"
+	searchAttribute    = "search"
 	familyIdAttribute  = "familyId"
 	emailIdAttribute   = "emailId"
 	infoAttribute      = "info"
@@ -107,6 +108,7 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 	if familyID == nil {
 		familyID = aws.String(uuid.New().String())
 	}
+	ts := time.Now().Unix()
 	for _, u := range userData {
 		if len(u.Email) == 0 {
 			return openapi.FamilyId{}, errors.New("a valid email id is needed or all users")
@@ -117,13 +119,14 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 		u.FirstName = d.titleCase(u.FirstName)
 		u.LastName = d.titleCase(u.LastName)
 		u.DisplayName = u.FirstName + " " + u.LastName
+		searchData := d.buildSearchIndex(u.FirstName, u.LastName, u.Email)
 		userDataJson, err := json.Marshal(u)
 		if err != nil {
 			return openapi.FamilyId{}, err
 		}
 		statements = append(statements, types.ParameterizedStatement{
 			Statement: aws.String(fmt.Sprintf(
-				`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s'}`,
+				`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : %d, '%s' : ?, '%s' : ?}`,
 				d.cfg.UserDataTableName,
 				idAttribute,
 				uuid.New().String(),
@@ -133,9 +136,19 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 				*familyID,
 				emailIdAttribute,
 				emails.getAll(),
+				createdAtAttribute,
+				ts,
 				infoAttribute,
-				string(userDataJson),
+				searchAttribute,
 			)),
+			Parameters: []types.AttributeValue{
+				&types.AttributeValueMemberS{
+					Value: string(userDataJson),
+				},
+				&types.AttributeValueMemberS{
+					Value: searchData,
+				},
+			},
 		})
 	}
 	_, err = d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
@@ -405,6 +418,18 @@ func (d DynamoDBService) getStringValue(attrMap map[string]types.AttributeValue,
 
 func (d DynamoDBService) titleCase(s string) string {
 	return strings.TrimSpace(titleCaser.String(s))
+}
+
+func (d DynamoDBService) buildSearchIndex(s ...string) string {
+	var all []string
+	for i := range s {
+		entry := strings.TrimSpace(s[i])
+		entry = strings.ToLower(entry)
+		if len(entry) > 0 {
+			all = append(all, entry)
+		}
+	}
+	return strings.Join(all, ",")
 }
 
 func NewDataService(cfg *config.Config, authService AuthService) DataService {
