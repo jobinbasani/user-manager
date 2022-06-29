@@ -5,6 +5,7 @@ rootdir=$(cd $(dirname ${BASH_SOURCE[0]}); cd ../; pwd)
 PACKAGE_NAME=openapi
 WORKDIR=${rootdir}/user_manager/${PACKAGE_NAME}
 GENERATOR_IMAGE=openapitools/openapi-generator-cli:v5.4.0
+rm -Rf $WORKDIR/*
 
 docker run --rm -v "$rootdir":/src_files "$GENERATOR_IMAGE" generate \
   -i /src_files/api_spec.yml \

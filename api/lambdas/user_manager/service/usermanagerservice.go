@@ -117,6 +117,17 @@ func (u *UserManagerService) DeleteAnnouncements(ctx context.Context, announceme
 	return openapi.Response(http.StatusOK, ids), nil
 }
 
+func (u *UserManagerService) GetAdmins(ctx context.Context) (openapi.ImplResponse, error) {
+	users, err := u.authService.GetAdmins(ctx)
+	if err != nil {
+		log.Println(err)
+		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
+			Message: err.Error(),
+		}), err
+	}
+	return openapi.Response(http.StatusOK, users), nil
+}
+
 // NewUserManagerService creates a new UserManagerService
 func NewUserManagerService(cfg *config.Config, authService AuthService, dataService DataService) *UserManagerService {
 	return &UserManagerService{

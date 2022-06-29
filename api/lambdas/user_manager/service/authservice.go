@@ -17,6 +17,7 @@ type AuthService interface {
 	GetUserInfoByAccessToken(ctx context.Context) (openapi.User, error)
 	GetUserInfoBySub(ctx context.Context, sub string) (openapi.User, error)
 	GetUserInfoByEmail(ctx context.Context, email string) (openapi.User, error)
+	GetAdmins(ctx context.Context) ([]openapi.User, error)
 }
 
 type CognitoService struct {
@@ -57,6 +58,21 @@ func (c *CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.
 	return c.cognitoUserOutputToUserRecord(userOutput.UserAttributes), nil
 }
 
+func (c *CognitoService) GetAdmins(ctx context.Context) ([]openapi.User, error) {
+	var users []openapi.User
+	userOutput, err := c.client.ListUsersInGroup(ctx, &cognitoidentityprovider.ListUsersInGroupInput{
+		GroupName:  c.cfg.CognitoAdminGroup,
+		UserPoolId: aws.String(c.cfg.CognitoUserPoolID),
+	})
+	if err != nil {
+		return nil, err
+	}
+	for _, u := range userOutput.Users {
+		users = append(users, c.cognitoUserOutputToUserRecord(u.Attributes))
+	}
+	return users, nil
+}
+
 func (c *CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {
 	var user openapi.User
 	for _, attribute := range attributes {
@@ -75,6 +91,7 @@ func (c *CognitoService) cognitoUserOutputToUserRecord(attributes []types.Attrib
 			}
 		}
 	}
+	user.DisplayName = util.ToTitleCase(user.FirstName, user.LastName)
 	return user
 }
 

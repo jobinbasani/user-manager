@@ -20,6 +20,7 @@ type Config struct {
 	AwsConfig           aws.Config
 	JwkCache            *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
 	CognitoUserPoolID   string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
+	CognitoAdminGroup   *string              `envconfig:"USERMANAGER_ADMIN_GROUP" default:"admin"`
 	UserDataTableName   string               `envconfig:"USERMANAGER_TABLE_NAME" required:"true"`
 	EmailIndexName      string               `envconfig:"USERMANAGER_EMAIL_INDEX_NAME" required:"true"`
 	FamilyIndexName     string               `envconfig:"USERMANAGER_FAMILY_INDEX_NAME" required:"true"`

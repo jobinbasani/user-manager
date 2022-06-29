@@ -20,6 +20,7 @@ import (
 type AdminApiRouter interface {
 	AddAnnouncement(http.ResponseWriter, *http.Request)
 	DeleteAnnouncements(http.ResponseWriter, *http.Request)
+	GetAdmins(http.ResponseWriter, *http.Request)
 }
 
 // FamilyManagementApiRouter defines the required methods for binding the api requests to a responses for the FamilyManagementApi
@@ -52,6 +53,7 @@ type UserManagementApiRouter interface {
 type AdminApiServicer interface {
 	AddAnnouncement(context.Context, Announcement) (ImplResponse, error)
 	DeleteAnnouncements(context.Context, []string) (ImplResponse, error)
+	GetAdmins(context.Context) (ImplResponse, error)
 }
 
 // FamilyManagementApiServicer defines the api actions for the FamilyManagementApi service

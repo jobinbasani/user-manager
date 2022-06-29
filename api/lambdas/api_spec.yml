@@ -108,6 +108,28 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admins:
+    get:
+      operationId: getAdmins
+      summary: List of users with Admin access
+      tags:
+        - Admin
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicUserInfoArray'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/admin/announcements:
     post:
       operationId: addAnnouncement
@@ -521,6 +543,11 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/UserData'
+
+    BasicUserInfoArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
 
     StringArray:
       type: array

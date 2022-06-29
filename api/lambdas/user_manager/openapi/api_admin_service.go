@@ -71,3 +71,26 @@ func (s *AdminApiService) DeleteAnnouncements(ctx context.Context, requestBody [
 
 	return Response(http.StatusNotImplemented, nil), errors.New("DeleteAnnouncements method not implemented")
 }
+
+// GetAdmins - List of users with Admin access
+func (s *AdminApiService) GetAdmins(ctx context.Context) (ImplResponse, error) {
+	// TODO - update GetAdmins with the required logic for this service method.
+	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, []User{}) or use other options such as http.Ok ...
+	//return Response(200, []User{}), nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("GetAdmins method not implemented")
+}
