@@ -17,6 +17,7 @@ class UserManagerStack extends cdk.Stack {
     const userTableName = 'UserManagerData';
     const familyIndexName = 'familyIndex';
     const emailIndexName = 'emailIndex';
+    const searchIndexName = 'searchIndex';
     const ttlAttribute = 'expDate';
 
     const userTable = new dynamodb.Table(this, id, {
@@ -55,6 +56,17 @@ class UserManagerStack extends cdk.Stack {
       },
       projectionType: dynamodb.ProjectionType.INCLUDE,
       nonKeyAttributes: ['familyId'],
+      readCapacity: 2,
+      writeCapacity: 2,
+    });
+
+    userTable.addGlobalSecondaryIndex({
+      indexName: searchIndexName,
+      partitionKey: {
+        name: 'search',
+        type: dynamodb.AttributeType.STRING,
+      },
+      projectionType: dynamodb.ProjectionType.KEYS_ONLY,
       readCapacity: 2,
       writeCapacity: 2,
     });

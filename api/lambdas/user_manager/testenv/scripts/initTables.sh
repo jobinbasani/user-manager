@@ -10,6 +10,7 @@ if [ "$tblCount" -eq "0" ]; then
                             AttributeName=recType,AttributeType=S \
                             AttributeName=emailId,AttributeType=S \
                             AttributeName=familyId,AttributeType=S \
+                            AttributeName=search,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH AttributeName=recType,KeyType=RANGE \
     --billing-mode PAY_PER_REQUEST \
     --global-secondary-indexes \
@@ -28,7 +29,14 @@ if [ "$tblCount" -eq "0" ]; then
                     \"Projection\":{
                         \"ProjectionType\":\"KEYS_ONLY\"
                     }
-                }
+                },
+               {
+                   \"IndexName\": \"searchIndex\",
+                   \"KeySchema\": [{\"AttributeName\":\"search\",\"KeyType\":\"HASH\"}],
+                   \"Projection\":{
+                       \"ProjectionType\":\"KEYS_ONLY\"
+                   }
+               }
             ]"
 else
   echo "Available tables are:"
