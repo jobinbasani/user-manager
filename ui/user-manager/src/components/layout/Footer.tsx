@@ -25,7 +25,7 @@ export default function Footer() {
 
   return (
     <>
-      <Container sx={{ textAlign: 'center' }}>
+      <Container sx={{ textAlign: 'center', bgcolor: '#F0F2F5' }}>
         <Typography variant="h6" sx={{ fontSize: 12, padding: 2 }}>&copy; Holy Family Syro Malabar Church</Typography>
       </Container>
       <Paper
