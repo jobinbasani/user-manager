@@ -115,6 +115,13 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
       initialValues.firstName = user.userInfo.firstName;
       initialValues.lastName = user.userInfo.lastName;
       initialValues.email = user.userInfo.userEmail;
+    } else {
+      const primaryAcct = family.members[0];
+      initialValues.familyUnit = primaryAcct.familyUnit;
+      initialValues.apartment = primaryAcct.apartment;
+      initialValues.street = primaryAcct.street;
+      initialValues.city = primaryAcct.city;
+      initialValues.postalCode = primaryAcct.postalCode;
     }
     return initialValues;
   };
