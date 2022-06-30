@@ -46,6 +46,7 @@ type UserRecord = Omit<UserData,
 export default function AddFamilyMember({ showFormFn }:FormProps) {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+  const family = useSelector((state: RootState) => state.family);
 
   const userInfoSchema = Yup.object().shape({
     firstName: Yup.string()
@@ -83,30 +84,39 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
       .min(6).max(7).required('Required'),
   });
 
-  const initialValues:UserRecord = {
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    email: '',
-    gender: '',
-    baptismalName: '',
-    houseName: '',
-    familyUnit: '',
-    dateOfBirth: null,
-    dateOfBaptism: null,
-    dateOfConfirmation: null,
-    maritalStatus: '',
-    canadianStatus: '',
-    inCanadaSince: null,
-    homeParish: '',
-    dioceseInIndia: '',
-    previousParishInCanada: '',
-    apartment: '',
-    street: '',
-    city: '',
-    province: UserDataProvinceEnum.Ns,
-    postalCode: '',
-    mobile: '',
+  const getInitialValues = () => {
+    const initialValues:UserRecord = {
+      firstName: '',
+      lastName: '',
+      middleName: '',
+      email: '',
+      gender: '',
+      baptismalName: '',
+      houseName: '',
+      familyUnit: '',
+      dateOfBirth: null,
+      dateOfBaptism: null,
+      dateOfConfirmation: null,
+      maritalStatus: '',
+      canadianStatus: '',
+      inCanadaSince: null,
+      homeParish: '',
+      dioceseInIndia: '',
+      previousParishInCanada: '',
+      apartment: '',
+      street: '',
+      city: '',
+      province: UserDataProvinceEnum.Ns,
+      postalCode: '',
+      mobile: '',
+    };
+
+    if (family.members.length === 0) {
+      initialValues.firstName = user.userInfo.firstName;
+      initialValues.lastName = user.userInfo.lastName;
+      initialValues.email = user.userInfo.userEmail;
+    }
+    return initialValues;
   };
 
   const saveUserData = async (data:UserRecord, setSubmitting:((isSubmitting: boolean) => void)) => {
@@ -172,7 +182,7 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={getInitialValues()}
       validationSchema={userInfoSchema}
       onSubmit={async (values, { setSubmitting }) => {
         await saveUserData(values, setSubmitting);
