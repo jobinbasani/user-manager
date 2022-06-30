@@ -185,6 +185,7 @@ class UserManagerStack extends cdk.Stack {
     userManagerLambda.addToRolePolicy(new iam.PolicyStatement({
       actions: [
         'cognito-idp:ListUsers',
+        'cognito-idp:ListUsersInGroup',
       ],
       resources: [
         userPool.userPoolArn,
