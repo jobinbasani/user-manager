@@ -13,7 +13,7 @@ import {
   UserData,
   UserDataCanadianStatusEnum,
   UserDataGenderEnum,
-  UserDataMaritalStatusEnum, UserDataProvinceEnum,
+  UserDataMaritalStatusEnum, UserDataProvinceEnum, UserDataRelationEnum,
 } from '../../generated-sources/openapi';
 import { getEnumIndexByEnumValue } from '../../util/util';
 import { getFamilyManagementAPI } from '../../api/api';
@@ -32,7 +32,8 @@ type UserRecord = Omit<UserData,
 'inCanadaSince'|
 'canadianStatus'|
 'maritalStatus'|
-'gender'
+'gender'|
+'relation'
 > &{
   dateOfBirth:OptionalDate
   dateOfConfirmation:OptionalDate
@@ -41,6 +42,7 @@ type UserRecord = Omit<UserData,
   canadianStatus:string
   maritalStatus:string
   gender:string
+  relation:string
 };
 
 export default function AddFamilyMember({ showFormFn }:FormProps) {
@@ -92,6 +94,7 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
       email: '',
       gender: '',
       baptismalName: '',
+      relation: '',
       houseName: '',
       familyUnit: '',
       dateOfBirth: null,
@@ -212,6 +215,9 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
           {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
           <br />
           <FormTextField label="Baptismal Name" name="baptismalName" />
+          <br />
+          {family.members.length > 0
+            && selectField(`Relation to ${user.userInfo.firstName} ${user.userInfo.lastName}`, 'relation', UserDataRelationEnum)}
           <br />
           <FormTextField label="House Name" name="houseName" />
           <br />
