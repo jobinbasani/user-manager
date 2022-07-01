@@ -67,6 +67,11 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
       .required('Required'),
     baptismalName: Yup.string()
       .max(50, 'Too Long!'),
+    relation: Yup.string()
+      .when('firstName', {
+        is: () => family.members.length > 0,
+        then: (schema) => schema.required('Required'),
+      }),
     houseName: Yup.string()
       .max(50, 'Too Long!'),
     familyUnit: Yup.string()
@@ -136,6 +141,9 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
       canadianStatus: getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus) >= 0
         ? Object.values(UserDataCanadianStatusEnum)[getEnumIndexByEnumValue(UserDataCanadianStatusEnum, data.canadianStatus)]
         : UserDataCanadianStatusEnum.Citizen,
+      relation: getEnumIndexByEnumValue(UserDataRelationEnum, data.relation) >= 0
+        ? Object.values(UserDataRelationEnum)[getEnumIndexByEnumValue(UserDataRelationEnum, data.relation)]
+        : undefined,
       city: data.city,
       dateOfBaptism: data.dateOfBaptism ? data.dateOfBaptism.toString() : undefined,
       dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toString() : '',
@@ -217,7 +225,7 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
           <FormTextField label="Baptismal Name" name="baptismalName" />
           <br />
           {family.members.length > 0
-            && selectField(`Relation to ${user.userInfo.firstName} ${user.userInfo.lastName}`, 'relation', UserDataRelationEnum)}
+            && selectField(`Relation to ${user.userInfo.firstName}`, 'relation', UserDataRelationEnum)}
           <br />
           <FormTextField label="House Name" name="houseName" />
           <br />
