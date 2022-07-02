@@ -210,34 +210,34 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
         submitForm, isSubmitting, values, setFieldValue,
       }) => (
         <Form>
-          <FormTextField label="First Name" name="firstName" />
+          <FormTextField label="First Name *" name="firstName" />
           <br />
           <FormTextField label="Middle Name" name="middleName" />
           <br />
-          <FormTextField label="Last Name" name="lastName" />
+          <FormTextField label="Last Name *" name="lastName" />
           <br />
-          {selectField('Gender', 'gender', UserDataGenderEnum)}
+          {selectField('Gender *', 'gender', UserDataGenderEnum)}
           <br />
-          <FormTextField label="Email" name="email" />
+          <FormTextField label="Email *" name="email" />
           <br />
-          {selectField('Marital Status', 'maritalStatus', UserDataMaritalStatusEnum)}
+          {selectField('Marital Status *', 'maritalStatus', UserDataMaritalStatusEnum)}
           <br />
           <FormTextField label="Baptismal Name" name="baptismalName" />
           <br />
           {family.members.length > 0
-            && selectField(`Relation to ${user.userInfo.firstName}`, 'relation', UserDataRelationEnum)}
+            && selectField(`Relation to ${user.userInfo.firstName} *`, 'relation', UserDataRelationEnum)}
           <br />
           <FormTextField label="House Name" name="houseName" />
           <br />
           <FormTextField label="Family Unit" name="familyUnit" />
           <br />
-          <FormDateField value={values.dateOfBirth} setFieldValue={setFieldValue} label="Date of Birth" name="dateOfBirth" />
+          <FormDateField value={values.dateOfBirth} setFieldValue={setFieldValue} label="Date of Birth *" name="dateOfBirth" />
           <br />
           <FormDateField value={values.dateOfBaptism} setFieldValue={setFieldValue} label="Date of Baptism" name="dateOfBaptism" />
           <br />
           <FormDateField value={values.dateOfConfirmation} setFieldValue={setFieldValue} label="Date of Confirmation" name="dateOfConfirmation" />
           <br />
-          {selectField('Status in Canada', 'canadianStatus', UserDataCanadianStatusEnum)}
+          {selectField('Status in Canada *', 'canadianStatus', UserDataCanadianStatusEnum)}
           <br />
           <FormDateField value={values.inCanadaSince} setFieldValue={setFieldValue} label="In Canada since" name="inCanadaSince" />
           <br />
@@ -249,13 +249,13 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
           <br />
           <FormTextField label="Apt #" name="apartment" />
           <br />
-          <FormTextField label="Street # and name" name="street" />
+          <FormTextField label="Street # and name *" name="street" />
           <br />
-          <FormTextField label="City" name="city" />
+          <FormTextField label="City *" name="city" />
           <br />
-          {selectField('Province', 'province', UserDataProvinceEnum)}
+          {selectField('Province *', 'province', UserDataProvinceEnum)}
           <br />
-          <FormTextField label="Postal Code" name="postalCode" />
+          <FormTextField label="Postal Code *" name="postalCode" />
           <br />
           <FormTextField label="Mobile Number" name="cell" />
           {isSubmitting && <LinearProgress />}
