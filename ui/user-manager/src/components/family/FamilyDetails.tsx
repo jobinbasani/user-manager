@@ -20,24 +20,27 @@ import {
 import CardContent from '@mui/material/CardContent';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Button from '@mui/material/Button';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import PeopleIcon from '@mui/icons-material/People';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { format } from 'date-fns';
 import { PersonRemove } from '@mui/icons-material';
 import { stringAvatar } from '../../util/util';
-import { RootState } from '../../store';
 import { getFamilyManagementAPI } from '../../api/api';
-import { setFamilyDetails } from '../../store/family/family-slice';
+import { setFamilyDetails, FamilyDetails as FamilyDetailsModel } from '../../store/family/family-slice';
 import AddFamilyMember from '../form/AddFamilyMember';
 import TitleAndSubtitle from '../text/TitleAndSubtitle';
 import { UserDataGenderEnum } from '../../generated-sources/openapi';
+import { UserDetails } from '../../store/user/user-slice';
 
-export default function FamilyDetails() {
+type FamilyDetailsProps = {
+  user: UserDetails;
+  family:FamilyDetailsModel;
+};
+
+export default function FamilyDetails({ user, family }: FamilyDetailsProps) {
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
-  const family = useSelector((state: RootState) => state.family);
   const [isLoading, setLoading] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
