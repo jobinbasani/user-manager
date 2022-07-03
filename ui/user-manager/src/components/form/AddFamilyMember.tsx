@@ -19,7 +19,14 @@ import { FamilyDetails as FamilyDetailsModel } from '../../store/family/family-s
 import { FormDateField, FormTextField, OptionalDate } from './FormFields';
 import { UserDetails } from '../../store/user/user-slice';
 
-export type UserRecord = Omit<UserData,
+export type AddFamilyDetailsProps = {
+  user: UserDetails;
+  family:FamilyDetailsModel;
+  showFormFn:React.Dispatch<React.SetStateAction<boolean>>
+  onAddMember:((data:UserData) => Promise<{ payload: UserData[]; type: string; }>)
+};
+
+type UserRecord = Omit<UserData,
 'dateOfBirth'|
 'dateOfConfirmation'|
 'dateOfBaptism'|
@@ -37,13 +44,6 @@ export type UserRecord = Omit<UserData,
   maritalStatus:string
   gender:string
   relation:string
-};
-
-export type AddFamilyDetailsProps = {
-  user: UserDetails;
-  family:FamilyDetailsModel;
-  showFormFn:React.Dispatch<React.SetStateAction<boolean>>
-  onAddMember:((data:UserData) => Promise<{ payload: UserData[]; type: string; }>)
 };
 
 export default function AddFamilyMember({
