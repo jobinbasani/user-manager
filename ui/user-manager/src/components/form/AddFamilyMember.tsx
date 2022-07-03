@@ -7,7 +7,6 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
 import React from 'react';
 import {
   UserData,
@@ -16,16 +15,11 @@ import {
   UserDataMaritalStatusEnum, UserDataProvinceEnum, UserDataRelationEnum,
 } from '../../generated-sources/openapi';
 import { getEnumIndexByEnumValue } from '../../util/util';
-import { getFamilyManagementAPI } from '../../api/api';
-import { RootState } from '../../store';
-import { setFamilyDetails } from '../../store/family/family-slice';
+import { FamilyDetails as FamilyDetailsModel } from '../../store/family/family-slice';
 import { FormDateField, FormTextField, OptionalDate } from './FormFields';
+import { UserDetails } from '../../store/user/user-slice';
 
-type FormProps = {
-  showFormFn:React.Dispatch<React.SetStateAction<boolean>>
-}
-
-type UserRecord = Omit<UserData,
+export type UserRecord = Omit<UserData,
 'dateOfBirth'|
 'dateOfConfirmation'|
 'dateOfBaptism'|
@@ -45,11 +39,17 @@ type UserRecord = Omit<UserData,
   relation:string
 };
 
-export default function AddFamilyMember({ showFormFn }:FormProps) {
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
-  const family = useSelector((state: RootState) => state.family);
+export type AddFamilyDetailsProps = {
+  user: UserDetails;
+  family:FamilyDetailsModel;
+  showFormFn:React.Dispatch<React.SetStateAction<boolean>>
+  onAddMember:((data:UserData) => Promise<{ payload: UserData[]; type: string; }>)
+};
 
+export default function AddFamilyMember({
+  user, family,
+  showFormFn, onAddMember,
+}:AddFamilyDetailsProps) {
   const userInfoSchema = Yup.object().shape({
     firstName: Yup.string()
       .min(2, 'Too Short!')
@@ -171,9 +171,7 @@ export default function AddFamilyMember({ showFormFn }:FormProps) {
         : UserDataProvinceEnum.Ns,
       street: data.street,
     };
-    await getFamilyManagementAPI(user.accessToken).addFamilyMembers([userData])
-      .then(() => getFamilyManagementAPI(user.accessToken).getUserFamily())
-      .then((familyDetails) => dispatch(setFamilyDetails(familyDetails.data)))
+    await onAddMember(userData)
       .finally(() => {
         setSubmitting(false);
         showFormFn(false);

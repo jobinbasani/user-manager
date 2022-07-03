@@ -20,28 +20,24 @@ import {
 import CardContent from '@mui/material/CardContent';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Button from '@mui/material/Button';
-import { useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PeopleIcon from '@mui/icons-material/People';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { format } from 'date-fns';
 import { PersonRemove } from '@mui/icons-material';
 import { stringAvatar } from '../../util/util';
-import { getFamilyManagementAPI } from '../../api/api';
-import { setFamilyDetails, FamilyDetails as FamilyDetailsModel } from '../../store/family/family-slice';
-import AddFamilyMember from '../form/AddFamilyMember';
+import AddFamilyMember, { AddFamilyDetailsProps } from '../form/AddFamilyMember';
 import TitleAndSubtitle from '../text/TitleAndSubtitle';
 import { UserDataGenderEnum } from '../../generated-sources/openapi';
-import { UserDetails } from '../../store/user/user-slice';
 
-type FamilyDetailsProps = {
-  user: UserDetails;
-  family:FamilyDetailsModel;
-};
+type FamilyDetailsProps = Omit<AddFamilyDetailsProps, 'showFormFn'> & {
+  isLoading: boolean;
+  onDeleteMember:((deleteUserId: string) => Promise<void>);
+}
 
-export default function FamilyDetails({ user, family }: FamilyDetailsProps) {
-  const dispatch = useDispatch();
-  const [isLoading, setLoading] = useState(false);
+export default function FamilyDetails({
+  user, family, isLoading, onAddMember, onDeleteMember,
+}: FamilyDetailsProps) {
   const [formVisible, setFormVisible] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteUserName, setDeleteUserName] = useState('');
@@ -57,38 +53,14 @@ export default function FamilyDetails({ user, family }: FamilyDetailsProps) {
     setConfirmDialogOpen(false);
   };
 
-  const loadFamilyData = async () => {
-    setLoading(true);
-    const familyDetails = await getFamilyManagementAPI(user.accessToken).getUserFamily();
-    dispatch(setFamilyDetails(familyDetails.data));
-  };
-
-  const deleteUser = async () => {
-    closeConfirmDialog();
-    if (user.isLoggedIn) {
-      setLoading(true);
-      getFamilyManagementAPI(user.accessToken)
-        .deleteFamilyMembers([deleteUserId])
-        .then(loadFamilyData)
-        .finally(() => setLoading(false));
-    }
-  };
-
   const handleAddMemberClick = () => {
     setFormVisible(!formVisible);
   };
 
-  useEffect(() => {
-    if (user) {
-      window.history.replaceState(null, '', '/myaccount');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user.isLoggedIn) {
-      loadFamilyData().finally(() => setLoading(false));
-    }
-  }, [dispatch, user]);
+  const deleteUser = async () => {
+    closeConfirmDialog();
+    await onDeleteMember(deleteUserId);
+  };
 
   return (
     <Card>
@@ -179,7 +151,7 @@ export default function FamilyDetails({ user, family }: FamilyDetailsProps) {
       </CardActions>
       <Collapse in={formVisible} timeout="auto" unmountOnExit>
         <CardContent>
-          <AddFamilyMember showFormFn={setFormVisible} />
+          <AddFamilyMember user={user} family={family} showFormFn={setFormVisible} onAddMember={onAddMember} />
         </CardContent>
       </Collapse>
     </Card>
