@@ -18,6 +18,7 @@ type AuthService interface {
 	GetUserInfoBySub(ctx context.Context, sub string) (openapi.User, error)
 	GetUserInfoByEmail(ctx context.Context, email string) (openapi.User, error)
 	GetAdmins(ctx context.Context) (openapi.BasicUserInfoList, error)
+	GetAdminCandidates(ctx context.Context, search string) (openapi.BasicUserInfoList, error)
 }
 
 type CognitoService struct {
@@ -74,6 +75,10 @@ func (c *CognitoService) GetAdmins(ctx context.Context) (openapi.BasicUserInfoLi
 		Total: int32(len(users)),
 		Items: users,
 	}, nil
+}
+
+func (c *CognitoService) GetAdminCandidates(ctx context.Context, search string) (openapi.BasicUserInfoList, error) {
+	return openapi.BasicUserInfoList{}, nil
 }
 
 func (c *CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {

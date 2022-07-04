@@ -20,6 +20,7 @@ import (
 type AdminApiRouter interface {
 	AddAnnouncement(http.ResponseWriter, *http.Request)
 	DeleteAnnouncements(http.ResponseWriter, *http.Request)
+	GetAdminCandidates(http.ResponseWriter, *http.Request)
 	GetAdmins(http.ResponseWriter, *http.Request)
 }
 
@@ -53,6 +54,7 @@ type UserManagementApiRouter interface {
 type AdminApiServicer interface {
 	AddAnnouncement(context.Context, Announcement) (ImplResponse, error)
 	DeleteAnnouncements(context.Context, []string) (ImplResponse, error)
+	GetAdminCandidates(context.Context, string) (ImplResponse, error)
 	GetAdmins(context.Context) (ImplResponse, error)
 }
 
