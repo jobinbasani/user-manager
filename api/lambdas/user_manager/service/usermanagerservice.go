@@ -128,17 +128,6 @@ func (u *UserManagerService) GetAdmins(ctx context.Context) (openapi.ImplRespons
 	return openapi.Response(http.StatusOK, users), nil
 }
 
-func (u *UserManagerService) GetAdminCandidates(ctx context.Context, search string) (openapi.ImplResponse, error) {
-	users, err := u.authService.GetAdminCandidates(ctx, search)
-	if err != nil {
-		log.Println(err)
-		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
-			Message: err.Error(),
-		}), err
-	}
-	return openapi.Response(http.StatusOK, users), nil
-}
-
 // NewUserManagerService creates a new UserManagerService
 func NewUserManagerService(cfg *config.Config, authService AuthService, dataService DataService) *UserManagerService {
 	return &UserManagerService{

@@ -9,6 +9,7 @@ import (
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -50,6 +51,11 @@ type DynamoDBService struct {
 	cfg         *config.Config
 	client      *dynamodb.Client
 	authService AuthService
+}
+
+type userDataWithTime struct {
+	createdTime *int
+	*openapi.UserData
 }
 
 type stringSet map[string]struct{}
@@ -335,6 +341,7 @@ func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string)
 		return nil, err
 	}
 	var users []openapi.UserData
+	var udwt []userDataWithTime
 	for _, resp := range batchExecutionOutput.Responses {
 		infoJson := d.getStringValue(resp.Item, infoAttribute)
 		if infoJson == nil {
@@ -353,7 +360,19 @@ func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string)
 		if userId != nil {
 			userData.Id = *userId
 		}
-		users = append(users, userData)
+		udwt = append(udwt, userDataWithTime{
+			createdTime: d.getIntValue(resp.Item, createdAtAttribute),
+			UserData:    &userData,
+		})
+	}
+	if udwt != nil {
+		sort.Slice(udwt, func(i, j int) bool {
+			return *udwt[i].createdTime < *udwt[j].createdTime
+		})
+		users = make([]openapi.UserData, len(udwt))
+		for i := range udwt {
+			users[i] = *udwt[i].UserData
+		}
 	}
 	return users, nil
 }
@@ -411,6 +430,18 @@ func (d DynamoDBService) getStringValue(attrMap map[string]types.AttributeValue,
 		member, ok := attr.(*types.AttributeValueMemberS)
 		if ok {
 			return aws.String(member.Value)
+		}
+	}
+	return nil
+}
+
+func (d DynamoDBService) getIntValue(attrMap map[string]types.AttributeValue, attrName string) *int {
+	attr, exists := attrMap[attrName]
+	if exists {
+		member, ok := attr.(*types.AttributeValueMemberN)
+		if ok {
+			num, _ := strconv.Atoi(member.Value)
+			return aws.Int(num)
 		}
 	}
 	return nil

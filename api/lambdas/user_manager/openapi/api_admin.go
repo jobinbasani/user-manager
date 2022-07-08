@@ -61,12 +61,6 @@ func (c *AdminApiController) Routes() Routes {
 			c.DeleteAnnouncements,
 		},
 		{
-			"GetAdminCandidates",
-			strings.ToUpper("Get"),
-			"/api/v1/admin/admin-candidates",
-			c.GetAdminCandidates,
-		},
-		{
 			"GetAdmins",
 			strings.ToUpper("Get"),
 			"/api/v1/admin/admins",
@@ -109,21 +103,6 @@ func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.
 		return
 	}
 	result, err := c.service.DeleteAnnouncements(r.Context(), requestBodyParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// GetAdminCandidates - List of users who can be added to admin group
-func (c *AdminApiController) GetAdminCandidates(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	searchParam := query.Get("search")
-	result, err := c.service.GetAdminCandidates(r.Context(), searchParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

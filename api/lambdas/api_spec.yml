@@ -130,34 +130,6 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
-  /api/v1/admin/admin-candidates:
-    get:
-      operationId: getAdminCandidates
-      summary: List of users who can be added to admin group
-      tags:
-        - Admin
-      parameters:
-        - in: query
-          name: search
-          schema:
-            type: string
-          description: First name, last name or email of the user to be searched for
-      responses:
-        200:
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BasicUserInfoList'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-          $ref: '#/components/responses/NotFound'
-        default:
-          $ref: '#/components/responses/InternalServerError'
-
   /api/v1/admin/announcements:
     post:
       operationId: addAnnouncement

@@ -619,45 +619,6 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary List of users who can be added to admin group
-         * @param {string} [search] First name, last name or email of the user to be searched for
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAdminCandidates: async (search?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/admin/admin-candidates`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-            if (search !== undefined) {
-                localVarQueryParameter['search'] = search;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary List of users with Admin access
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -724,17 +685,6 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary List of users who can be added to admin group
-         * @param {string} [search] First name, last name or email of the user to be searched for
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getAdminCandidates(search?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicUserInfoList>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAdminCandidates(search, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @summary List of users with Admin access
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -772,16 +722,6 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         deleteAnnouncements(requestBody: Array<string>, options?: any): AxiosPromise<Array<string>> {
             return localVarFp.deleteAnnouncements(requestBody, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary List of users who can be added to admin group
-         * @param {string} [search] First name, last name or email of the user to be searched for
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAdminCandidates(search?: string, options?: any): AxiosPromise<BasicUserInfoList> {
-            return localVarFp.getAdminCandidates(search, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -824,18 +764,6 @@ export class AdminApi extends BaseAPI {
      */
     public deleteAnnouncements(requestBody: Array<string>, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).deleteAnnouncements(requestBody, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary List of users who can be added to admin group
-     * @param {string} [search] First name, last name or email of the user to be searched for
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AdminApi
-     */
-    public getAdminCandidates(search?: string, options?: AxiosRequestConfig) {
-        return AdminApiFp(this.configuration).getAdminCandidates(search, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
