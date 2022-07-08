@@ -23,12 +23,10 @@ import Button from '@mui/material/Button';
 import { useState } from 'react';
 import PeopleIcon from '@mui/icons-material/People';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { format } from 'date-fns';
 import { PersonRemove } from '@mui/icons-material';
 import { stringAvatar } from '../../util/util';
 import AddFamilyMember, { AddFamilyDetailsProps } from '../form/AddFamilyMember';
-import TitleAndSubtitle from '../text/TitleAndSubtitle';
-import { UserDataGenderEnum } from '../../generated-sources/openapi';
+import UserDetails from '../user/UserDetails';
 
 type FamilyDetailsProps = Omit<AddFamilyDetailsProps, 'showFormFn'> & {
   isLoading: boolean;
@@ -126,9 +124,7 @@ export default function FamilyDetails({
                   />
                 </AccordionSummary>
                 <AccordionDetails>
-                  <TitleAndSubtitle title="Gender" subtitle={Object.keys(UserDataGenderEnum)[Object.values(UserDataGenderEnum).indexOf(member.gender)]} />
-                  <TitleAndSubtitle title="Birthday" subtitle={format(new Date(member.dateOfBirth), 'MMM d, yyyy')} />
-                  <TitleAndSubtitle title="Email" subtitle={member.email} />
+                  <UserDetails member={member} />
                   <br />
                   <Divider light />
                   <Button
