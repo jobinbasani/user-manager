@@ -94,3 +94,26 @@ func (s *FamilyManagementApiService) GetUserFamily(ctx context.Context) (ImplRes
 
 	return Response(http.StatusNotImplemented, nil), errors.New("GetUserFamily method not implemented")
 }
+
+// UpdateFamilyMember - Update family member
+func (s *FamilyManagementApiService) UpdateFamilyMember(ctx context.Context, userId string, userData UserData) (ImplResponse, error) {
+	// TODO - update UpdateFamilyMember with the required logic for this service method.
+	// Add api_family_management_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, UserId{}) or use other options such as http.Ok ...
+	//return Response(200, UserId{}), nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("UpdateFamilyMember method not implemented")
+}

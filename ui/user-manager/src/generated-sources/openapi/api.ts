@@ -530,6 +530,19 @@ export const UserDataProvinceEnum = {
 
 export type UserDataProvinceEnum = typeof UserDataProvinceEnum[keyof typeof UserDataProvinceEnum];
 
+/**
+ * 
+ * @export
+ * @interface UserId
+ */
+export interface UserId {
+    /**
+     * 
+     * @type {string}
+     * @memberof UserId
+     */
+    'userId'?: string;
+}
 
 /**
  * AdminApi - axios parameter creator
@@ -899,6 +912,50 @@ export const FamilyManagementApiAxiosParamCreator = function (configuration?: Co
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Update family member
+         * @param {string} userId The globally unique identifier for the user.
+         * @param {UserData} userData Family member detail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateFamilyMember: async (userId: string, userData: UserData, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('updateFamilyMember', 'userId', userId)
+            // verify required parameter 'userData' is not null or undefined
+            assertParamExists('updateFamilyMember', 'userData', userData)
+            const localVarPath = `/api/v1/user/family/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(userData, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -941,6 +998,18 @@ export const FamilyManagementApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getUserFamily(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary Update family member
+         * @param {string} userId The globally unique identifier for the user.
+         * @param {UserData} userData Family member detail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateFamilyMember(userId: string, userData: UserData, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserId>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateFamilyMember(userId, userData, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -979,6 +1048,17 @@ export const FamilyManagementApiFactory = function (configuration?: Configuratio
          */
         getUserFamily(options?: any): AxiosPromise<Array<UserData>> {
             return localVarFp.getUserFamily(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Update family member
+         * @param {string} userId The globally unique identifier for the user.
+         * @param {UserData} userData Family member detail
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateFamilyMember(userId: string, userData: UserData, options?: any): AxiosPromise<UserId> {
+            return localVarFp.updateFamilyMember(userId, userData, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1023,6 +1103,19 @@ export class FamilyManagementApi extends BaseAPI {
      */
     public getUserFamily(options?: AxiosRequestConfig) {
         return FamilyManagementApiFp(this.configuration).getUserFamily(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Update family member
+     * @param {string} userId The globally unique identifier for the user.
+     * @param {UserData} userData Family member detail
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FamilyManagementApi
+     */
+    public updateFamilyMember(userId: string, userData: UserData, options?: AxiosRequestConfig) {
+        return FamilyManagementApiFp(this.configuration).updateFamilyMember(userId, userData, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

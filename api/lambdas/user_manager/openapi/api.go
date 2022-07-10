@@ -30,6 +30,7 @@ type FamilyManagementApiRouter interface {
 	AddFamilyMembers(http.ResponseWriter, *http.Request)
 	DeleteFamilyMembers(http.ResponseWriter, *http.Request)
 	GetUserFamily(http.ResponseWriter, *http.Request)
+	UpdateFamilyMember(http.ResponseWriter, *http.Request)
 }
 
 // PublicApiRouter defines the required methods for binding the api requests to a responses for the PublicApi
@@ -64,6 +65,7 @@ type FamilyManagementApiServicer interface {
 	AddFamilyMembers(context.Context, []UserData) (ImplResponse, error)
 	DeleteFamilyMembers(context.Context, []string) (ImplResponse, error)
 	GetUserFamily(context.Context) (ImplResponse, error)
+	UpdateFamilyMember(context.Context, string, UserData) (ImplResponse, error)
 }
 
 // PublicApiServicer defines the api actions for the PublicApi service

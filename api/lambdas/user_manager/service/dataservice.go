@@ -42,6 +42,7 @@ var titleCaser = cases.Title(language.English)
 type DataService interface {
 	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
 	AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
+	UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error)
 	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
 	AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error)
 	GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error)
@@ -166,6 +167,12 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 
 	return openapi.FamilyId{
 		FamilyId: *familyID,
+	}, nil
+}
+
+func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error) {
+	return openapi.UserId{
+		UserId: userId,
 	}, nil
 }
 

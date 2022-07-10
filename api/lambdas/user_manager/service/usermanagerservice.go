@@ -128,6 +128,17 @@ func (u *UserManagerService) GetAdmins(ctx context.Context) (openapi.ImplRespons
 	return openapi.Response(http.StatusOK, users), nil
 }
 
+func (u *UserManagerService) UpdateFamilyMember(ctx context.Context, userId string, user openapi.UserData) (openapi.ImplResponse, error) {
+	updatedUserId, err := u.dataService.UpdateFamilyMember(ctx, userId, user)
+	if err != nil {
+		log.Println(err)
+		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
+			Message: err.Error(),
+		}), err
+	}
+	return openapi.Response(http.StatusOK, updatedUserId), nil
+}
+
 // NewUserManagerService creates a new UserManagerService
 func NewUserManagerService(cfg *config.Config, authService AuthService, dataService DataService) *UserManagerService {
 	return &UserManagerService{

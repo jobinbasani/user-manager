@@ -13,6 +13,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 // FamilyManagementApiController binds http requests to an api service and writes the service results to the http response
@@ -66,6 +68,12 @@ func (c *FamilyManagementApiController) Routes() Routes {
 			"/api/v1/user/family",
 			c.GetUserFamily,
 		},
+		{
+			"UpdateFamilyMember",
+			strings.ToUpper("Put"),
+			"/api/v1/user/family/{userId}",
+			c.UpdateFamilyMember,
+		},
 	}
 }
 
@@ -118,6 +126,33 @@ func (c *FamilyManagementApiController) DeleteFamilyMembers(w http.ResponseWrite
 // GetUserFamily - Get user family details
 func (c *FamilyManagementApiController) GetUserFamily(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetUserFamily(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// UpdateFamilyMember - Update family member
+func (c *FamilyManagementApiController) UpdateFamilyMember(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userIdParam := params["userId"]
+
+	userDataParam := UserData{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&userDataParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertUserDataRequired(userDataParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.UpdateFamilyMember(r.Context(), userIdParam, userDataParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

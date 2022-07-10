@@ -108,6 +108,37 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/user/family/{userId}:
+    put:
+      operationId: updateFamilyMember
+      summary: Update family member
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      requestBody:
+        description: Family member detail
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserData'
+      tags:
+        - Family Management
+      responses:
+        200:
+          description: updated user's id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserId'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/admin/admins:
     get:
       operationId: getAdmins
@@ -237,7 +268,16 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/InternalServerError'
-
+  parameters:
+    UserIdPathParam:
+      name: userId
+      description: The globally unique identifier for the user.
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 00000000-0000-0000-0000-000000000001
   securitySchemes:
     bearer: # arbitrary name for the security scheme
       type: http
@@ -603,6 +643,14 @@ components:
       type: object
       properties:
         familyId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+
+    UserId:
+      type: object
+      properties:
+        userId:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
