@@ -171,6 +171,53 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 }
 
 func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error) {
+	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
+	if err != nil {
+		return openapi.UserId{}, err
+	}
+	familyId, err := d.getFamilyIDForEmail(ctx, user.Email)
+	if err != nil {
+		return openapi.UserId{}, err
+	}
+	userIds, err := d.getFamilyMemberIDs(ctx, *familyId)
+	if err != nil {
+		return openapi.UserId{}, err
+	}
+	hasUser := false
+	for i := range userIds {
+		if userIds[i] == userId {
+			hasUser = true
+			break
+		}
+	}
+	if !hasUser {
+		return openapi.UserId{}, fmt.Errorf("unable to find user %s in family", userId)
+	}
+	userData.Id = userId
+	userDataJson, err := json.Marshal(userData)
+	if err != nil {
+		return openapi.UserId{}, err
+	}
+	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(`UPDATE "%s" SET %s = ? WHERE "%s" = '%s' AND "%s" = '%s' AND "%s" = '%s'`,
+			d.cfg.UserDataTableName,
+			infoAttribute,
+			idAttribute,
+			userId,
+			recTypeAttribute,
+			userRecType,
+			familyIdAttribute,
+			*familyId,
+		)),
+		Parameters: []types.AttributeValue{
+			&types.AttributeValueMemberS{
+				Value: string(userDataJson),
+			},
+		},
+	})
+	if err != nil {
+		return openapi.UserId{}, err
+	}
 	return openapi.UserId{
 		UserId: userId,
 	}, nil
