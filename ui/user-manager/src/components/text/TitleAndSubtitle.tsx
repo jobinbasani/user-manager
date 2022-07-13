@@ -25,7 +25,11 @@ function TitleAndSubtitle({
     }
   }
   if (formatDate) {
-    subtitleValue = format(new Date(subtitleValue), 'MMM d, yyyy');
+    try {
+      subtitleValue = format(new Date(subtitleValue), 'MMM d, yyyy');
+    } catch (err) {
+      console.log(`unable to format ${subtitleValue} to date`);
+    }
   }
   return (
     <>

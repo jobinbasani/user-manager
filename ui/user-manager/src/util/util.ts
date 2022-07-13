@@ -20,11 +20,19 @@ function stringToColor(string:string) {
 
 // eslint-disable-next-line import/prefer-default-export
 export function stringAvatar(name:string) {
+  const nameSplit = name.split(' ');
+  let chars = 'U';
+  if (nameSplit.length === 1) {
+    // eslint-disable-next-line prefer-destructuring
+    chars = nameSplit[0][0];
+  } else if (nameSplit.length > 1) {
+    chars = `${nameSplit[0][0]}${nameSplit[1][0]}`;
+  }
   return {
     sx: {
       bgcolor: stringToColor(name),
     },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    children: chars,
   };
 }
 
