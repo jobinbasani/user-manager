@@ -120,14 +120,8 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 		if len(u.Email) == 0 {
 			return openapi.FamilyId{}, errors.New("a valid email id is needed or all users")
 		}
-		emails := make(stringSet)
-		emails.add(user.Email)
-		emails.add(u.Email)
-		u.FirstName = d.titleCase(u.FirstName)
-		u.LastName = d.titleCase(u.LastName)
-		u.DisplayName = u.FirstName + " " + u.LastName
-		searchData := d.buildSearchIndex(u.FirstName, u.LastName, u.Email)
-		userDataJson, err := json.Marshal(u)
+		formattedUser, emails, searchData := d.formatUser(user, u)
+		userDataJson, err := json.Marshal(formattedUser)
 		if err != nil {
 			return openapi.FamilyId{}, err
 		}
@@ -194,14 +188,17 @@ func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, 
 		return openapi.UserId{}, fmt.Errorf("unable to find user %s in family", userId)
 	}
 	userData.Id = userId
-	userDataJson, err := json.Marshal(userData)
+	formattedUser, emails, searchData := d.formatUser(user, userData)
+	userDataJson, err := json.Marshal(formattedUser)
 	if err != nil {
 		return openapi.UserId{}, err
 	}
 	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement: aws.String(fmt.Sprintf(`UPDATE "%s" SET %s = ? WHERE "%s" = '%s' AND "%s" = '%s' AND "%s" = '%s'`,
+		Statement: aws.String(fmt.Sprintf(`UPDATE "%s" SET %s = ? SET %s = ? SET %s = ? WHERE "%s" = '%s' AND "%s" = '%s' AND "%s" = '%s'`,
 			d.cfg.UserDataTableName,
 			infoAttribute,
+			emailIdAttribute,
+			searchAttribute,
 			idAttribute,
 			userId,
 			recTypeAttribute,
@@ -212,6 +209,12 @@ func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, 
 		Parameters: []types.AttributeValue{
 			&types.AttributeValueMemberS{
 				Value: string(userDataJson),
+			},
+			&types.AttributeValueMemberS{
+				Value: emails.getAll(),
+			},
+			&types.AttributeValueMemberS{
+				Value: searchData,
 			},
 		},
 	})
@@ -370,6 +373,16 @@ func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementId
 	return announcementIds, nil
 }
 
+func (d DynamoDBService) formatUser(user openapi.User, u openapi.UserData) (openapi.UserData, stringSet, string) {
+	emails := make(stringSet)
+	emails.add(user.Email)
+	emails.add(u.Email)
+	u.FirstName = d.titleCase(u.FirstName)
+	u.LastName = d.titleCase(u.LastName)
+	u.DisplayName = u.FirstName + " " + u.LastName
+	searchData := d.buildSearchIndex(u.FirstName, u.LastName, u.Email)
+	return u, emails, searchData
+}
 func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {
 	if len(ids) == 0 {
 		return nil, errors.New("no user id's were provided")
