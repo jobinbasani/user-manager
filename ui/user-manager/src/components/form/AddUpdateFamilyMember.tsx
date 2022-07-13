@@ -19,8 +19,9 @@ import { FamilyDetails as FamilyDetailsModel } from '../../store/family/family-s
 import { FormDateField, FormTextField, OptionalDate } from './FormFields';
 import { UserDetails } from '../../store/user/user-slice';
 
-export type AddFamilyDetailsProps = {
+export type AddUpdateFamilyDetailsProps = {
   user: UserDetails;
+  editUserId: string;
   family:FamilyDetailsModel;
   showFormFn:React.Dispatch<React.SetStateAction<boolean>>
   onAddMember:((data:UserData) => Promise<{ payload: UserData[]; type: string; }>)
@@ -46,10 +47,10 @@ type UserRecord = Omit<UserData,
   relation:string
 };
 
-export default function AddFamilyMember({
-  user, family,
+export default function AddUpdateFamilyMember({
+  user, editUserId, family,
   showFormFn, onAddMember,
-}:AddFamilyDetailsProps) {
+}:AddUpdateFamilyDetailsProps) {
   const userInfoSchema = Yup.object().shape({
     firstName: Yup.string()
       .min(2, 'Too Short!')
@@ -118,6 +119,15 @@ export default function AddFamilyMember({
       postalCode: '',
       mobile: '',
     };
+
+    if (editUserId.length > 0) {
+      const editUser = family.members.find((u) => u.id === editUserId);
+      if (editUser) {
+        initialValues.firstName = editUser.firstName;
+        initialValues.middleName = editUser.middleName;
+        return initialValues;
+      }
+    }
 
     if (family.members.length === 0) {
       initialValues.firstName = user.userInfo.firstName;

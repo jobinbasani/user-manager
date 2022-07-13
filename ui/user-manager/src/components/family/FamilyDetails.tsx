@@ -20,21 +20,23 @@ import {
 import CardContent from '@mui/material/CardContent';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Button from '@mui/material/Button';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import PeopleIcon from '@mui/icons-material/People';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PersonRemove } from '@mui/icons-material';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { stringAvatar } from '../../util/util';
-import AddFamilyMember, { AddFamilyDetailsProps } from '../form/AddFamilyMember';
+import AddUpdateFamilyMember, { AddUpdateFamilyDetailsProps } from '../form/AddUpdateFamilyMember';
 import UserDetails from '../user/UserDetails';
 
-type FamilyDetailsProps = Omit<AddFamilyDetailsProps, 'showFormFn'> & {
+type FamilyDetailsProps = Omit<AddUpdateFamilyDetailsProps, 'showFormFn'> & {
   isLoading: boolean;
+  setEditUserId:React.Dispatch<React.SetStateAction<string>>;
   onDeleteMember:((deleteUserId: string) => Promise<void>);
 }
 
 export default function FamilyDetails({
-  user, family, isLoading, onAddMember, onDeleteMember,
+  user, editUserId, setEditUserId, family, isLoading, onAddMember, onDeleteMember,
 }: FamilyDetailsProps) {
   const [formVisible, setFormVisible] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -58,6 +60,11 @@ export default function FamilyDetails({
   const deleteUser = async () => {
     closeConfirmDialog();
     await onDeleteMember(deleteUserId);
+  };
+
+  const editUser = (userId:string) => {
+    setEditUserId(userId);
+    setFormVisible(true);
   };
 
   return (
@@ -128,6 +135,15 @@ export default function FamilyDetails({
                   <br />
                   <Divider light />
                   <Button
+                    color="primary"
+                    size="small"
+                    onClick={() => editUser(member.id ? member.id : '')}
+                    startIcon={<BorderColorIcon />}
+                    sx={{ flex: 1 }}
+                  >
+                    Edit
+                  </Button>
+                  <Button
                     color="error"
                     size="small"
                     onClick={() => showConfirmDialog(member.displayName ?? '', member.id ?? '')}
@@ -147,7 +163,7 @@ export default function FamilyDetails({
       </CardActions>
       <Collapse in={formVisible} timeout="auto" unmountOnExit>
         <CardContent>
-          <AddFamilyMember user={user} family={family} showFormFn={setFormVisible} onAddMember={onAddMember} />
+          <AddUpdateFamilyMember user={user} editUserId={editUserId} family={family} showFormFn={setFormVisible} onAddMember={onAddMember} />
         </CardContent>
       </Collapse>
     </Card>

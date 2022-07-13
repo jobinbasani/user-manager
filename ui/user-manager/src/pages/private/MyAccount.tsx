@@ -13,6 +13,7 @@ export default function MyAccount() {
   const user = useSelector((state: RootState) => state.user);
   const family = useSelector((state: RootState) => state.family);
   const [isLoading, setLoading] = useState(false);
+  const [editUserId, setEditUserId] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -48,7 +49,7 @@ export default function MyAccount() {
 
   return (
     <Box bgcolor="grey" flex={4} p={2}>
-      <FamilyDetails user={user} family={family} isLoading={isLoading} onAddMember={addFamilyMember} onDeleteMember={deleteUser} />
+      <FamilyDetails user={user} editUserId={editUserId} setEditUserId={setEditUserId} family={family} isLoading={isLoading} onAddMember={addFamilyMember} onDeleteMember={deleteUser} />
     </Box>
   );
 }
