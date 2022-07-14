@@ -26,22 +26,48 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PersonRemove } from '@mui/icons-material';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { stringAvatar } from '../../util/util';
-import AddUpdateFamilyMember, { AddUpdateFamilyDetailsProps } from '../form/AddUpdateFamilyMember';
+import AddUpdateFamilyMember, { AddUpdateFamilyDetailsProps, UserRecord } from '../form/AddUpdateFamilyMember';
 import UserDetails from '../user/UserDetails';
+import { UserDataProvinceEnum } from '../../generated-sources/openapi';
 
-type FamilyDetailsProps = Omit<AddUpdateFamilyDetailsProps, 'showFormFn'> & {
+type FamilyDetailsProps = Omit<AddUpdateFamilyDetailsProps, 'showFormFn'|'initialValues'> & {
   isLoading: boolean;
-  setEditUserId:React.Dispatch<React.SetStateAction<string>>;
   onDeleteMember:((deleteUserId: string) => Promise<void>);
 }
 
 export default function FamilyDetails({
-  user, editUserId, setEditUserId, family, isLoading, onAddMember, onDeleteMember,
+  user, family, isLoading, onAddMember, onDeleteMember,
 }: FamilyDetailsProps) {
   const [formVisible, setFormVisible] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteUserName, setDeleteUserName] = useState('');
   const [deleteUserId, setDeleteUserId] = useState('');
+  const [initialMemberData, setInitialMemberData] = useState<UserRecord>({
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    email: '',
+    gender: '',
+    baptismalName: '',
+    relation: '',
+    houseName: '',
+    familyUnit: '',
+    dateOfBirth: null,
+    dateOfBaptism: null,
+    dateOfConfirmation: null,
+    maritalStatus: '',
+    canadianStatus: '',
+    inCanadaSince: null,
+    homeParish: '',
+    dioceseInIndia: '',
+    previousParishInCanada: '',
+    apartment: '',
+    street: '',
+    city: '',
+    province: UserDataProvinceEnum.Ns,
+    postalCode: '',
+    mobile: '',
+  });
 
   const showConfirmDialog = (displayName:string, userId:string) => {
     setDeleteUserName(displayName);
@@ -54,6 +80,45 @@ export default function FamilyDetails({
   };
 
   const handleAddMemberClick = () => {
+    const newUserData:UserRecord = {
+      firstName: '',
+      lastName: '',
+      middleName: '',
+      email: '',
+      gender: '',
+      baptismalName: '',
+      relation: '',
+      houseName: '',
+      familyUnit: '',
+      dateOfBirth: null,
+      dateOfBaptism: null,
+      dateOfConfirmation: null,
+      maritalStatus: '',
+      canadianStatus: '',
+      inCanadaSince: null,
+      homeParish: '',
+      dioceseInIndia: '',
+      previousParishInCanada: '',
+      apartment: '',
+      street: '',
+      city: '',
+      province: UserDataProvinceEnum.Ns,
+      postalCode: '',
+      mobile: '',
+    };
+    if (family.members.length === 0) {
+      newUserData.firstName = user.userInfo.firstName;
+      newUserData.lastName = user.userInfo.lastName;
+      newUserData.email = user.userInfo.userEmail;
+    } else {
+      const primaryAcct = family.members[0];
+      newUserData.familyUnit = primaryAcct.familyUnit;
+      newUserData.apartment = primaryAcct.apartment;
+      newUserData.street = primaryAcct.street;
+      newUserData.city = primaryAcct.city;
+      newUserData.postalCode = primaryAcct.postalCode;
+    }
+    setInitialMemberData(newUserData);
     setFormVisible(!formVisible);
   };
 
@@ -63,7 +128,38 @@ export default function FamilyDetails({
   };
 
   const editUser = (userId:string) => {
-    setEditUserId(userId);
+    setFormVisible(false);
+    const userToBeEdited = family.members.find((u) => u.id === userId);
+    if (!editUser) {
+      return;
+    }
+    const initialData:UserRecord = {
+      firstName: userToBeEdited?.firstName || '',
+      lastName: userToBeEdited?.lastName || '',
+      middleName: userToBeEdited?.middleName || '',
+      email: userToBeEdited?.email || '',
+      gender: userToBeEdited?.gender || '',
+      baptismalName: userToBeEdited?.baptismalName || '',
+      relation: userToBeEdited?.relation || '',
+      houseName: userToBeEdited?.houseName || '',
+      familyUnit: userToBeEdited?.familyUnit || '',
+      dateOfBirth: userToBeEdited?.dateOfBirth || null,
+      dateOfBaptism: userToBeEdited?.dateOfBaptism || null,
+      dateOfConfirmation: userToBeEdited?.dateOfConfirmation || null,
+      maritalStatus: userToBeEdited?.maritalStatus || '',
+      canadianStatus: userToBeEdited?.canadianStatus || '',
+      inCanadaSince: userToBeEdited?.inCanadaSince || null,
+      homeParish: userToBeEdited?.homeParish || '',
+      dioceseInIndia: userToBeEdited?.dioceseInIndia || '',
+      previousParishInCanada: userToBeEdited?.previousParishInCanada || '',
+      apartment: userToBeEdited?.apartment || '',
+      street: userToBeEdited?.street || '',
+      city: userToBeEdited?.city || '',
+      province: userToBeEdited?.province || UserDataProvinceEnum.Ns,
+      postalCode: userToBeEdited?.postalCode || '',
+      mobile: userToBeEdited?.mobile || '',
+    };
+    setInitialMemberData(initialData);
     setFormVisible(true);
   };
 
@@ -163,7 +259,7 @@ export default function FamilyDetails({
       </CardActions>
       <Collapse in={formVisible} timeout="auto" unmountOnExit>
         <CardContent>
-          <AddUpdateFamilyMember user={user} editUserId={editUserId} family={family} showFormFn={setFormVisible} onAddMember={onAddMember} />
+          <AddUpdateFamilyMember user={user} initialValues={initialMemberData} family={family} showFormFn={setFormVisible} onAddMember={onAddMember} />
         </CardContent>
       </Collapse>
     </Card>

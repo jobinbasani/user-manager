@@ -19,15 +19,7 @@ import { FamilyDetails as FamilyDetailsModel } from '../../store/family/family-s
 import { FormDateField, FormTextField, OptionalDate } from './FormFields';
 import { UserDetails } from '../../store/user/user-slice';
 
-export type AddUpdateFamilyDetailsProps = {
-  user: UserDetails;
-  editUserId: string;
-  family:FamilyDetailsModel;
-  showFormFn:React.Dispatch<React.SetStateAction<boolean>>
-  onAddMember:((data:UserData) => Promise<{ payload: UserData[]; type: string; }>)
-};
-
-type UserRecord = Omit<UserData,
+export type UserRecord = Omit<UserData,
 'dateOfBirth'|
 'dateOfConfirmation'|
 'dateOfBaptism'|
@@ -47,8 +39,17 @@ type UserRecord = Omit<UserData,
   relation:string
 };
 
+export type AddUpdateFamilyDetailsProps = {
+  user: UserDetails;
+  initialValues: UserRecord;
+  family:FamilyDetailsModel;
+  showFormFn:React.Dispatch<React.SetStateAction<boolean>>
+  onAddMember:((data:UserData) => Promise<{ payload: UserData[]; type: string; }>)
+};
+
 export default function AddUpdateFamilyMember({
-  user, editUserId, family,
+  user,
+  family, initialValues,
   showFormFn, onAddMember,
 }:AddUpdateFamilyDetailsProps) {
   const userInfoSchema = Yup.object().shape({
@@ -91,58 +92,6 @@ export default function AddUpdateFamilyMember({
     postalCode: Yup.string()
       .min(6).max(7).required('Required'),
   });
-
-  const getInitialValues = () => {
-    const initialValues:UserRecord = {
-      firstName: '',
-      lastName: '',
-      middleName: '',
-      email: '',
-      gender: '',
-      baptismalName: '',
-      relation: '',
-      houseName: '',
-      familyUnit: '',
-      dateOfBirth: null,
-      dateOfBaptism: null,
-      dateOfConfirmation: null,
-      maritalStatus: '',
-      canadianStatus: '',
-      inCanadaSince: null,
-      homeParish: '',
-      dioceseInIndia: '',
-      previousParishInCanada: '',
-      apartment: '',
-      street: '',
-      city: '',
-      province: UserDataProvinceEnum.Ns,
-      postalCode: '',
-      mobile: '',
-    };
-
-    if (editUserId.length > 0) {
-      const editUser = family.members.find((u) => u.id === editUserId);
-      if (editUser) {
-        initialValues.firstName = editUser.firstName;
-        initialValues.middleName = editUser.middleName;
-        return initialValues;
-      }
-    }
-
-    if (family.members.length === 0) {
-      initialValues.firstName = user.userInfo.firstName;
-      initialValues.lastName = user.userInfo.lastName;
-      initialValues.email = user.userInfo.userEmail;
-    } else {
-      const primaryAcct = family.members[0];
-      initialValues.familyUnit = primaryAcct.familyUnit;
-      initialValues.apartment = primaryAcct.apartment;
-      initialValues.street = primaryAcct.street;
-      initialValues.city = primaryAcct.city;
-      initialValues.postalCode = primaryAcct.postalCode;
-    }
-    return initialValues;
-  };
 
   const saveUserData = async (data:UserRecord, setSubmitting:((isSubmitting: boolean) => void)) => {
     const userData:UserData = {
@@ -208,14 +157,15 @@ export default function AddUpdateFamilyMember({
 
   return (
     <Formik
-      initialValues={getInitialValues()}
+      initialValues={initialValues}
       validationSchema={userInfoSchema}
       onSubmit={async (values, { setSubmitting }) => {
         await saveUserData(values, setSubmitting);
       }}
     >
       {({
-        submitForm, isSubmitting, values, setFieldValue,
+        submitForm,
+        isSubmitting, values, setFieldValue,
       }) => (
         <Form>
           <FormTextField label="First Name *" name="firstName" />
@@ -276,6 +226,7 @@ export default function AddUpdateFamilyMember({
           >
             Submit
           </Button>
+          <Button type="reset">Reset</Button>
         </Form>
       )}
     </Formik>
