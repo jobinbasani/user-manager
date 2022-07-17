@@ -128,7 +128,10 @@ export default function FamilyDetails({
   };
 
   const editUser = (userId:string) => {
-    setFormVisible(false);
+    if (formVisible) {
+      setFormVisible(false);
+      return;
+    }
     const userToBeEdited = family.members.find((u) => u.id === userId);
     if (!editUser) {
       return;

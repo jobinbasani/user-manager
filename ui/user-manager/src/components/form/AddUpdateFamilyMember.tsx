@@ -164,7 +164,6 @@ export default function AddUpdateFamilyMember({
       }}
     >
       {({
-        submitForm,
         isSubmitting, values, setFieldValue,
       }) => (
         <Form>
@@ -222,11 +221,11 @@ export default function AddUpdateFamilyMember({
             variant="contained"
             color="primary"
             disabled={isSubmitting}
-            onClick={submitForm}
+            type="submit"
           >
             Submit
           </Button>
-          <Button type="reset">Reset</Button>
+          <Button onClick={() => showFormFn(false)}>Cancel</Button>
         </Form>
       )}
     </Formik>
