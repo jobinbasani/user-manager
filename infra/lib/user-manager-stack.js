@@ -164,17 +164,10 @@ class UserManagerStack extends cdk.Stack {
 
     userManagerLambda.addToRolePolicy(new iam.PolicyStatement({
       actions: [
-        'dynamodb:GetItem',
-        'dynamodb:PutItem',
-        'dynamodb:Query',
-        'dynamodb:UpdateItem',
-        'dynamodb:DeleteItem',
-        'dynamodb:BatchGetItem',
-        'dynamodb:BatchWriteItem',
-        'dynamodb:ConditionCheckItem',
         'dynamodb:PartiQLSelect',
         'dynamodb:PartiQLInsert',
         'dynamodb:PartiQLDelete',
+        'dynamodb:PartiQLUpdate',
       ],
       resources: [
         userTable.tableArn,
