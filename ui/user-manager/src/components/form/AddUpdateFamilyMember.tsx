@@ -1,9 +1,8 @@
 import {
-  Field, Form, Formik,
+  Form, Formik,
 } from 'formik';
-import { Select } from 'formik-mui';
 import {
-  LinearProgress, MenuItem,
+  LinearProgress,
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import * as Yup from 'yup';
@@ -15,7 +14,9 @@ import {
   UserDataMaritalStatusEnum, UserDataProvinceEnum, UserDataRelationEnum,
 } from '../../generated-sources/openapi';
 import { getEnumIndexByEnumValue } from '../../util/util';
-import { FormDateField, FormTextField, OptionalDate } from './FormFields';
+import {
+  FormDateField, FormSelectField, FormTextField, OptionalDate,
+} from './FormFields';
 
 export type UserRecord = Omit<UserData,
 'dateOfBirth'|
@@ -134,24 +135,6 @@ export default function AddUpdateFamilyMember({
       });
   };
 
-  const selectField = (label:string, name:string, value:Record<string, string>) => (
-    <Field
-      label={label}
-      name={name}
-      variant="standard"
-      margin="dense"
-      sx={{ minWidth: 200 }}
-      component={Select}
-    >
-      {Object.keys(value)
-        .map((k) => (
-          <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>
-            {k.length === 2 ? k.toUpperCase() : k.replace(/([a-z])([A-Z])/g, '$1 $2')}
-          </MenuItem>
-        ))}
-    </Field>
-  );
-
   return (
     <Formik
       initialValues={initialValues}
@@ -170,16 +153,16 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormTextField label="Last Name *" name="lastName" />
           <br />
-          {selectField('Gender *', 'gender', UserDataGenderEnum)}
+          <FormSelectField label="Gender *" name="gender" value={UserDataGenderEnum} />
           <br />
           <FormTextField label="Email *" name="email" />
           <br />
-          {selectField('Marital Status *', 'maritalStatus', UserDataMaritalStatusEnum)}
+          <FormSelectField label="Marital Status *" name="maritalStatus" value={UserDataMaritalStatusEnum} />
           <br />
           <FormTextField label="Baptismal Name" name="baptismalName" />
           <br />
           {relatedUser.length > 0
-            && selectField(`Relation to ${relatedUser} *`, 'relation', UserDataRelationEnum)}
+            && <FormSelectField label={`Relation to ${relatedUser} *`} name="relation" value={UserDataRelationEnum} />}
           <br />
           <FormTextField label="House Name" name="houseName" />
           <br />
@@ -191,7 +174,7 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormDateField value={values.dateOfConfirmation} setFieldValue={setFieldValue} label="Date of Confirmation" name="dateOfConfirmation" />
           <br />
-          {selectField('Status in Canada *', 'canadianStatus', UserDataCanadianStatusEnum)}
+          <FormSelectField label="Status in Canada *" name="canadianStatus" value={UserDataCanadianStatusEnum} />
           <br />
           <FormDateField value={values.inCanadaSince} setFieldValue={setFieldValue} label="In Canada since" name="inCanadaSince" />
           <br />
@@ -207,7 +190,7 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormTextField label="City *" name="city" />
           <br />
-          {selectField('Province *', 'province', UserDataProvinceEnum)}
+          <FormSelectField label="Province *" name="province" value={UserDataProvinceEnum} />
           <br />
           <FormTextField label="Postal Code *" name="postalCode" />
           <br />

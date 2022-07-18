@@ -1,8 +1,9 @@
-import { TextField } from 'formik-mui';
+import { Select, TextField } from 'formik-mui';
 import { Field } from 'formik';
 import React from 'react';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { DatePicker, DateTimePicker, LocalizationProvider } from '@mui/lab';
+import { MenuItem } from '@mui/material';
 
 type TextFieldProps = {
   label: string;
@@ -17,6 +18,12 @@ type DateFieldProps = {
   value:string|null
   setFieldValue:((field: string, val: any, shouldValidate?: boolean) => void)
 } & TextFieldProps
+
+type SelectFieldProps = {
+  label:string;
+  name:string;
+  value:Record<string, string>;
+}
 
 export type OptionalDate = string|null
 
@@ -95,5 +102,25 @@ export function FormDateTimeField({
         )}
       />
     </LocalizationProvider>
+  );
+}
+
+export function FormSelectField({ label, name, value }:SelectFieldProps) {
+  return (
+    <Field
+      label={label}
+      name={name}
+      variant="standard"
+      margin="dense"
+      sx={{ minWidth: 200 }}
+      component={Select}
+    >
+      {Object.keys(value)
+        .map((k) => (
+          <MenuItem key={k} value={value[Object.keys(value)[Object.keys(value).indexOf(k)]]}>
+            {k.length === 2 ? k.toUpperCase() : k.replace(/([a-z])([A-Z])/g, '$1 $2')}
+          </MenuItem>
+        ))}
+    </Field>
   );
 }
