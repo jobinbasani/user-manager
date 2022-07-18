@@ -26,22 +26,28 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PersonRemove } from '@mui/icons-material';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { stringAvatar } from '../../util/util';
+import { FamilyDetails as FamilyDetailsModel } from '../../store/family/family-slice';
+import { UserDetails as UserDetailsModel } from '../../store/user/user-slice';
 import AddUpdateFamilyMember, { AddUpdateFamilyDetailsProps, UserRecord } from '../form/AddUpdateFamilyMember';
 import UserDetails from '../user/UserDetails';
 import { UserDataProvinceEnum } from '../../generated-sources/openapi';
 
-type FamilyDetailsProps = Omit<AddUpdateFamilyDetailsProps, 'showFormFn'|'initialValues'> & {
+type FamilyDetailsProps = Omit<AddUpdateFamilyDetailsProps, 'showFormFn'|'initialValues'|'editUserId'> & {
   isLoading: boolean;
+  family:FamilyDetailsModel;
+  user:UserDetailsModel;
   onDeleteMember:((deleteUserId: string) => Promise<void>);
 }
 
 export default function FamilyDetails({
-  user, family, isLoading, onAddMember, onDeleteMember,
+  user, family, isLoading, onMemberDataSubmit, onDeleteMember,
 }: FamilyDetailsProps) {
   const [formVisible, setFormVisible] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [editUserId, setEditUserId] = useState<string|null>(null);
   const [deleteUserName, setDeleteUserName] = useState('');
   const [deleteUserId, setDeleteUserId] = useState('');
+  const [relatedUser, setRelatedUser] = useState('');
   const [initialMemberData, setInitialMemberData] = useState<UserRecord>({
     firstName: '',
     lastName: '',
@@ -79,7 +85,7 @@ export default function FamilyDetails({
     setConfirmDialogOpen(false);
   };
 
-  const handleAddMemberClick = () => {
+  const addUser = () => {
     const newUserData:UserRecord = {
       firstName: '',
       lastName: '',
@@ -119,6 +125,12 @@ export default function FamilyDetails({
       newUserData.postalCode = primaryAcct.postalCode;
     }
     setInitialMemberData(newUserData);
+    if (family.members.length > 0) {
+      setRelatedUser(family.members[0].firstName);
+    } else {
+      setRelatedUser('');
+    }
+    setEditUserId(null);
     setFormVisible(!formVisible);
   };
 
@@ -163,6 +175,7 @@ export default function FamilyDetails({
       mobile: userToBeEdited?.mobile || '',
     };
     setInitialMemberData(initialData);
+    setEditUserId(userId);
     setFormVisible(true);
   };
 
@@ -233,15 +246,18 @@ export default function FamilyDetails({
                   <UserDetails member={member} />
                   <br />
                   <Divider light />
-                  <Button
-                    color="primary"
-                    size="small"
-                    onClick={() => editUser(member.id ? member.id : '')}
-                    startIcon={<BorderColorIcon />}
-                    sx={{ flex: 1 }}
-                  >
-                    Edit
-                  </Button>
+                  {!formVisible
+                  && (
+                    <Button
+                      color="primary"
+                      size="small"
+                      onClick={() => editUser(member.id ? member.id : '')}
+                      startIcon={<BorderColorIcon />}
+                      sx={{ flex: 1 }}
+                    >
+                      Edit
+                    </Button>
+                  )}
                   <Button
                     color="error"
                     size="small"
@@ -257,12 +273,15 @@ export default function FamilyDetails({
           })}
         </List>
       </CardContent>
-      <CardActions>
-        <Button size="small" onClick={handleAddMemberClick} startIcon={<AddReactionIcon />} sx={{ marginLeft: 'auto' }}>Add Member</Button>
-      </CardActions>
+      {!formVisible
+      && (
+        <CardActions>
+          <Button size="small" onClick={addUser} startIcon={<AddReactionIcon />} sx={{ marginLeft: 'auto' }}>Add Member</Button>
+        </CardActions>
+      )}
       <Collapse in={formVisible} timeout="auto" unmountOnExit>
         <CardContent>
-          <AddUpdateFamilyMember user={user} initialValues={initialMemberData} family={family} showFormFn={setFormVisible} onAddMember={onAddMember} />
+          <AddUpdateFamilyMember initialValues={initialMemberData} editUserId={editUserId} relatedUser={relatedUser} showFormFn={setFormVisible} onMemberDataSubmit={onMemberDataSubmit} />
         </CardContent>
       </Collapse>
     </Card>

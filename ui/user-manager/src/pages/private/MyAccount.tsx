@@ -26,9 +26,16 @@ export default function MyAccount() {
     dispatch(setFamilyDetails(familyDetails.data));
   };
 
-  const addFamilyMember = async (userData:UserData) => getFamilyManagementAPI(user.accessToken).addFamilyMembers([userData])
-    .then(() => getFamilyManagementAPI(user.accessToken).getUserFamily())
-    .then((familyDetails) => dispatch(setFamilyDetails(familyDetails.data)));
+  const onMemberDataSubmit = async (userData:UserData, editUserId:string|null) => {
+    if (editUserId && editUserId.length > 0) {
+      return getFamilyManagementAPI(user.accessToken).updateFamilyMember(editUserId, userData)
+        .then(() => getFamilyManagementAPI(user.accessToken).getUserFamily())
+        .then((familyDetails) => dispatch(setFamilyDetails(familyDetails.data)));
+    }
+    return getFamilyManagementAPI(user.accessToken).addFamilyMembers([userData])
+      .then(() => getFamilyManagementAPI(user.accessToken).getUserFamily())
+      .then((familyDetails) => dispatch(setFamilyDetails(familyDetails.data)));
+  };
 
   const deleteUser = async (deleteUserId: string) => {
     if (user.isLoggedIn) {
@@ -48,7 +55,7 @@ export default function MyAccount() {
 
   return (
     <Box bgcolor="grey" flex={4} p={2}>
-      <FamilyDetails user={user} family={family} isLoading={isLoading} onAddMember={addFamilyMember} onDeleteMember={deleteUser} />
+      <FamilyDetails user={user} family={family} relatedUser="" isLoading={isLoading} onMemberDataSubmit={onMemberDataSubmit} onDeleteMember={deleteUser} />
     </Box>
   );
 }

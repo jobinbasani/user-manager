@@ -15,9 +15,7 @@ import {
   UserDataMaritalStatusEnum, UserDataProvinceEnum, UserDataRelationEnum,
 } from '../../generated-sources/openapi';
 import { getEnumIndexByEnumValue } from '../../util/util';
-import { FamilyDetails as FamilyDetailsModel } from '../../store/family/family-slice';
 import { FormDateField, FormTextField, OptionalDate } from './FormFields';
-import { UserDetails } from '../../store/user/user-slice';
 
 export type UserRecord = Omit<UserData,
 'dateOfBirth'|
@@ -40,17 +38,16 @@ export type UserRecord = Omit<UserData,
 };
 
 export type AddUpdateFamilyDetailsProps = {
-  user: UserDetails;
+  relatedUser:string;
+  editUserId: string|null;
   initialValues: UserRecord;
-  family:FamilyDetailsModel;
   showFormFn:React.Dispatch<React.SetStateAction<boolean>>
-  onAddMember:((data:UserData) => Promise<{ payload: UserData[]; type: string; }>)
+  onMemberDataSubmit:((data:UserData, editUserId:string|null) => Promise<{ payload: UserData[]; type: string; }>)
 };
 
 export default function AddUpdateFamilyMember({
-  user,
-  family, initialValues,
-  showFormFn, onAddMember,
+  relatedUser, initialValues, editUserId,
+  showFormFn, onMemberDataSubmit,
 }:AddUpdateFamilyDetailsProps) {
   const userInfoSchema = Yup.object().shape({
     firstName: Yup.string()
@@ -71,7 +68,7 @@ export default function AddUpdateFamilyMember({
       .max(50, 'Too Long!'),
     relation: Yup.string()
       .when('firstName', {
-        is: () => family.members.length > 0,
+        is: () => relatedUser.length > 0,
         then: (schema) => schema.required('Required'),
       }),
     houseName: Yup.string()
@@ -130,7 +127,7 @@ export default function AddUpdateFamilyMember({
         : UserDataProvinceEnum.Ns,
       street: data.street,
     };
-    await onAddMember(userData)
+    await onMemberDataSubmit(userData, editUserId)
       .finally(() => {
         setSubmitting(false);
         showFormFn(false);
@@ -181,8 +178,8 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormTextField label="Baptismal Name" name="baptismalName" />
           <br />
-          {family.members.length > 0
-            && selectField(`Relation to ${user.userInfo.firstName} *`, 'relation', UserDataRelationEnum)}
+          {relatedUser.length > 0
+            && selectField(`Relation to ${relatedUser} *`, 'relation', UserDataRelationEnum)}
           <br />
           <FormTextField label="House Name" name="houseName" />
           <br />
