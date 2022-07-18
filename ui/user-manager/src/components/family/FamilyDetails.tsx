@@ -175,6 +175,11 @@ export default function FamilyDetails({
       mobile: userToBeEdited?.mobile || '',
     };
     setInitialMemberData(initialData);
+    if (family.members.length === 1 || (family.members.length > 1 && family.members[0].id === userId)) {
+      setRelatedUser('');
+    } else {
+      setRelatedUser(family.members[0].firstName);
+    }
     setEditUserId(userId);
     setFormVisible(true);
   };
