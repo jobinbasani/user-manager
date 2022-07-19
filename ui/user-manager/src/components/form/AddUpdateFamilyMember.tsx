@@ -51,9 +51,9 @@ export default function AddUpdateFamilyMember({
   showFormFn, onMemberDataSubmit,
 }:AddUpdateFamilyDetailsProps) {
   const focusRef = useRef<HTMLDivElement>(null);
-
+  const executeScroll = () => focusRef.current?.scrollIntoView({ behavior: 'smooth' });
   useEffect(() => {
-    focusRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(executeScroll, 600);
   }, [initialValues]);
 
   const userInfoSchema = Yup.object().shape({
@@ -153,6 +153,7 @@ export default function AddUpdateFamilyMember({
         isSubmitting, values, setFieldValue,
       }) => (
         <Form>
+          <div ref={focusRef} />
           <FormTextField label="First Name *" name="firstName" />
           <br />
           <FormTextField label="Middle Name" name="middleName" />
@@ -161,9 +162,7 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormSelectField label="Gender *" name="gender" value={UserDataGenderEnum} />
           <br />
-          <div ref={focusRef}>
-            <FormTextField label="Email *" name="email" />
-          </div>
+          <FormTextField label="Email *" name="email" />
           <br />
           <FormSelectField label="Marital Status *" name="maritalStatus" value={UserDataMaritalStatusEnum} />
           <br />
