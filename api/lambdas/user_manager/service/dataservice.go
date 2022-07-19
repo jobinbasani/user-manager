@@ -42,6 +42,7 @@ var titleCaser = cases.Title(language.English)
 type DataService interface {
 	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
 	AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
+	AdminLoadFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
 	UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error)
 	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
 	AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error)
@@ -107,61 +108,15 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 	if len(userData) == 0 {
 		return openapi.FamilyId{}, errors.New("at least one user is needed in a family")
 	}
-	var statements []types.ParameterizedStatement
 	familyID, err := d.getFamilyIDForEmail(ctx, user.Email)
 	if err != nil {
 		return openapi.FamilyId{}, err
 	}
-	if familyID == nil {
-		familyID = aws.String(uuid.New().String())
-	}
-	ts := time.Now().Unix()
-	for _, u := range userData {
-		if len(u.Email) == 0 {
-			return openapi.FamilyId{}, errors.New("a valid email id is needed or all users")
-		}
-		formattedUser, emails, searchData := d.formatUser(user, u)
-		userDataJson, err := json.Marshal(formattedUser)
-		if err != nil {
-			return openapi.FamilyId{}, err
-		}
-		statements = append(statements, types.ParameterizedStatement{
-			Statement: aws.String(fmt.Sprintf(
-				`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : %d, '%s' : ?, '%s' : ?}`,
-				d.cfg.UserDataTableName,
-				idAttribute,
-				uuid.New().String(),
-				recTypeAttribute,
-				userRecType,
-				familyIdAttribute,
-				*familyID,
-				emailIdAttribute,
-				emails.getAll(),
-				createdAtAttribute,
-				ts,
-				infoAttribute,
-				searchAttribute,
-			)),
-			Parameters: []types.AttributeValue{
-				&types.AttributeValueMemberS{
-					Value: string(userDataJson),
-				},
-				&types.AttributeValueMemberS{
-					Value: searchData,
-				},
-			},
-		})
-	}
-	_, err = d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
-		TransactStatements: statements,
-	})
-	if err != nil {
-		return openapi.FamilyId{}, err
-	}
+	return d.insertFamilyMembers(ctx, familyID, user, userData)
+}
 
-	return openapi.FamilyId{
-		FamilyId: *familyID,
-	}, nil
+func (d DynamoDBService) AdminLoadFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
+	return d.insertFamilyMembers(ctx, nil, openapi.User{}, userData)
 }
 
 func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error) {
@@ -373,9 +328,67 @@ func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementId
 	return announcementIds, nil
 }
 
+func (d DynamoDBService) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {
+
+	var statements []types.ParameterizedStatement
+
+	if familyID == nil {
+		familyID = aws.String(uuid.New().String())
+	}
+	ts := time.Now().Unix()
+	for i, u := range userData {
+		if len(u.Email) == 0 {
+			return openapi.FamilyId{}, errors.New("a valid email id is needed or all users")
+		}
+		formattedUser, emails, searchData := d.formatUser(currentUser, u)
+		userDataJson, err := json.Marshal(formattedUser)
+		if err != nil {
+			return openapi.FamilyId{}, err
+		}
+		statements = append(statements, types.ParameterizedStatement{
+			Statement: aws.String(fmt.Sprintf(
+				`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : '%s', '%s' : %d, '%s' : ?, '%s' : ?}`,
+				d.cfg.UserDataTableName,
+				idAttribute,
+				uuid.New().String(),
+				recTypeAttribute,
+				userRecType,
+				familyIdAttribute,
+				*familyID,
+				emailIdAttribute,
+				emails.getAll(),
+				createdAtAttribute,
+				ts+int64(i),
+				infoAttribute,
+				searchAttribute,
+			)),
+			Parameters: []types.AttributeValue{
+				&types.AttributeValueMemberS{
+					Value: string(userDataJson),
+				},
+				&types.AttributeValueMemberS{
+					Value: searchData,
+				},
+			},
+		})
+	}
+	_, err := d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
+		TransactStatements: statements,
+	})
+	if err != nil {
+		return openapi.FamilyId{}, err
+	}
+
+	return openapi.FamilyId{
+		FamilyId: *familyID,
+	}, nil
+}
+
 func (d DynamoDBService) formatUser(user openapi.User, u openapi.UserData) (openapi.UserData, stringSet, string) {
 	emails := make(stringSet)
-	emails.add(user.Email)
+	if len(user.Email) > 0 {
+		emails.add(user.Email)
+	}
 	emails.add(u.Email)
 	u.FirstName = d.titleCase(u.FirstName)
 	u.LastName = d.titleCase(u.LastName)

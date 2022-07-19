@@ -294,11 +294,10 @@ func parseDate(d string) (*string, error) {
 	formatted := timeT.Format(time.RubyDate)
 	return &formatted, nil
 }
-func ProcessRecord(headers []string, rec []string) {
+func ProcessRecord(headers []string, rec []string) []openapi.UserData {
 	var recs []openapi.UserData
 	for i := range headers {
 		header := strings.ToLower(strings.ReplaceAll(headers[i], " ", ""))
-		fmt.Println(header)
 		handler, exists := handlers[header]
 		if !exists {
 			continue
@@ -308,5 +307,20 @@ func ProcessRecord(headers []string, rec []string) {
 			log.Fatal(err)
 		}
 	}
-	fmt.Println(recs)
+	if len(recs) > 1 {
+		primaryRec := recs[0]
+		for i := 1; i < len(recs); i++ {
+			if len(recs[i].Street) == 0 {
+				recs[i].Apartment = primaryRec.Apartment
+				recs[i].Street = primaryRec.Street
+				recs[i].City = primaryRec.City
+				recs[i].Province = primaryRec.Province
+				recs[i].PostalCode = primaryRec.PostalCode
+			}
+			if len(recs[i].Email) == 0 {
+				recs[i].Email = primaryRec.Email
+			}
+		}
+	}
+	return recs
 }

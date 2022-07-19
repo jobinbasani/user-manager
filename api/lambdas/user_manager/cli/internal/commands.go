@@ -113,6 +113,10 @@ func NewLoadDataCommand() *cli.Command {
 				Usage:    "Location of CSV input file",
 				Required: true,
 			},
+			&cli.StringFlag{
+				Name:  "dynamo_endpoint",
+				Usage: "DynamoDB endpoint URL",
+			},
 		},
 	}
 }
@@ -222,6 +226,13 @@ func getLoadFileAction(c *cli.Context) error {
 
 	defer f.Close()
 
+	cfg := config.Configure(c.Context)
+
+	endpointUrl := c.String("dynamo_endpoint")
+	if len(endpointUrl) > 0 {
+		cfg.DynamoDBEndpointURL = aws.String(endpointUrl)
+	}
+	dataService := service.NewDataService(cfg, nil)
 	csvReader := csv.NewReader(f)
 	recCount := -1
 	var headers []string
@@ -241,7 +252,14 @@ func getLoadFileAction(c *cli.Context) error {
 			headers = rec
 			continue
 		}
-		dataloader.ProcessRecord(headers, rec)
+		userdataRecords := dataloader.ProcessRecord(headers, rec)
+		if len(userdataRecords) > 0 {
+			familyId, err := dataService.AdminLoadFamily(c.Context, userdataRecords)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(familyId)
+		}
 	}
 	return nil
 }
