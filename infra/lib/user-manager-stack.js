@@ -22,9 +22,7 @@ class UserManagerStack extends cdk.Stack {
 
     const userTable = new dynamodb.Table(this, id, {
       tableName: userTableName,
-      billingMode: dynamodb.BillingMode.PROVISIONED,
-      readCapacity: 2,
-      writeCapacity: 2,
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
@@ -44,8 +42,6 @@ class UserManagerStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
       projectionType: dynamodb.ProjectionType.KEYS_ONLY,
-      readCapacity: 2,
-      writeCapacity: 2,
     });
 
     userTable.addGlobalSecondaryIndex({
@@ -56,8 +52,6 @@ class UserManagerStack extends cdk.Stack {
       },
       projectionType: dynamodb.ProjectionType.INCLUDE,
       nonKeyAttributes: ['familyId'],
-      readCapacity: 2,
-      writeCapacity: 2,
     });
 
     userTable.addGlobalSecondaryIndex({
@@ -67,8 +61,6 @@ class UserManagerStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
       projectionType: dynamodb.ProjectionType.KEYS_ONLY,
-      readCapacity: 2,
-      writeCapacity: 2,
     });
 
     const userPool = new cognito.UserPool(this, 'userpool', {

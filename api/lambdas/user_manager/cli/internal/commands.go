@@ -117,6 +117,10 @@ func NewLoadDataCommand() *cli.Command {
 				Name:  "dynamo_endpoint",
 				Usage: "DynamoDB endpoint URL",
 			},
+			&cli.StringFlag{
+				Name:  "table",
+				Usage: "DynamoDB table name",
+			},
 		},
 	}
 }
@@ -231,6 +235,10 @@ func getLoadFileAction(c *cli.Context) error {
 	endpointUrl := c.String("dynamo_endpoint")
 	if len(endpointUrl) > 0 {
 		cfg.DynamoDBEndpointURL = aws.String(endpointUrl)
+	}
+	tableName := c.String("table")
+	if len(tableName) > 0 {
+		cfg.UserDataTableName = tableName
 	}
 	dataService := service.NewDataService(cfg, nil)
 	csvReader := csv.NewReader(f)

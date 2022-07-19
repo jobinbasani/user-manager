@@ -146,13 +146,13 @@ var handlers = map[string]columnHandler{
 		if strings.HasPrefix(d, "pr") {
 			(*s)[len(*s)-1].CanadianStatus = "permanentResident"
 		} else if strings.HasPrefix(d, "citi") {
-			(*s)[len(*s)-1].MaritalStatus = "citizen"
+			(*s)[len(*s)-1].CanadianStatus = "citizen"
 		} else if strings.HasPrefix(d, "work") {
-			(*s)[len(*s)-1].MaritalStatus = "workPermit"
+			(*s)[len(*s)-1].CanadianStatus = "workPermit"
 		} else if strings.HasPrefix(d, "visi") {
-			(*s)[len(*s)-1].MaritalStatus = "visitor"
+			(*s)[len(*s)-1].CanadianStatus = "visitor"
 		} else if strings.HasPrefix(d, "stu") {
-			(*s)[len(*s)-1].MaritalStatus = "student"
+			(*s)[len(*s)-1].CanadianStatus = "student"
 		}
 		return nil
 	},
