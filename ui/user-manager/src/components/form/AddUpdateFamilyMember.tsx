@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import * as Yup from 'yup';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   UserData,
   UserDataCanadianStatusEnum,
@@ -50,6 +50,12 @@ export default function AddUpdateFamilyMember({
   relatedUser, initialValues, editUserId,
   showFormFn, onMemberDataSubmit,
 }:AddUpdateFamilyDetailsProps) {
+  const focusRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    focusRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [initialValues]);
+
   const userInfoSchema = Yup.object().shape({
     firstName: Yup.string()
       .min(2, 'Too Short!')
@@ -155,7 +161,9 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormSelectField label="Gender *" name="gender" value={UserDataGenderEnum} />
           <br />
-          <FormTextField label="Email *" name="email" />
+          <div ref={focusRef}>
+            <FormTextField label="Email *" name="email" />
+          </div>
           <br />
           <FormSelectField label="Marital Status *" name="maritalStatus" value={UserDataMaritalStatusEnum} />
           <br />
