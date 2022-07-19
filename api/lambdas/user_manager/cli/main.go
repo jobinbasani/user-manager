@@ -13,12 +13,13 @@ func main() {
 
 	app := &cli.App{
 		Name:        "User Manager CLI",
-		Description: "Tools for managing video streams",
+		Description: "Tools for managing user manager data",
 		Commands: []*cli.Command{
 			internal.NewGetUserInfoCommand(),
 			internal.NewGetUserInfoBySubCommand(),
 			internal.NewGetUserInfoByEmailCommand(),
 			internal.NewStartServerCommand(),
+			internal.NewLoadDataCommand(),
 		},
 		ErrWriter: os.Stderr,
 	}

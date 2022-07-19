@@ -491,6 +491,9 @@ components:
         dateOfConfirmation:
           type: string
           description: Date of confirmation
+        dateOfMarriage:
+          type: string
+          description: Date of marriage
         homeParish:
           type: string
           description: Home parish
@@ -553,6 +556,9 @@ components:
         inCanadaSince:
           type: string
           description: In Canada since
+        profession:
+          type: string
+          description: Profession
         province:
           type: string
           enum:

@@ -2,12 +2,15 @@ package internal
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/labstack/gommon/log"
 	"github.com/urfave/cli/v2"
 	"github.com/ztrue/shutdown"
+	"io"
+	"lambdas/user_manager/cli/internal/dataloader"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/routes"
@@ -16,6 +19,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func NewGetUserInfoCommand() *cli.Command {
@@ -92,6 +96,22 @@ func NewStartServerCommand() *cli.Command {
 			&cli.IntFlag{
 				Name:  "port",
 				Usage: "Port to run the server on",
+			},
+		},
+	}
+}
+
+func NewLoadDataCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "load_data",
+		Aliases: []string{},
+		Usage:   "Load user data from csv files",
+		Action:  getLoadFileAction,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "file",
+				Usage:    "Location of CSV input file",
+				Required: true,
 			},
 		},
 	}
@@ -190,5 +210,38 @@ func getStartServerAction(c *cli.Context) error {
 		_ = srv.Shutdown(c.Context)
 	})
 	shutdown.Listen(os.Interrupt)
+	return nil
+}
+
+func getLoadFileAction(c *cli.Context) error {
+	inputFile := c.String("file")
+	f, err := os.Open(inputFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	recCount := -1
+	var headers []string
+	for {
+		rec, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		if len(rec) == 0 || len(strings.TrimSpace(rec[0])) == 0 {
+			break
+		}
+		recCount = recCount + 1
+		if recCount == 0 {
+			headers = rec
+			continue
+		}
+		dataloader.ProcessRecord(headers, rec)
+	}
 	return nil
 }

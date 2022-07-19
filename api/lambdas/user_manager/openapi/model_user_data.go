@@ -47,6 +47,9 @@ type UserData struct {
 	// Date of confirmation
 	DateOfConfirmation string `json:"dateOfConfirmation,omitempty"`
 
+	// Date of marriage
+	DateOfMarriage string `json:"dateOfMarriage,omitempty"`
+
 	// Home parish
 	HomeParish string `json:"homeParish,omitempty"`
 
@@ -83,6 +86,9 @@ type UserData struct {
 
 	// In Canada since
 	InCanadaSince string `json:"inCanadaSince,omitempty"`
+
+	// Profession
+	Profession string `json:"profession,omitempty"`
 
 	// Province
 	Province string `json:"province,omitempty"`
