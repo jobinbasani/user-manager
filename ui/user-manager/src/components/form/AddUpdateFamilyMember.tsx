@@ -54,7 +54,7 @@ export default function AddUpdateFamilyMember({
   const focusRef = useRef<HTMLDivElement>(null);
   const executeScroll = () => focusRef.current?.scrollIntoView({ behavior: 'smooth' });
   useEffect(() => {
-    setTimeout(executeScroll, 300);
+    setTimeout(executeScroll, 500);
   }, [initialValues]);
 
   const userInfoSchema = Yup.object().shape({
