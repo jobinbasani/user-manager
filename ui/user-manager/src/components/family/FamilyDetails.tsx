@@ -25,7 +25,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PersonRemove } from '@mui/icons-material';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
-import { stringAvatar } from '../../util/util';
+import { stringAvatar, tzAgnosticDate } from '../../util/util';
 import { FamilyDetails as FamilyDetailsModel } from '../../store/family/family-slice';
 import { UserDetails as UserDetailsModel } from '../../store/user/user-slice';
 import AddUpdateFamilyMember, { AddUpdateFamilyDetailsProps, UserRecord } from '../form/AddUpdateFamilyMember';
@@ -158,12 +158,12 @@ export default function FamilyDetails({
       relation: userToBeEdited?.relation || '',
       houseName: userToBeEdited?.houseName || '',
       familyUnit: userToBeEdited?.familyUnit || '',
-      dateOfBirth: userToBeEdited?.dateOfBirth || null,
-      dateOfBaptism: userToBeEdited?.dateOfBaptism || null,
-      dateOfConfirmation: userToBeEdited?.dateOfConfirmation || null,
+      dateOfBirth: tzAgnosticDate(userToBeEdited?.dateOfBirth),
+      dateOfBaptism: tzAgnosticDate(userToBeEdited?.dateOfBaptism),
+      dateOfConfirmation: tzAgnosticDate(userToBeEdited?.dateOfConfirmation),
       maritalStatus: userToBeEdited?.maritalStatus || '',
       canadianStatus: userToBeEdited?.canadianStatus || '',
-      inCanadaSince: userToBeEdited?.inCanadaSince || null,
+      inCanadaSince: tzAgnosticDate(userToBeEdited?.inCanadaSince),
       homeParish: userToBeEdited?.homeParish || '',
       dioceseInIndia: userToBeEdited?.dioceseInIndia || '',
       previousParishInCanada: userToBeEdited?.previousParishInCanada || '',

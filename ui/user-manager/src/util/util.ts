@@ -45,3 +45,25 @@ export function getEnumIndexByEnumValue(myEnum:Record<string, string>, enumValue
   }
   return -1;
 }
+
+export function tzAgnosticDate(input:string|undefined) {
+  if (!input) {
+    return null;
+  }
+  try {
+    const matches = /\w+\s\w+\s(?<day>\d+)\s.*/.exec(input);
+    if (matches) {
+      const parsed = new Date(input);
+      if (matches.groups) {
+        const { day } = matches.groups;
+        if (day) {
+          const tzDate = new Date(parsed.getFullYear(), parsed.getMonth(), Number(day));
+          return tzDate.toISOString();
+        }
+      }
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
