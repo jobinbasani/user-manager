@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 import { format } from 'date-fns';
+import { tzAgnosticDate } from '../../util/util';
 
 type TitleAndSubtitleProps = {
   title: string;
@@ -26,7 +27,11 @@ function TitleAndSubtitle({
   }
   if (formatDate) {
     try {
-      subtitleValue = format(new Date(subtitleValue), 'MMM d, yyyy');
+      const tzAgnosticDateString = tzAgnosticDate(subtitleValue);
+      if (!tzAgnosticDateString) {
+        return null;
+      }
+      subtitleValue = format(new Date(tzAgnosticDateString), 'MMM d, yyyy');
     } catch (err) {
       console.log(`unable to format ${subtitleValue} to date`);
     }
