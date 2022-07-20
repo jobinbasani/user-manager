@@ -205,6 +205,9 @@ export default function AddUpdateFamilyMember({
           <FormTextField label="Mobile Number" name="cell" />
           {isSubmitting && <LinearProgress />}
           <br />
+          {Object.keys(errors).length > 0
+            && <Alert severity="error">Please fill all mandatory fields(marked with an asterisk *)</Alert>}
+          <br />
           <Button
             variant="contained"
             color="primary"
@@ -214,9 +217,7 @@ export default function AddUpdateFamilyMember({
             Submit
           </Button>
           <Button onClick={() => showFormFn(false)}>Cancel</Button>
-          <br />
-          {Object.keys(errors).length > 0
-            && <Alert severity="error">Please fill all mandatory fields(marked with an asterisk *)</Alert>}
+
         </Form>
       )}
     </Formik>
