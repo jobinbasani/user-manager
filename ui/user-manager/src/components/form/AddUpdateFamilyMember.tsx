@@ -23,6 +23,7 @@ export type UserRecord = Omit<UserData,
 'dateOfBirth'|
 'dateOfConfirmation'|
 'dateOfBaptism'|
+'dateOfMarriage'|
 'inCanadaSince'|
 'canadianStatus'|
 'maritalStatus'|
@@ -32,6 +33,7 @@ export type UserRecord = Omit<UserData,
   dateOfBirth:OptionalDate
   dateOfConfirmation:OptionalDate
   dateOfBaptism:OptionalDate
+  dateOfMarriage:OptionalDate
   inCanadaSince:OptionalDate
   canadianStatus:string
   maritalStatus:string
@@ -54,7 +56,7 @@ export default function AddUpdateFamilyMember({
   const focusRef = useRef<HTMLDivElement>(null);
   const executeScroll = () => focusRef.current?.scrollIntoView({ behavior: 'smooth' });
   useEffect(() => {
-    setTimeout(executeScroll, 500);
+    setTimeout(executeScroll, 600);
   }, [initialValues]);
 
   const userInfoSchema = Yup.object().shape({
@@ -112,6 +114,7 @@ export default function AddUpdateFamilyMember({
       dateOfBaptism: data.dateOfBaptism ? data.dateOfBaptism.toString() : undefined,
       dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toString() : '',
       dateOfConfirmation: data.dateOfConfirmation ? data.dateOfConfirmation.toString() : undefined,
+      dateOfMarriage: data.dateOfMarriage ? data.dateOfMarriage.toString() : undefined,
       dioceseInIndia: data.dioceseInIndia,
       email: data.email,
       familyUnit: data.familyUnit,
@@ -165,7 +168,9 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormTextField label="Email *" name="email" />
           <br />
-          <FormSelectField label="Marital Status *" name="maritalStatus" value={UserDataMaritalStatusEnum} />
+          <FormSelectField label="Marital Status" name="maritalStatus" value={UserDataMaritalStatusEnum} />
+          <br />
+          <FormDateField value={values.dateOfMarriage} setFieldValue={setFieldValue} label="Date of Marriage" name="dateOfMarriage" />
           <br />
           <FormTextField label="Baptismal Name" name="baptismalName" />
           <br />

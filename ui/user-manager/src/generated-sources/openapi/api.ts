@@ -381,6 +381,12 @@ export interface UserData {
      */
     'dateOfConfirmation'?: string;
     /**
+     * Date of marriage
+     * @type {string}
+     * @memberof UserData
+     */
+    'dateOfMarriage'?: string;
+    /**
      * Home parish
      * @type {string}
      * @memberof UserData
@@ -458,6 +464,12 @@ export interface UserData {
      * @memberof UserData
      */
     'inCanadaSince'?: string;
+    /**
+     * Profession
+     * @type {string}
+     * @memberof UserData
+     */
+    'profession'?: string;
     /**
      * Province
      * @type {string}
