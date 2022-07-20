@@ -2,6 +2,7 @@ import {
   Form, Formik,
 } from 'formik';
 import {
+  Alert,
   LinearProgress,
 } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -150,7 +151,7 @@ export default function AddUpdateFamilyMember({
       }}
     >
       {({
-        isSubmitting, values, setFieldValue,
+        errors, isSubmitting, values, setFieldValue,
       }) => (
         <Form>
           <div ref={focusRef} />
@@ -213,6 +214,9 @@ export default function AddUpdateFamilyMember({
             Submit
           </Button>
           <Button onClick={() => showFormFn(false)}>Cancel</Button>
+          <br />
+          {Object.keys(errors).length > 0
+            && <Alert severity="error">Please fill all mandatory fields(marked with an asterisk *)</Alert>}
         </Form>
       )}
     </Formik>
