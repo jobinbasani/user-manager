@@ -18,6 +18,7 @@ export default function UserDetails({ member }:UserDetailsProps) {
       <TitleAndSubtitle title="Birthday" subtitle={member.dateOfBirth} formatDate />
       <TitleAndSubtitle title="Email" subtitle={member.email} />
       <TitleAndSubtitle title="Marital Status" subtitle={member.maritalStatus} source={UserDataMaritalStatusEnum} />
+      <TitleAndSubtitle title="Date of Marriage" subtitle={member.dateOfMarriage} formatDate />
       <TitleAndSubtitle title="Baptismal Name" subtitle={member.baptismalName} />
       <TitleAndSubtitle title="Relation" subtitle={member.relation} source={UserDataRelationEnum} />
       <TitleAndSubtitle title="House Name" subtitle={member.houseName} />

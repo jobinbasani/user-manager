@@ -88,6 +88,11 @@ export default function AddUpdateFamilyMember({
     dateOfBirth: Yup.date()
       .typeError('Please provide a valid date')
       .required('Required'),
+    dateOfMarriage: Yup.date()
+      .when('maritalStatus', {
+        is: (s:string) => s === 'married',
+        then: (schema) => schema.typeError('Please provide a valid date'),
+      }),
     canadianStatus: Yup.string()
       .required('Required'),
     street: Yup.string()
@@ -170,8 +175,13 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormSelectField label="Marital Status" name="maritalStatus" value={UserDataMaritalStatusEnum} />
           <br />
-          <FormDateField value={values.dateOfMarriage} setFieldValue={setFieldValue} label="Date of Marriage" name="dateOfMarriage" />
-          <br />
+          {values?.maritalStatus?.toLowerCase() === 'married'
+            && (
+              <>
+                <FormDateField value={values.dateOfMarriage} setFieldValue={setFieldValue} label="Date of Marriage *" name="dateOfMarriage" />
+                <br />
+              </>
+            )}
           <FormTextField label="Baptismal Name" name="baptismalName" />
           <br />
           {relatedUser.length > 0

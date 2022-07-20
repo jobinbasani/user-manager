@@ -393,6 +393,9 @@ func (d DynamoDBService) formatUser(user openapi.User, u openapi.UserData) (open
 	u.FirstName = d.titleCase(u.FirstName)
 	u.LastName = d.titleCase(u.LastName)
 	u.DisplayName = u.FirstName + " " + u.LastName
+	if u.MaritalStatus != "married" {
+		u.DateOfMarriage = ""
+	}
 	searchData := d.buildSearchIndex(u.FirstName, u.LastName, u.Email)
 	return u, emails, searchData
 }
