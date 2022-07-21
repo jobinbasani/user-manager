@@ -67,3 +67,10 @@ export function tzAgnosticDate(input:string|undefined) {
   }
   return null;
 }
+
+export function dateString(d:string) {
+  if (d.length === 0) {
+    return d;
+  }
+  return new Date(d).toString();
+}

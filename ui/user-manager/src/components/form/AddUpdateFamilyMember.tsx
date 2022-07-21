@@ -14,7 +14,7 @@ import {
   UserDataGenderEnum,
   UserDataMaritalStatusEnum, UserDataProvinceEnum, UserDataRelationEnum,
 } from '../../generated-sources/openapi';
-import { getEnumIndexByEnumValue } from '../../util/util';
+import { dateString, getEnumIndexByEnumValue } from '../../util/util';
 import {
   FormDateField, FormSelectField, FormTextField, OptionalDate,
 } from './FormFields';
@@ -116,10 +116,10 @@ export default function AddUpdateFamilyMember({
         ? Object.values(UserDataRelationEnum)[getEnumIndexByEnumValue(UserDataRelationEnum, data.relation)]
         : undefined,
       city: data.city,
-      dateOfBaptism: data.dateOfBaptism ? data.dateOfBaptism.toString() : undefined,
-      dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toString() : '',
-      dateOfConfirmation: data.dateOfConfirmation ? data.dateOfConfirmation.toString() : undefined,
-      dateOfMarriage: data.dateOfMarriage ? data.dateOfMarriage.toString() : undefined,
+      dateOfBaptism: data.dateOfBaptism ? dateString(data.dateOfBaptism.toString()) : undefined,
+      dateOfBirth: data.dateOfBirth ? dateString(data.dateOfBirth.toString()) : '',
+      dateOfConfirmation: data.dateOfConfirmation ? dateString(data.dateOfConfirmation.toString()) : undefined,
+      dateOfMarriage: data.dateOfMarriage ? dateString(data.dateOfMarriage.toString()) : undefined,
       dioceseInIndia: data.dioceseInIndia,
       email: data.email,
       familyUnit: data.familyUnit,
@@ -129,7 +129,7 @@ export default function AddUpdateFamilyMember({
         : UserDataGenderEnum.Male,
       homeParish: data.homeParish,
       houseName: data.houseName,
-      inCanadaSince: data.inCanadaSince ? data.inCanadaSince.toString() : undefined,
+      inCanadaSince: data.inCanadaSince ? dateString(data.inCanadaSince.toString()) : undefined,
       lastName: data.lastName,
       maritalStatus: getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus) >= 0
         ? Object.values(UserDataMaritalStatusEnum)[getEnumIndexByEnumValue(UserDataMaritalStatusEnum, data.maritalStatus)]
