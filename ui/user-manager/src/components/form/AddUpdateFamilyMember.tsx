@@ -88,11 +88,6 @@ export default function AddUpdateFamilyMember({
     dateOfBirth: Yup.date()
       .typeError('Please provide a valid date')
       .required('Required'),
-    dateOfMarriage: Yup.date()
-      .when('maritalStatus', {
-        is: (s:string) => s === 'married',
-        then: (schema) => schema.typeError('Please provide a valid date'),
-      }),
     canadianStatus: Yup.string()
       .required('Required'),
     street: Yup.string()
