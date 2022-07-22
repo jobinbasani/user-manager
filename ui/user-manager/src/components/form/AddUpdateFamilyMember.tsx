@@ -123,6 +123,7 @@ export default function AddUpdateFamilyMember({
         ? Object.values(UserDataGenderEnum)[getEnumIndexByEnumValue(UserDataGenderEnum, data.gender)]
         : UserDataGenderEnum.Male,
       homeParish: data.homeParish,
+      profession: data.profession,
       houseName: data.houseName,
       inCanadaSince: data.inCanadaSince ? dateString(data.inCanadaSince.toString()) : undefined,
       lastName: data.lastName,
@@ -195,6 +196,8 @@ export default function AddUpdateFamilyMember({
           <FormSelectField label="Status in Canada *" name="canadianStatus" value={UserDataCanadianStatusEnum} />
           <br />
           <FormDateField value={values.inCanadaSince} setFieldValue={setFieldValue} label="In Canada since" name="inCanadaSince" />
+          <br />
+          <FormTextField label="Profession" name="profession" />
           <br />
           <FormTextField label="Home Parish" name="homeParish" />
           <br />

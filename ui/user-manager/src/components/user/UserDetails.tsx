@@ -27,6 +27,7 @@ export default function UserDetails({ member }:UserDetailsProps) {
       <TitleAndSubtitle title="Date of Confirmation" subtitle={member.dateOfConfirmation} formatDate />
       <TitleAndSubtitle title="Status in Canada" subtitle={member.canadianStatus} source={UserDataCanadianStatusEnum} />
       <TitleAndSubtitle title="In Canada Since" subtitle={member.inCanadaSince} formatDate />
+      <TitleAndSubtitle title="Profession" subtitle={member.profession} />
       <TitleAndSubtitle title="Home Parish" subtitle={member.homeParish} />
       <TitleAndSubtitle title="Diocese in India" subtitle={member.dioceseInIndia} />
       <TitleAndSubtitle title="Previous Parish in Canada" subtitle={member.previousParishInCanada} />
