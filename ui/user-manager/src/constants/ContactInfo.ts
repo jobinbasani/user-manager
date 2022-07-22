@@ -13,6 +13,6 @@ export const ContactInfoItems: Array<ContactInfo> = [
     key: '1', Image: FacebookIcon, link: 'https://www.facebook.com/groups/1003089003043538',
   },
   {
-    key: '2', Image: InstagramIcon, link: 'https://instagram.com',
+    key: '2', Image: InstagramIcon, link: 'https://www.instagram.com/syrohalifax/',
   },
 ];
