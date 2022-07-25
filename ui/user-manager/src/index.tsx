@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import './index.scss';
 import { Provider } from 'react-redux';
 import reportWebVitals from './reportWebVitals';
 import store from './store/index';

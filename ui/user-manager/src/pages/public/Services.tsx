@@ -1,12 +1,15 @@
-import ComingSoon from '../../components/unspported/ComingSoon';
+import Typography from '@mui/material/Typography';
+import { Stack } from '@mui/material';
+import RichTextEditor from '../../components/editor/RichTextEditor';
 
 function Services() {
   return (
-    <div>
-      {' '}
-      <ComingSoon />
-      {' '}
-    </div>
+    <Stack spacing={2} p={2} sx={{ width: { xs: 0.8, sm: 0.6 } }}>
+      <Typography variant="h6" gutterBottom component="div">
+        Services
+      </Typography>
+      <RichTextEditor />
+    </Stack>
   );
 }
 
