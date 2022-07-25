@@ -53,12 +53,31 @@ func (c *PublicApiController) Routes() Routes {
 			"/api/v1/public/announcements",
 			c.GetAnnouncements,
 		},
+		{
+			"GetServices",
+			strings.ToUpper("Get"),
+			"/api/v1/public/services",
+			c.GetServices,
+		},
 	}
 }
 
 // GetAnnouncements - Get all announcements
 func (c *PublicApiController) GetAnnouncements(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetAnnouncements(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetServices - Get service details
+func (c *PublicApiController) GetServices(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetServices(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

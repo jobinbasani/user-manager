@@ -21,6 +21,7 @@ type AdminApiRouter interface {
 	AddAnnouncement(http.ResponseWriter, *http.Request)
 	DeleteAnnouncements(http.ResponseWriter, *http.Request)
 	GetAdmins(http.ResponseWriter, *http.Request)
+	SetServiceData(http.ResponseWriter, *http.Request)
 }
 
 // FamilyManagementApiRouter defines the required methods for binding the api requests to a responses for the FamilyManagementApi
@@ -38,6 +39,7 @@ type FamilyManagementApiRouter interface {
 // pass the data to a PublicApiServicer to perform the required actions, then write the service results to the http response.
 type PublicApiRouter interface {
 	GetAnnouncements(http.ResponseWriter, *http.Request)
+	GetServices(http.ResponseWriter, *http.Request)
 }
 
 // UserManagementApiRouter defines the required methods for binding the api requests to a responses for the UserManagementApi
@@ -55,6 +57,7 @@ type AdminApiServicer interface {
 	AddAnnouncement(context.Context, Announcement) (ImplResponse, error)
 	DeleteAnnouncements(context.Context, []string) (ImplResponse, error)
 	GetAdmins(context.Context) (ImplResponse, error)
+	SetServiceData(context.Context, PageContent) (ImplResponse, error)
 }
 
 // FamilyManagementApiServicer defines the api actions for the FamilyManagementApi service
@@ -74,6 +77,7 @@ type FamilyManagementApiServicer interface {
 // and updated with the logic required for the API.
 type PublicApiServicer interface {
 	GetAnnouncements(context.Context) (ImplResponse, error)
+	GetServices(context.Context) (ImplResponse, error)
 }
 
 // UserManagementApiServicer defines the api actions for the UserManagementApi service

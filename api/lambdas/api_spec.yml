@@ -217,6 +217,31 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/services:
+    put:
+      operationId: setServiceData
+      summary: Set service details
+      requestBody:
+        description: Service page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set service data
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/public/announcements:
     get:
       operationId: getAnnouncements
@@ -231,6 +256,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Announcements'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/services:
+    get:
+      operationId: getServices
+      summary: Get service details
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContent'
         404:
           $ref: '#/components/responses/NotFound'
         default:
@@ -613,6 +657,14 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/Announcement'
+
+    PageContent:
+      type: object
+      properties:
+        html:
+          type: string
+          example: "<p>Content goes here!</p>"
+
 
     Announcement:
       type: object

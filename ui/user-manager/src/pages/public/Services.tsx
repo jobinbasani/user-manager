@@ -5,7 +5,7 @@ import RichTextEditor from '../../components/editor/RichTextEditor';
 function Services() {
   return (
     <Stack spacing={2} p={2} sx={{ width: { xs: 0.8, sm: 0.6 } }}>
-      <Typography variant="h6" gutterBottom component="div">
+      <Typography variant="h6">
         Services
       </Typography>
       <RichTextEditor />

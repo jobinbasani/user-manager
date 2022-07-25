@@ -42,3 +42,20 @@ func (s *PublicApiService) GetAnnouncements(ctx context.Context) (ImplResponse, 
 
 	return Response(http.StatusNotImplemented, nil), errors.New("GetAnnouncements method not implemented")
 }
+
+// GetServices - Get service details
+func (s *PublicApiService) GetServices(ctx context.Context) (ImplResponse, error) {
+	// TODO - update GetServices with the required logic for this service method.
+	// Add api_public_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, PageContent{}) or use other options such as http.Ok ...
+	//return Response(200, PageContent{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("GetServices method not implemented")
+}

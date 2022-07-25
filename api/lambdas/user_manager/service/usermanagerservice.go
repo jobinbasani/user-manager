@@ -130,13 +130,31 @@ func (u *UserManagerService) GetAdmins(ctx context.Context) (openapi.ImplRespons
 
 func (u *UserManagerService) UpdateFamilyMember(ctx context.Context, userId string, user openapi.UserData) (openapi.ImplResponse, error) {
 	updatedUserId, err := u.dataService.UpdateFamilyMember(ctx, userId, user)
+	return u.handleResponse(updatedUserId, err)
+}
+
+func (u *UserManagerService) SetServiceData(ctx context.Context, pageContent openapi.PageContent) (openapi.ImplResponse, error) {
+	err := u.dataService.SetPageContent(ctx, servicesRecType, pageContent)
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) GetServices(ctx context.Context) (openapi.ImplResponse, error) {
+	content, err := u.dataService.GetPageContent(ctx, servicesRecType)
+	return u.handleResponse(content, err)
+}
+
+func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)
 		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
 			Message: err.Error(),
 		}), err
 	}
-	return openapi.Response(http.StatusOK, updatedUserId), nil
+	status := http.StatusOK
+	if body == nil {
+		status = http.StatusNoContent
+	}
+	return openapi.Response(status, body), nil
 }
 
 // NewUserManagerService creates a new UserManagerService

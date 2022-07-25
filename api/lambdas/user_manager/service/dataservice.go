@@ -32,9 +32,11 @@ const (
 	familyIdAttribute  = "familyId"
 	emailIdAttribute   = "emailId"
 	infoAttribute      = "info"
-	userRecType        = "USER"
-	announcementId     = "announcements"
 	ttlAttribute       = "expDate"
+	userRecType        = "USER"
+	servicesRecType    = "SERVICES"
+	announcementId     = "announcements"
+	pageContentId      = "pagecontent"
 )
 
 var titleCaser = cases.Title(language.English)
@@ -48,6 +50,8 @@ type DataService interface {
 	AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error)
 	GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error)
 	DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error)
+	GetPageContent(ctx context.Context, key string) (openapi.PageContent, error)
+	SetPageContent(ctx context.Context, key string, content openapi.PageContent) error
 }
 type DynamoDBService struct {
 	cfg         *config.Config
@@ -326,6 +330,59 @@ func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementId
 		return nil, err
 	}
 	return announcementIds, nil
+}
+
+func (d DynamoDBService) GetPageContent(ctx context.Context, key string) (openapi.PageContent, error) {
+
+	data, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			pageContentId,
+			recTypeAttribute,
+			servicesRecType,
+		)),
+	})
+	if err != nil {
+		return openapi.PageContent{}, err
+	}
+	if len(data.Items) == 0 {
+		return openapi.PageContent{}, errors.New("no data found")
+	}
+	contentString := d.getStringValue(data.Items[0], infoAttribute)
+	if contentString == nil {
+		return openapi.PageContent{}, errors.New("no valid data found")
+	}
+	var content openapi.PageContent
+	err = json.Unmarshal([]byte(*contentString), &content)
+	if err != nil {
+		return openapi.PageContent{}, err
+	}
+	return content, nil
+}
+
+func (d DynamoDBService) SetPageContent(ctx context.Context, key string, content openapi.PageContent) error {
+	contentData, err := json.Marshal(content)
+	if err != nil {
+		return err
+	}
+	_, err = d.client.PutItem(ctx, &dynamodb.PutItemInput{
+		TableName: &d.cfg.UserDataTableName,
+		Item: map[string]types.AttributeValue{
+			idAttribute: &types.AttributeValueMemberS{
+				Value: pageContentId,
+			},
+			recTypeAttribute: &types.AttributeValueMemberS{
+				Value: key,
+			},
+			infoAttribute: &types.AttributeValueMemberS{
+				Value: string(contentData),
+			},
+		},
+	})
+
+	return err
 }
 
 func (d DynamoDBService) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {

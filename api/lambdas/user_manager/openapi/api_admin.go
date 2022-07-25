@@ -66,6 +66,12 @@ func (c *AdminApiController) Routes() Routes {
 			"/api/v1/admin/admins",
 			c.GetAdmins,
 		},
+		{
+			"SetServiceData",
+			strings.ToUpper("Put"),
+			"/api/v1/admin/services",
+			c.SetServiceData,
+		},
 	}
 }
 
@@ -116,6 +122,30 @@ func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.
 // GetAdmins - List of users with Admin access
 func (c *AdminApiController) GetAdmins(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetAdmins(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// SetServiceData - Set service details
+func (c *AdminApiController) SetServiceData(w http.ResponseWriter, r *http.Request) {
+	pageContentParam := PageContent{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&pageContentParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertPageContentRequired(pageContentParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.SetServiceData(r.Context(), pageContentParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
