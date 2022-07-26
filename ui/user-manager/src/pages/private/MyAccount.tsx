@@ -51,7 +51,7 @@ export default function MyAccount() {
     if (user.isLoggedIn) {
       loadFamilyData().finally(() => setLoading(false));
     }
-  }, [dispatch, user]);
+  });
 
   return (
     <Box bgcolor="grey" flex={4} p={2}>
