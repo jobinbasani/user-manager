@@ -691,6 +691,86 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Set catechism details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setCatechismData: async (pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pageContent' is not null or undefined
+            assertParamExists('setCatechismData', 'pageContent', pageContent)
+            const localVarPath = `/api/v1/admin/catechism`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(pageContent, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Set committee details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setCommitteeData: async (pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pageContent' is not null or undefined
+            assertParamExists('setCommitteeData', 'pageContent', pageContent)
+            const localVarPath = `/api/v1/admin/committee`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(pageContent, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Set service details
          * @param {PageContent} pageContent Service page content
          * @param {*} [options] Override http request option.
@@ -773,6 +853,28 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Set catechism details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setCatechismData(pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setCatechismData(pageContent, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Set committee details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setCommitteeData(pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setCommitteeData(pageContent, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Set service details
          * @param {PageContent} pageContent Service page content
          * @param {*} [options] Override http request option.
@@ -820,6 +922,26 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         getAdmins(options?: any): AxiosPromise<BasicUserInfoList> {
             return localVarFp.getAdmins(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Set catechism details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setCatechismData(pageContent: PageContent, options?: any): AxiosPromise<void> {
+            return localVarFp.setCatechismData(pageContent, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Set committee details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setCommitteeData(pageContent: PageContent, options?: any): AxiosPromise<void> {
+            return localVarFp.setCommitteeData(pageContent, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -874,6 +996,30 @@ export class AdminApi extends BaseAPI {
      */
     public getAdmins(options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).getAdmins(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Set catechism details
+     * @param {PageContent} pageContent Service page content
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public setCatechismData(pageContent: PageContent, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).setCatechismData(pageContent, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Set committee details
+     * @param {PageContent} pageContent Service page content
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public setCommitteeData(pageContent: PageContent, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).setCommitteeData(pageContent, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1256,6 +1402,66 @@ export const PublicApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @summary Get catechism details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCatechism: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/public/catechism`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get committee details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCommittee: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/public/committee`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get service details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1306,6 +1512,26 @@ export const PublicApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get catechism details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCatechism(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PageContent>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCatechism(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get committee details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCommittee(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PageContent>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCommittee(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get service details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1335,6 +1561,24 @@ export const PublicApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @summary Get catechism details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCatechism(options?: any): AxiosPromise<PageContent> {
+            return localVarFp.getCatechism(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get committee details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCommittee(options?: any): AxiosPromise<PageContent> {
+            return localVarFp.getCommittee(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get service details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1361,6 +1605,28 @@ export class PublicApi extends BaseAPI {
      */
     public getAnnouncements(options?: AxiosRequestConfig) {
         return PublicApiFp(this.configuration).getAnnouncements(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get catechism details
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicApi
+     */
+    public getCatechism(options?: AxiosRequestConfig) {
+        return PublicApiFp(this.configuration).getCatechism(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get committee details
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicApi
+     */
+    public getCommittee(options?: AxiosRequestConfig) {
+        return PublicApiFp(this.configuration).getCommittee(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
