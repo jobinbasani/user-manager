@@ -143,6 +143,26 @@ func (u *UserManagerService) GetServices(ctx context.Context) (openapi.ImplRespo
 	return u.handleResponse(content, err)
 }
 
+func (u *UserManagerService) SetCommitteeData(ctx context.Context, pageContent openapi.PageContent) (openapi.ImplResponse, error) {
+	err := u.dataService.SetPageContent(ctx, committeeRecType, pageContent)
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) GetCommittee(ctx context.Context) (openapi.ImplResponse, error) {
+	content, err := u.dataService.GetPageContent(ctx, committeeRecType)
+	return u.handleResponse(content, err)
+}
+
+func (u *UserManagerService) SetCatechismData(ctx context.Context, pageContent openapi.PageContent) (openapi.ImplResponse, error) {
+	err := u.dataService.SetPageContent(ctx, catechismRecType, pageContent)
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) GetCatechism(ctx context.Context) (openapi.ImplResponse, error) {
+	content, err := u.dataService.GetPageContent(ctx, catechismRecType)
+	return u.handleResponse(content, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

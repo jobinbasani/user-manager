@@ -21,6 +21,8 @@ type AdminApiRouter interface {
 	AddAnnouncement(http.ResponseWriter, *http.Request)
 	DeleteAnnouncements(http.ResponseWriter, *http.Request)
 	GetAdmins(http.ResponseWriter, *http.Request)
+	SetCatechismData(http.ResponseWriter, *http.Request)
+	SetCommitteeData(http.ResponseWriter, *http.Request)
 	SetServiceData(http.ResponseWriter, *http.Request)
 }
 
@@ -39,6 +41,8 @@ type FamilyManagementApiRouter interface {
 // pass the data to a PublicApiServicer to perform the required actions, then write the service results to the http response.
 type PublicApiRouter interface {
 	GetAnnouncements(http.ResponseWriter, *http.Request)
+	GetCatechism(http.ResponseWriter, *http.Request)
+	GetCommittee(http.ResponseWriter, *http.Request)
 	GetServices(http.ResponseWriter, *http.Request)
 }
 
@@ -57,6 +61,8 @@ type AdminApiServicer interface {
 	AddAnnouncement(context.Context, Announcement) (ImplResponse, error)
 	DeleteAnnouncements(context.Context, []string) (ImplResponse, error)
 	GetAdmins(context.Context) (ImplResponse, error)
+	SetCatechismData(context.Context, PageContent) (ImplResponse, error)
+	SetCommitteeData(context.Context, PageContent) (ImplResponse, error)
 	SetServiceData(context.Context, PageContent) (ImplResponse, error)
 }
 
@@ -77,6 +83,8 @@ type FamilyManagementApiServicer interface {
 // and updated with the logic required for the API.
 type PublicApiServicer interface {
 	GetAnnouncements(context.Context) (ImplResponse, error)
+	GetCatechism(context.Context) (ImplResponse, error)
+	GetCommittee(context.Context) (ImplResponse, error)
 	GetServices(context.Context) (ImplResponse, error)
 }
 

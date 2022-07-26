@@ -242,6 +242,56 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/catechism:
+    put:
+      operationId: setCatechismData
+      summary: Set catechism details
+      requestBody:
+        description: Service page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set catechism data
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/committee:
+    put:
+      operationId: setCommitteeData
+      summary: Set committee details
+      requestBody:
+        description: Service page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set committee data
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/public/announcements:
     get:
       operationId: getAnnouncements
@@ -265,6 +315,44 @@ paths:
     get:
       operationId: getServices
       summary: Get service details
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContent'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/catechism:
+    get:
+      operationId: getCatechism
+      summary: Get catechism details
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContent'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/committee:
+    get:
+      operationId: getCommittee
+      summary: Get committee details
       security: []
       tags:
         - Public

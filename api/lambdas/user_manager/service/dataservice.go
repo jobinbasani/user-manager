@@ -35,6 +35,8 @@ const (
 	ttlAttribute       = "expDate"
 	userRecType        = "USER"
 	servicesRecType    = "SERVICES"
+	catechismRecType   = "CATECHISM"
+	committeeRecType   = "COMMITTEE"
 	announcementId     = "announcements"
 	pageContentId      = "pagecontent"
 )
@@ -341,7 +343,7 @@ func (d DynamoDBService) GetPageContent(ctx context.Context, key string) (openap
 			idAttribute,
 			pageContentId,
 			recTypeAttribute,
-			servicesRecType,
+			key,
 		)),
 	})
 	if err != nil {
