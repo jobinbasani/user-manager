@@ -235,6 +235,19 @@ export interface NotFoundError {
     'errors'?: Array<InternalServerErrorErrors>;
 }
 /**
+ * 
+ * @export
+ * @interface PageContent
+ */
+export interface PageContent {
+    /**
+     * 
+     * @type {string}
+     * @memberof PageContent
+     */
+    'html'?: string;
+}
+/**
  * User must be authenticated in order to access this endpoint.
  * @export
  * @interface UnauthorizedError
@@ -676,6 +689,46 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Set service details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setServiceData: async (pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pageContent' is not null or undefined
+            assertParamExists('setServiceData', 'pageContent', pageContent)
+            const localVarPath = `/api/v1/admin/services`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(pageContent, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -718,6 +771,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAdmins(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary Set service details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setServiceData(pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setServiceData(pageContent, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -756,6 +820,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         getAdmins(options?: any): AxiosPromise<BasicUserInfoList> {
             return localVarFp.getAdmins(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Set service details
+         * @param {PageContent} pageContent Service page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setServiceData(pageContent: PageContent, options?: any): AxiosPromise<void> {
+            return localVarFp.setServiceData(pageContent, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -800,6 +874,18 @@ export class AdminApi extends BaseAPI {
      */
     public getAdmins(options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).getAdmins(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Set service details
+     * @param {PageContent} pageContent Service page content
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public setServiceData(pageContent: PageContent, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).setServiceData(pageContent, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1168,6 +1254,36 @@ export const PublicApiAxiosParamCreator = function (configuration?: Configuratio
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Get service details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getServices: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/public/services`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -1186,6 +1302,16 @@ export const PublicApiFp = function(configuration?: Configuration) {
          */
         async getAnnouncements(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Announcement>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAnnouncements(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get service details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getServices(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PageContent>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getServices(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -1207,6 +1333,15 @@ export const PublicApiFactory = function (configuration?: Configuration, basePat
         getAnnouncements(options?: any): AxiosPromise<Array<Announcement>> {
             return localVarFp.getAnnouncements(options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Get service details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getServices(options?: any): AxiosPromise<PageContent> {
+            return localVarFp.getServices(options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -1226,6 +1361,17 @@ export class PublicApi extends BaseAPI {
      */
     public getAnnouncements(options?: AxiosRequestConfig) {
         return PublicApiFp(this.configuration).getAnnouncements(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get service details
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicApi
+     */
+    public getServices(options?: AxiosRequestConfig) {
+        return PublicApiFp(this.configuration).getServices(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

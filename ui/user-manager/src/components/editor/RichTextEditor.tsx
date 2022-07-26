@@ -1,9 +1,17 @@
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Box } from '@mui/material';
+import React from 'react';
+import Button from '@mui/material/Button';
 
 type MenuBarProps={
   editor:Editor|null
+}
+
+type EditorProps={
+  content:string
+  onEditCancel:(() => void)
+  onEditSave:((html: string|undefined)=> void)
 }
 
 function MenuBar({ editor }:MenuBarProps) {
@@ -125,18 +133,30 @@ function MenuBar({ editor }:MenuBarProps) {
     </>
   );
 }
-export default function RichTextEditor() {
+export default function RichTextEditor({ content, onEditCancel, onEditSave }:EditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
     ],
-    content: '<p>Hello World!</p>',
+    content,
   });
 
   return (
     <Box pt={2} sx={{ border: '1px solid grey' }}>
       <MenuBar editor={editor} />
       <EditorContent editor={editor} />
+      <Button
+        color="primary"
+        onClick={() => onEditSave(editor?.getHTML())}
+      >
+        Save
+      </Button>
+      <Button
+        color="error"
+        onClick={() => onEditCancel()}
+      >
+        Cancel
+      </Button>
     </Box>
   );
 }

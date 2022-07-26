@@ -348,7 +348,7 @@ func (d DynamoDBService) GetPageContent(ctx context.Context, key string) (openap
 		return openapi.PageContent{}, err
 	}
 	if len(data.Items) == 0 {
-		return openapi.PageContent{}, errors.New("no data found")
+		return openapi.PageContent{}, nil
 	}
 	contentString := d.getStringValue(data.Items[0], infoAttribute)
 	if contentString == nil {
