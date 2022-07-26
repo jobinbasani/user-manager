@@ -7,7 +7,7 @@ import { getAdminAPI } from '../../api/api';
 import { User } from '../../generated-sources/openapi';
 
 export default function AdminList() {
-  useSelector((state: RootState) => state.user.isAdmin);
+  const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
   const user = useSelector((state: RootState) => state.user);
   const [rows, setRows] = useState([] as Array<User>);
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ export default function AdminList() {
 
   useEffect(() => {
     loadAdmins();
-  });
+  }, [isAdmin]);
 
   return (
     <DataGrid
