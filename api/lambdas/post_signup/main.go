@@ -23,11 +23,19 @@ func handler(ctx context.Context, event events.CognitoEventUserPoolsPostConfirma
 		return event, errors.New("email field could not be extracted")
 	}
 	fmt.Printf("PostConfirmation for user: %s\n", email)
-	isPresent, err := signupDataService.IsEmailPresent(ctx, email)
-	if err != nil {
-		return event, err
+	confirmUser := false
+	if cfg.RequireAdminApprovalPostSignup {
+		isPresent, err := signupDataService.IsEmailPresent(ctx, email)
+		if err != nil {
+			return event, err
+		}
+		if isPresent {
+			confirmUser = true
+		}
+	} else {
+		confirmUser = true
 	}
-	if isPresent {
+	if confirmUser {
 		err := signupAuthService.ConfirmUser(ctx, event.UserName, event.UserPoolID)
 		if err != nil {
 			return event, err
