@@ -1,14 +1,15 @@
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { LinearProgress } from '@mui/material';
-import { RootState } from '../../store';
 import { getAdminAPI } from '../../api/api';
 import { User } from '../../generated-sources/openapi';
+import { UserDetails } from '../../store/user/user-slice';
 
-export default function AdminList() {
-  const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
-  const user = useSelector((state: RootState) => state.user);
+type AdminListProps={
+  user:UserDetails;
+}
+
+export default function AdminList({ user }:AdminListProps) {
   const [rows, setRows] = useState([] as Array<User>);
   const [loading, setLoading] = useState(false);
   const columns: GridColDef[] = [
@@ -20,6 +21,9 @@ export default function AdminList() {
   ];
 
   const loadAdmins = () => {
+    if (!user.isAdmin) {
+      return;
+    }
     setLoading(true);
     getAdminAPI(user.accessToken).getAdmins()
       .then((admins) => {
@@ -32,7 +36,7 @@ export default function AdminList() {
 
   useEffect(() => {
     loadAdmins();
-  }, [isAdmin]);
+  }, [user]);
 
   return (
     <DataGrid
