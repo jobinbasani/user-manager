@@ -163,6 +163,11 @@ func (u *UserManagerService) GetCatechism(ctx context.Context) (openapi.ImplResp
 	return u.handleResponse(content, err)
 }
 
+func (u *UserManagerService) SearchSignedUpUsers(ctx context.Context, query string) (openapi.ImplResponse, error) {
+	results, err := u.authService.SearchUsers(ctx, query)
+	return u.handleResponse(results, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

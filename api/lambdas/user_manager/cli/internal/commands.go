@@ -60,6 +60,28 @@ func NewGetUserInfoBySubCommand() *cli.Command {
 	}
 }
 
+func NewSearchUserCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "searchuser",
+		Aliases: []string{},
+		Usage:   "Search user by firstname, lastname or email",
+		Action:  getSearchUserAction,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "query",
+				Required: true,
+				Usage:    "Search parameter",
+			},
+			&cli.StringFlag{
+				Name:     "pool_id",
+				Required: true,
+				Usage:    "Cognito User Pool ID",
+				EnvVars:  []string{"USERMANAGER_USER_POOL_ID"},
+			},
+		},
+	}
+}
+
 func NewGetUserInfoByEmailCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "emailinfo",
@@ -151,6 +173,26 @@ func getUserInfoBySubAction(c *cli.Context) error {
 		return err
 	}
 	fmt.Println(user)
+	return nil
+}
+
+func getSearchUserAction(c *cli.Context) error {
+	query := c.String("query")
+	poolID := c.String("pool_id")
+	cfg := &config.Config{
+		CognitoUserPoolID: poolID,
+	}
+	var err error
+	cfg.AwsConfig, err = awsconfig.LoadDefaultConfig(c.Context)
+	if err != nil {
+		return err
+	}
+	authService := service.NewAuthService(cfg)
+	users, err := authService.SearchUsers(c.Context, query)
+	if err != nil {
+		return err
+	}
+	fmt.Println(users)
 	return nil
 }
 

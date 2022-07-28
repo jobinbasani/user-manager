@@ -67,6 +67,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.GetAdmins,
 		},
 		{
+			"SearchSignedUpUsers",
+			strings.ToUpper("Get"),
+			"/api/v1/admin/search/signedupusers",
+			c.SearchSignedUpUsers,
+		},
+		{
 			"SetCatechismData",
 			strings.ToUpper("Put"),
 			"/api/v1/admin/catechism",
@@ -134,6 +140,21 @@ func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.
 // GetAdmins - List of users with Admin access
 func (c *AdminApiController) GetAdmins(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetAdmins(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// SearchSignedUpUsers - Search signed up users by name or email
+func (c *AdminApiController) SearchSignedUpUsers(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	qParam := query.Get("q")
+	result, err := c.service.SearchSignedUpUsers(r.Context(), qParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

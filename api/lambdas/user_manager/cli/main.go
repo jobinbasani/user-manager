@@ -18,6 +18,7 @@ func main() {
 			internal.NewGetUserInfoCommand(),
 			internal.NewGetUserInfoBySubCommand(),
 			internal.NewGetUserInfoByEmailCommand(),
+			internal.NewSearchUserCommand(),
 			internal.NewStartServerCommand(),
 			internal.NewLoadDataCommand(),
 		},
