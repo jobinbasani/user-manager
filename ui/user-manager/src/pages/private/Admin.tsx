@@ -1,14 +1,36 @@
 import { Stack, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import AdminList from '../../components/admin/AdminList';
 import { RootState } from '../../store';
+import { User } from '../../generated-sources/openapi';
+import { getAdminAPI } from '../../api/api';
 
 export default function Admin() {
   const user = useSelector((state: RootState) => state.user);
   const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [rows, setRows] = useState([] as Array<User>);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const loadAdmins = () => {
+    if (!user.isAdmin) {
+      return;
+    }
+    setLoading(true);
+    getAdminAPI(user.accessToken).getAdmins()
+      .then((admins) => {
+        if (admins.data.total > 0) {
+          setRows(admins.data.items);
+        }
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadAdmins();
+  }, [user]);
   const lookupUser = () => {
     console.log(query);
   };
@@ -25,17 +47,26 @@ export default function Admin() {
       }}
       p={2}
     >
-      <AdminList user={user} />
-      <Container disableGutters>
-        <Button color="primary">Add Admin</Button>
-      </Container>
-      <Stack
-        direction="row"
-        spacing={2}
-      >
-        <TextField label="First name, last name or email" variant="standard" onChange={(evt) => setQuery(evt.target.value)} />
-        <Button color="primary" onClick={() => lookupUser()}>Search</Button>
-      </Stack>
+      {!showAddForm
+      && (
+        <>
+          <AdminList loading={loading} rows={rows} />
+          <Container disableGutters>
+            <Button color="primary" onClick={() => setShowAddForm(true)}>Add Admin</Button>
+          </Container>
+        </>
+      )}
+      {showAddForm
+      && (
+        <Stack
+          direction="row"
+          spacing={2}
+        >
+          <TextField label="First name, last name or email" size="small" variant="standard" onChange={(evt) => setQuery(evt.target.value)} />
+          <Button color="primary" onClick={() => lookupUser()}>Search</Button>
+          <Button color="error" onClick={() => setShowAddForm(false)}>Cancel</Button>
+        </Stack>
+      )}
     </Stack>
   );
 }
