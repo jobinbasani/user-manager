@@ -11,6 +11,8 @@ import { getAdminAPI } from '../../api/api';
 export default function Admin() {
   const user = useSelector((state: RootState) => state.user);
   const [query, setQuery] = useState('');
+  const [selectedAdmins, setSelectedAdmins] = useState([] as Array<User>);
+  const [selectedAdminResults, setSelectedAdminResults] = useState([] as Array<User>);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [rows, setRows] = useState([] as Array<User>);
@@ -65,9 +67,10 @@ export default function Admin() {
       {!showAddForm
       && (
         <>
-          <AdminList loading={loading} rows={rows} />
+          <AdminList loading={loading} rows={rows} onRowSelect={setSelectedAdmins} />
           <Container disableGutters>
             <Button color="primary" onClick={() => setShowAddForm(true)}>Add Admin</Button>
+            {selectedAdmins.length > 0 && <Button color="error">Remove Admin</Button>}
           </Container>
         </>
       )}
@@ -85,9 +88,20 @@ export default function Admin() {
               onChange={(evt) => setQuery(evt.target.value)}
             />
             <Button color="primary" onClick={() => lookupUser()}>Search</Button>
-            <Button color="error" onClick={() => setShowAddForm(false)}>Cancel</Button>
+            <Button
+              color="error"
+              onClick={() => {
+                setShowAddForm(false);
+                setSearchRows([] as Array<User>);
+              }}
+            >
+              Cancel
+            </Button>
           </Stack>
-          <AdminList loading={searchLoading} rows={searchRows} />
+          <AdminList loading={searchLoading} rows={searchRows} onRowSelect={setSelectedAdminResults} />
+          <Container disableGutters>
+            {selectedAdminResults.length > 0 && <Button color="primary">Set As Admin</Button>}
+          </Container>
         </>
       )}
     </Stack>
