@@ -96,14 +96,10 @@ export default function Admin() {
   const addToAdmin = () => {
     getAdminAPI(user.accessToken)
       .addToAdminGroup(selectedAdminResults.map((sa) => sa.id))
-      .then((r) => {
-        if (r.status >= 200 && r.status < 300) {
-          setShowSuccessAdminAdd(true);
-        } else {
-          console.log(r.data);
-          setShowFailureAdminAdd(true);
-        }
+      .then(() => {
+        setShowSuccessAdminAdd(true);
       })
+      .catch(() => setShowFailureAdminAdd(true))
       .finally(() => {
         loadAdmins();
         cancelSearch();
@@ -113,14 +109,10 @@ export default function Admin() {
   const removeFromAdmins = () => {
     getAdminAPI(user.accessToken)
       .removeFromAdminGroup(selectedAdmins.map((sa) => sa.id))
-      .then((r) => {
-        if (r.status >= 200 && r.status < 300) {
-          setShowSuccessAdminRemove(true);
-        } else {
-          console.log(r.data);
-          setShowFailureAdminRemove(true);
-        }
+      .then(() => {
+        setShowSuccessAdminRemove(true);
       })
+      .catch(() => setShowFailureAdminRemove(true))
       .finally(() => loadAdmins());
   };
 
