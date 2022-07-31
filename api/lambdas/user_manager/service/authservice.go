@@ -26,6 +26,8 @@ type AuthService interface {
 	GetUserInfoByEmail(ctx context.Context, email string) (openapi.User, error)
 	GetAdmins(ctx context.Context) (openapi.BasicUserInfoList, error)
 	SearchUsers(ctx context.Context, query string) (openapi.BasicUserInfoList, error)
+	AddToAdminGroup(ctx context.Context, ids []string) error
+	RemoveFromAdminGroup(ctx context.Context, ids []string) error
 }
 
 type CognitoService struct {
@@ -145,6 +147,42 @@ func (c *CognitoService) SearchUsers(ctx context.Context, query string) (openapi
 		Total: int32(len(users)),
 		Items: users,
 	}, nil
+}
+
+func (c *CognitoService) AddToAdminGroup(ctx context.Context, ids []string) error {
+	g, ctx := errgroup.WithContext(ctx)
+	lo.ForEach(ids, func(id string, _ int) {
+		g.Go(func() error {
+			_, err := c.client.AdminAddUserToGroup(ctx, &cognitoidentityprovider.AdminAddUserToGroupInput{
+				GroupName:  c.cfg.CognitoAdminGroup,
+				UserPoolId: aws.String(c.cfg.CognitoUserPoolID),
+				Username:   aws.String(id),
+			})
+			return err
+		})
+	})
+	if err := g.Wait(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CognitoService) RemoveFromAdminGroup(ctx context.Context, ids []string) error {
+	g, ctx := errgroup.WithContext(ctx)
+	lo.ForEach(ids, func(id string, _ int) {
+		g.Go(func() error {
+			_, err := c.client.AdminRemoveUserFromGroup(ctx, &cognitoidentityprovider.AdminRemoveUserFromGroupInput{
+				GroupName:  c.cfg.CognitoAdminGroup,
+				UserPoolId: aws.String(c.cfg.CognitoUserPoolID),
+				Username:   aws.String(id),
+			})
+			return err
+		})
+	})
+	if err := g.Wait(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {

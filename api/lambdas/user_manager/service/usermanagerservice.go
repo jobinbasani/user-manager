@@ -168,6 +168,16 @@ func (u *UserManagerService) SearchSignedUpUsers(ctx context.Context, query stri
 	return u.handleResponse(results, err)
 }
 
+func (u *UserManagerService) AddToAdminGroup(ctx context.Context, userIds []string) (openapi.ImplResponse, error) {
+	err := u.authService.AddToAdminGroup(ctx, userIds)
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) RemoveFromAdminGroup(ctx context.Context, userIds []string) (openapi.ImplResponse, error) {
+	err := u.authService.RemoveFromAdminGroup(ctx, userIds)
+	return u.handleResponse(nil, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

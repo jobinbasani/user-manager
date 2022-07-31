@@ -55,6 +55,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.AddAnnouncement,
 		},
 		{
+			"AddToAdminGroup",
+			strings.ToUpper("Put"),
+			"/api/v1/admin/admins",
+			c.AddToAdminGroup,
+		},
+		{
 			"DeleteAnnouncements",
 			strings.ToUpper("Delete"),
 			"/api/v1/admin/announcements",
@@ -65,6 +71,12 @@ func (c *AdminApiController) Routes() Routes {
 			strings.ToUpper("Get"),
 			"/api/v1/admin/admins",
 			c.GetAdmins,
+		},
+		{
+			"RemoveFromAdminGroup",
+			strings.ToUpper("Delete"),
+			"/api/v1/admin/admins",
+			c.RemoveFromAdminGroup,
 		},
 		{
 			"SearchSignedUpUsers",
@@ -117,6 +129,26 @@ func (c *AdminApiController) AddAnnouncement(w http.ResponseWriter, r *http.Requ
 
 }
 
+// AddToAdminGroup - Add members to admin group
+func (c *AdminApiController) AddToAdminGroup(w http.ResponseWriter, r *http.Request) {
+	requestBodyParam := []string{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&requestBodyParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	result, err := c.service.AddToAdminGroup(r.Context(), requestBodyParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
 // DeleteAnnouncements - Delete announcements
 func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.Request) {
 	requestBodyParam := []string{}
@@ -140,6 +172,26 @@ func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.
 // GetAdmins - List of users with Admin access
 func (c *AdminApiController) GetAdmins(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetAdmins(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// RemoveFromAdminGroup - Remove members from admin group
+func (c *AdminApiController) RemoveFromAdminGroup(w http.ResponseWriter, r *http.Request) {
+	requestBodyParam := []string{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&requestBodyParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	result, err := c.service.RemoveFromAdminGroup(r.Context(), requestBodyParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

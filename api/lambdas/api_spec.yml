@@ -160,6 +160,52 @@ paths:
           $ref: '#/components/responses/NotFound'
         default:
           $ref: '#/components/responses/InternalServerError'
+    put:
+      operationId: addToAdminGroup
+      summary: Add members to admin group
+      requestBody:
+        description: User id's of new members
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StringArray'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Added admins
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      operationId: removeFromAdminGroup
+      summary: Remove members from admin group
+      requestBody:
+        description: User id's of members to be deleted
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StringArray'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Removed admins
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
 
   /api/v1/admin/search/signedupusers:
     get:

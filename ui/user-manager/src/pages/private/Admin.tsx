@@ -1,12 +1,21 @@
-import { Stack, TextField } from '@mui/material';
+import { Snackbar, Stack, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import { useEffect, useState } from 'react';
+import {
+  Dispatch,
+  forwardRef, SetStateAction, SyntheticEvent, useEffect, useState,
+} from 'react';
 import { useSelector } from 'react-redux';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import AdminList from '../../components/admin/AdminList';
 import { RootState } from '../../store';
 import { User } from '../../generated-sources/openapi';
 import { getAdminAPI } from '../../api/api';
+
+const Alert = forwardRef<HTMLDivElement, AlertProps>((
+  props,
+  ref,
+) => <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />);
 
 export default function Admin() {
   const user = useSelector((state: RootState) => state.user);
@@ -18,6 +27,34 @@ export default function Admin() {
   const [rows, setRows] = useState([] as Array<User>);
   const [searchRows, setSearchRows] = useState([] as Array<User>);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showSuccessAdminAdd, setShowSuccessAdminAdd] = useState(false);
+  const [showFailureAdminAdd, setShowFailureAdminAdd] = useState(false);
+  const [showSuccessAdminRemove, setShowSuccessAdminRemove] = useState(false);
+  const [showFailureAdminRemove, setShowFailureAdminRemove] = useState(false);
+
+  const checkAndCloseSnackBar = (fn: Dispatch<SetStateAction<boolean>>, event?: SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    fn(false);
+  };
+
+  const closeSuccessAdminAddMessage = (event?: SyntheticEvent | Event, reason?: string) => {
+    checkAndCloseSnackBar(setShowSuccessAdminAdd, event, reason);
+  };
+
+  const closeFailureAdminAddMessage = (event?: SyntheticEvent | Event, reason?: string) => {
+    checkAndCloseSnackBar(setShowFailureAdminAdd, event, reason);
+  };
+
+  const closeSuccessAdminRemoveMessage = (event?: SyntheticEvent | Event, reason?: string) => {
+    checkAndCloseSnackBar(setShowSuccessAdminRemove, event, reason);
+  };
+
+  const closeFailureAdminRemoveMessage = (event?: SyntheticEvent | Event, reason?: string) => {
+    checkAndCloseSnackBar(setShowFailureAdminRemove, event, reason);
+  };
+
   const loadAdmins = () => {
     if (!user.isAdmin) {
       return;
@@ -35,6 +72,7 @@ export default function Admin() {
   useEffect(() => {
     loadAdmins();
   }, [user]);
+
   const lookupUser = () => {
     const lookup = query.split(' ')[0];
     if (lookup.length === 0) {
@@ -51,6 +89,41 @@ export default function Admin() {
       })
       .finally(() => setSearchLoading(false));
   };
+  const cancelSearch = () => {
+    setShowAddForm(false);
+    setSearchRows([] as Array<User>);
+  };
+  const addToAdmin = () => {
+    getAdminAPI(user.accessToken)
+      .addToAdminGroup(selectedAdminResults.map((sa) => sa.id))
+      .then((r) => {
+        if (r.status >= 200 && r.status < 300) {
+          setShowSuccessAdminAdd(true);
+        } else {
+          console.log(r.data);
+          setShowFailureAdminAdd(true);
+        }
+      })
+      .finally(() => {
+        loadAdmins();
+        cancelSearch();
+      });
+  };
+
+  const removeFromAdmins = () => {
+    getAdminAPI(user.accessToken)
+      .removeFromAdminGroup(selectedAdmins.map((sa) => sa.id))
+      .then((r) => {
+        if (r.status >= 200 && r.status < 300) {
+          setShowSuccessAdminRemove(true);
+        } else {
+          console.log(r.data);
+          setShowFailureAdminRemove(true);
+        }
+      })
+      .finally(() => loadAdmins());
+  };
+
   return (
     <Stack
       direction="column"
@@ -70,7 +143,7 @@ export default function Admin() {
           <AdminList loading={loading} rows={rows} onRowSelect={setSelectedAdmins} />
           <Container disableGutters>
             <Button color="primary" onClick={() => setShowAddForm(true)}>Add Admin</Button>
-            {selectedAdmins.length > 0 && <Button color="error">Remove Admin</Button>}
+            {selectedAdmins.length > 0 && <Button color="error" onClick={removeFromAdmins}>Remove Admin</Button>}
           </Container>
         </>
       )}
@@ -90,20 +163,37 @@ export default function Admin() {
             <Button color="primary" onClick={() => lookupUser()}>Search</Button>
             <Button
               color="error"
-              onClick={() => {
-                setShowAddForm(false);
-                setSearchRows([] as Array<User>);
-              }}
+              onClick={() => cancelSearch()}
             >
               Cancel
             </Button>
           </Stack>
           <AdminList loading={searchLoading} rows={searchRows} onRowSelect={setSelectedAdminResults} />
           <Container disableGutters>
-            {selectedAdminResults.length > 0 && <Button color="primary">Set As Admin</Button>}
+            {selectedAdminResults.length > 0 && <Button color="primary" onClick={addToAdmin}>Set As Admin</Button>}
           </Container>
         </>
       )}
+      <Snackbar open={showSuccessAdminAdd} autoHideDuration={3000} onClose={closeSuccessAdminAddMessage}>
+        <Alert onClose={closeSuccessAdminAddMessage} severity="success" sx={{ width: '100%' }}>
+          Admins added successfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={showFailureAdminAdd} autoHideDuration={3000} onClose={closeFailureAdminAddMessage}>
+        <Alert onClose={closeFailureAdminAddMessage} severity="error" sx={{ width: '100%' }}>
+          There was an error adding selected users to admin group
+        </Alert>
+      </Snackbar>
+      <Snackbar open={showSuccessAdminRemove} autoHideDuration={3000} onClose={closeSuccessAdminRemoveMessage}>
+        <Alert onClose={closeSuccessAdminRemoveMessage} severity="success" sx={{ width: '100%' }}>
+          Admins removed successfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={showFailureAdminRemove} autoHideDuration={3000} onClose={closeFailureAdminRemoveMessage}>
+        <Alert onClose={closeFailureAdminRemoveMessage} severity="error" sx={{ width: '100%' }}>
+          There was an error removing selected users from admin group
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 }

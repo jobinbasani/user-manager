@@ -617,6 +617,46 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Add members to admin group
+         * @param {Array<string>} requestBody User id\&#39;s of new members
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addToAdminGroup: async (requestBody: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestBody' is not null or undefined
+            assertParamExists('addToAdminGroup', 'requestBody', requestBody)
+            const localVarPath = `/api/v1/admin/admins`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Delete announcements
          * @param {Array<string>} requestBody Announcement id\&#39;s to delete
          * @param {*} [options] Override http request option.
@@ -683,6 +723,46 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Remove members from admin group
+         * @param {Array<string>} requestBody User id\&#39;s of members to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeFromAdminGroup: async (requestBody: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestBody' is not null or undefined
+            assertParamExists('removeFromAdminGroup', 'requestBody', requestBody)
+            const localVarPath = `/api/v1/admin/admins`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -873,6 +953,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Add members to admin group
+         * @param {Array<string>} requestBody User id\&#39;s of new members
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addToAdminGroup(requestBody: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addToAdminGroup(requestBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Delete announcements
          * @param {Array<string>} requestBody Announcement id\&#39;s to delete
          * @param {*} [options] Override http request option.
@@ -890,6 +981,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
          */
         async getAdmins(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicUserInfoList>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAdmins(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Remove members from admin group
+         * @param {Array<string>} requestBody User id\&#39;s of members to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async removeFromAdminGroup(requestBody: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeFromAdminGroup(requestBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -958,6 +1060,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Add members to admin group
+         * @param {Array<string>} requestBody User id\&#39;s of new members
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addToAdminGroup(requestBody: Array<string>, options?: any): AxiosPromise<void> {
+            return localVarFp.addToAdminGroup(requestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Delete announcements
          * @param {Array<string>} requestBody Announcement id\&#39;s to delete
          * @param {*} [options] Override http request option.
@@ -974,6 +1086,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         getAdmins(options?: any): AxiosPromise<BasicUserInfoList> {
             return localVarFp.getAdmins(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Remove members from admin group
+         * @param {Array<string>} requestBody User id\&#39;s of members to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeFromAdminGroup(requestBody: Array<string>, options?: any): AxiosPromise<void> {
+            return localVarFp.removeFromAdminGroup(requestBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1039,6 +1161,18 @@ export class AdminApi extends BaseAPI {
 
     /**
      * 
+     * @summary Add members to admin group
+     * @param {Array<string>} requestBody User id\&#39;s of new members
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public addToAdminGroup(requestBody: Array<string>, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).addToAdminGroup(requestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Delete announcements
      * @param {Array<string>} requestBody Announcement id\&#39;s to delete
      * @param {*} [options] Override http request option.
@@ -1058,6 +1192,18 @@ export class AdminApi extends BaseAPI {
      */
     public getAdmins(options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).getAdmins(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Remove members from admin group
+     * @param {Array<string>} requestBody User id\&#39;s of members to be deleted
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public removeFromAdminGroup(requestBody: Array<string>, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).removeFromAdminGroup(requestBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

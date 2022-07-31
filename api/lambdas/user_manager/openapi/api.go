@@ -19,8 +19,10 @@ import (
 // pass the data to a AdminApiServicer to perform the required actions, then write the service results to the http response.
 type AdminApiRouter interface {
 	AddAnnouncement(http.ResponseWriter, *http.Request)
+	AddToAdminGroup(http.ResponseWriter, *http.Request)
 	DeleteAnnouncements(http.ResponseWriter, *http.Request)
 	GetAdmins(http.ResponseWriter, *http.Request)
+	RemoveFromAdminGroup(http.ResponseWriter, *http.Request)
 	SearchSignedUpUsers(http.ResponseWriter, *http.Request)
 	SetCatechismData(http.ResponseWriter, *http.Request)
 	SetCommitteeData(http.ResponseWriter, *http.Request)
@@ -60,8 +62,10 @@ type UserManagementApiRouter interface {
 // and updated with the logic required for the API.
 type AdminApiServicer interface {
 	AddAnnouncement(context.Context, Announcement) (ImplResponse, error)
+	AddToAdminGroup(context.Context, []string) (ImplResponse, error)
 	DeleteAnnouncements(context.Context, []string) (ImplResponse, error)
 	GetAdmins(context.Context) (ImplResponse, error)
+	RemoveFromAdminGroup(context.Context, []string) (ImplResponse, error)
 	SearchSignedUpUsers(context.Context, string) (ImplResponse, error)
 	SetCatechismData(context.Context, PageContent) (ImplResponse, error)
 	SetCommitteeData(context.Context, PageContent) (ImplResponse, error)
