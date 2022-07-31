@@ -172,6 +172,8 @@ class UserManagerStack extends cdk.Stack {
       actions: [
         'cognito-idp:ListUsers',
         'cognito-idp:ListUsersInGroup',
+        'cognito-idp:AdminAddUserToGroup',
+        'cognito-idp:AdminRemoveUserFromGroup',
       ],
       resources: [
         userPool.userPoolArn,
