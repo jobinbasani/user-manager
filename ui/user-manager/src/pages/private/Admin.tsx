@@ -1,7 +1,7 @@
 import { Snackbar, Stack, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import {
+import React, {
   Dispatch,
   forwardRef, SetStateAction, SyntheticEvent, useEffect, useState,
 } from 'react';
@@ -89,6 +89,13 @@ export default function Admin() {
       })
       .finally(() => setSearchLoading(false));
   };
+
+  const onSearchKeyDown = (event:React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      lookupUser();
+    }
+  };
+
   const cancelSearch = () => {
     setShowAddForm(false);
     setSearchRows([] as Array<User>);
@@ -150,6 +157,7 @@ export default function Admin() {
               label="First name, last name or email"
               size="small"
               variant="standard"
+              onKeyDown={onSearchKeyDown}
               onChange={(evt) => setQuery(evt.target.value)}
             />
             <Button color="primary" onClick={() => lookupUser()}>Search</Button>
