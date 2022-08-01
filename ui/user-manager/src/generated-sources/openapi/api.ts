@@ -771,6 +771,47 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Search family members by name or email
+         * @param {string} q first name, last name or email
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchFamilyMembers: async (q: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'q' is not null or undefined
+            assertParamExists('searchFamilyMembers', 'q', q)
+            const localVarPath = `/api/v1/admin/search/familymembers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (q !== undefined) {
+                localVarQueryParameter['q'] = q;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Search signed up users by name or email
          * @param {string} q first name, last name or email
          * @param {*} [options] Override http request option.
@@ -996,6 +1037,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Search family members by name or email
+         * @param {string} q first name, last name or email
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async searchFamilyMembers(q: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicUserInfoList>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchFamilyMembers(q, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Search signed up users by name or email
          * @param {string} q first name, last name or email
          * @param {*} [options] Override http request option.
@@ -1096,6 +1148,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         removeFromAdminGroup(requestBody: Array<string>, options?: any): AxiosPromise<void> {
             return localVarFp.removeFromAdminGroup(requestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Search family members by name or email
+         * @param {string} q first name, last name or email
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchFamilyMembers(q: string, options?: any): AxiosPromise<BasicUserInfoList> {
+            return localVarFp.searchFamilyMembers(q, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1204,6 +1266,18 @@ export class AdminApi extends BaseAPI {
      */
     public removeFromAdminGroup(requestBody: Array<string>, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).removeFromAdminGroup(requestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Search family members by name or email
+     * @param {string} q first name, last name or email
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public searchFamilyMembers(q: string, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).searchFamilyMembers(q, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
