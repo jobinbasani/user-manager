@@ -236,6 +236,35 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/search/familymembers:
+    get:
+      operationId: searchFamilyMembers
+      summary: Search family members by name or email
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          required: true
+          description: first name, last name or email
+      tags:
+        - Admin
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicUserInfoList'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/admin/announcements:
     post:
       operationId: addAnnouncement

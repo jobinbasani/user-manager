@@ -79,6 +79,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.RemoveFromAdminGroup,
 		},
 		{
+			"SearchFamilyMembers",
+			strings.ToUpper("Get"),
+			"/api/v1/admin/search/familymembers",
+			c.SearchFamilyMembers,
+		},
+		{
 			"SearchSignedUpUsers",
 			strings.ToUpper("Get"),
 			"/api/v1/admin/search/signedupusers",
@@ -192,6 +198,21 @@ func (c *AdminApiController) RemoveFromAdminGroup(w http.ResponseWriter, r *http
 		return
 	}
 	result, err := c.service.RemoveFromAdminGroup(r.Context(), requestBodyParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// SearchFamilyMembers - Search family members by name or email
+func (c *AdminApiController) SearchFamilyMembers(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	qParam := query.Get("q")
+	result, err := c.service.SearchFamilyMembers(r.Context(), qParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -54,6 +54,7 @@ type DataService interface {
 	DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error)
 	GetPageContent(ctx context.Context, key string) (openapi.PageContent, error)
 	SetPageContent(ctx context.Context, key string, content openapi.PageContent) error
+	SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error)
 }
 type DynamoDBService struct {
 	cfg         *config.Config
@@ -385,6 +386,78 @@ func (d DynamoDBService) SetPageContent(ctx context.Context, key string, content
 	})
 
 	return err
+}
+
+func (d DynamoDBService) SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error) {
+	if len(query) < 3 {
+		return nil, fmt.Errorf("invalid query - %s - must have atleast 3 characters", query)
+	}
+	var users []openapi.User
+	searchQueryOutput, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT * FROM "%s"."%s" WHERE CONTAINS("%s", '%s')`,
+			d.cfg.UserDataTableName,
+			d.cfg.SearchIndexName,
+			searchAttribute,
+			query,
+		)),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(searchQueryOutput.Items) == 0 {
+		return users, nil
+	}
+	var allIds []string
+	for i := range searchQueryOutput.Items {
+		userId := d.getStringValue(searchQueryOutput.Items[i], idAttribute)
+		if userId == nil {
+			continue
+		}
+		allIds = append(allIds, fmt.Sprintf("'%s'", *userId))
+	}
+
+	userQueryOutput, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT * FROM "%s" WHERE "%s" IN [%s] AND "%s" = '%s'`,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			strings.Join(allIds, ","),
+			recTypeAttribute,
+			userRecType,
+		)),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(userQueryOutput.Items) == 0 {
+		return users, nil
+	}
+
+	for i := range userQueryOutput.Items {
+		infoJson := d.getStringValue(userQueryOutput.Items[i], infoAttribute)
+		if infoJson == nil {
+			continue
+		}
+		var userData openapi.User
+		err := json.Unmarshal([]byte(*infoJson), &userData)
+		if err != nil {
+			return nil, err
+		}
+
+		userId := d.getStringValue(userQueryOutput.Items[i], idAttribute)
+		if userId != nil {
+			userData.Id = *userId
+		}
+		users = append(users, userData)
+	}
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].DisplayName < users[j].DisplayName
+	})
+	return users, nil
 }
 
 func (d DynamoDBService) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {

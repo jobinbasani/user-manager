@@ -23,6 +23,7 @@ type Config struct {
 	CognitoAdminGroup   *string              `envconfig:"USERMANAGER_ADMIN_GROUP" default:"admin"`
 	UserDataTableName   string               `envconfig:"USERMANAGER_TABLE_NAME" required:"true"`
 	EmailIndexName      string               `envconfig:"USERMANAGER_EMAIL_INDEX_NAME" required:"true"`
+	SearchIndexName     string               `envconfig:"USERMANAGER_SEARCH_INDEX_NAME" required:"true"`
 	FamilyIndexName     string               `envconfig:"USERMANAGER_FAMILY_INDEX_NAME" required:"true"`
 	DynamoDBEndpointURL *string              `envconfig:"USERMANAGER_DYNAMODB_ENDPOINT_URL"`
 }

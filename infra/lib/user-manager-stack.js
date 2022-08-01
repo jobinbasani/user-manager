@@ -151,6 +151,7 @@ class UserManagerStack extends cdk.Stack {
         USERMANAGER_TABLE_NAME: userTable.tableName,
         USERMANAGER_FAMILY_INDEX_NAME: familyIndexName,
         USERMANAGER_EMAIL_INDEX_NAME: emailIndexName,
+        USERMANAGER_SEARCH_INDEX_NAME: searchIndexName,
       },
     });
 

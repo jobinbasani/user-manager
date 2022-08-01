@@ -168,6 +168,11 @@ func (u *UserManagerService) SearchSignedUpUsers(ctx context.Context, query stri
 	return u.handleResponse(results, err)
 }
 
+func (u *UserManagerService) SearchFamilyMembers(ctx context.Context, query string) (openapi.ImplResponse, error) {
+	results, err := u.dataService.SearchFamilyMembers(ctx, query)
+	return u.handleResponse(results, err)
+}
+
 func (u *UserManagerService) AddToAdminGroup(ctx context.Context, userIds []string) (openapi.ImplResponse, error) {
 	err := u.authService.AddToAdminGroup(ctx, userIds)
 	return u.handleResponse(nil, err)
