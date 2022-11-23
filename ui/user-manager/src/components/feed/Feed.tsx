@@ -22,7 +22,7 @@ export default function Feed() {
     id: 'default-announce',
     title: 'Welcome to Holy Family Syro Malabar Church!',
     subtitle: '',
-    description: ' Please register and become a part of our community!',
+    description: ' Please register and become a part of our community.',
     createdOn: '',
     expiresOn: '',
   }]);
