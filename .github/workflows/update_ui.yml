@@ -1,6 +1,7 @@
 name: Update Web App
 
 on:
+  workflow_dispatch
   push:
     paths:
       - 'ui/user-manager/**'
