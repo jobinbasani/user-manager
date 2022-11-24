@@ -96,6 +96,25 @@ class UserManagerStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    const identityProviders = [
+      cognito.UserPoolClientIdentityProvider.COGNITO,
+    ];
+
+    if (process.env.GOOGLE_IDP_CLIENTID && process.env.GOOGLE_IDP_CLIENTSECRET) {
+      new cognito.UserPoolIdentityProviderGoogle(this, 'GoogleIdp', {
+        clientId: process.env.GOOGLE_IDP_CLIENTID,
+        clientSecret: process.env.GOOGLE_IDP_CLIENTSECRET,
+        userPool,
+        attributeMapping: {
+          email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+          givenName: cognito.ProviderAttribute.GOOGLE_GIVEN_NAME,
+          familyName: cognito.ProviderAttribute.GOOGLE_FAMILY_NAME,
+        },
+      });
+
+      identityProviders.push(cognito.UserPoolClientIdentityProvider.GOOGLE);
+    }
+
     const standardCognitoAttributes = {
       givenName: true,
       familyName: true,
@@ -125,7 +144,7 @@ class UserManagerStack extends cdk.Stack {
 
     const domain = userPool.addDomain('user-pool-domain', {
       cognitoDomain: {
-        domainPrefix: 'user-manager',
+        domainPrefix: 'hfxchurch-user-manager',
       },
     });
 
@@ -404,9 +423,7 @@ class UserManagerStack extends cdk.Stack {
           `https://${cloudfrontDistribution.distributionDomainName}/main/index.html`,
         ],
       },
-      supportedIdentityProviders: [
-        cognito.UserPoolClientIdentityProvider.COGNITO,
-      ],
+      supportedIdentityProviders: identityProviders,
       readAttributes: clientReadAttributes,
       writeAttributes: clientWriteAttributes,
     });

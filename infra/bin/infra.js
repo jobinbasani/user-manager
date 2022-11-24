@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('dotenv').config();
+
 const cdk = require('aws-cdk-lib');
 const { UserManagerStack } = require('../lib/user-manager-stack');
 
