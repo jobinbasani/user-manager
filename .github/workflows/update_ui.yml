@@ -50,6 +50,7 @@ jobs:
         completeSignUpUrl=${completeSignUpUrl//&/\\&}
         completeLogoutUrl="${partialLogoutUrl}${callbackUrl}"
         completeLogoutUrl=${completeLogoutUrl//&/\\&}
+        sed -i "s@API_URL.*=.*['].*['];@API_URL = '$cdnUrl';@g" src/constants/ApiConstants.ts
         sed -i "s@LOGIN_URL.*=.*['].*['];@LOGIN_URL = '$completeSignInUrl';@g" src/constants/ApiConstants.ts
         sed -i "s@SIGNUP_URL.*=.*['].*['];@SIGNUP_URL = '$completeSignUpUrl';@g" src/constants/ApiConstants.ts
         sed -i "s@SIGNOUT_URL.*=.*['].*['];@SIGNOUT_URL = '$completeLogoutUrl';@g" src/constants/ApiConstants.ts
