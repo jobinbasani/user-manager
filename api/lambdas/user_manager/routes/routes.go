@@ -15,7 +15,7 @@ import (
 // generate OpenAPI bindings
 //go:generate ../../scripts/generate_openapi_bindings.sh
 
-// GetRoutes registers all API gateway paths to a handler
+// GetRoutes registers all API gateway paths to the handler
 func GetRoutes(ctx context.Context, cfg *config.Config) *mux.Router {
 	authService := service.NewAuthService(cfg)
 	dataService := service.NewDataService(cfg, authService)

@@ -110,9 +110,26 @@ class UserManagerStack extends cdk.Stack {
           givenName: cognito.ProviderAttribute.GOOGLE_GIVEN_NAME,
           familyName: cognito.ProviderAttribute.GOOGLE_FAMILY_NAME,
         },
+        scopes: ['profile', 'openid', 'email'],
       });
 
       identityProviders.push(cognito.UserPoolClientIdentityProvider.GOOGLE);
+    }
+
+    if (process.env.FACEBOOK_IDP_CLIENTID && process.env.FACEBOOK_IDP_CLIENTSECRET) {
+      new cognito.UserPoolIdentityProviderFacebook(this, 'FacebookIdp', {
+        clientId: process.env.FACEBOOK_IDP_CLIENTID,
+        clientSecret: process.env.FACEBOOK_IDP_CLIENTSECRET,
+        userPool,
+        attributeMapping: {
+          email: cognito.ProviderAttribute.FACEBOOK_EMAIL,
+          givenName: cognito.ProviderAttribute.FACEBOOK_FIRST_NAME,
+          familyName: cognito.ProviderAttribute.FACEBOOK_LAST_NAME,
+        },
+        scopes: ['public_profile', 'email'],
+      });
+
+      identityProviders.push(cognito.UserPoolClientIdentityProvider.FACEBOOK);
     }
 
     const standardCognitoAttributes = {
