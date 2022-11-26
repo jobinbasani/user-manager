@@ -20,7 +20,7 @@ type UserManagerService struct {
 	dataService DataService
 }
 
-// GetUser returns the user profile
+// GetUser returns the user's profile
 func (u *UserManagerService) GetUser(ctx context.Context) (openapi.ImplResponse, error) {
 	user, err := u.authService.GetUserInfoByAccessToken(ctx)
 	if err != nil {
