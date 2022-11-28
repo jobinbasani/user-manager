@@ -65,7 +65,7 @@ func (c *CognitoService) getUserInfoByAttribute(ctx context.Context, attribute s
 		return nil, fmt.Errorf("no user with '%s' found", attribute)
 	}
 	users := lop.Map(output.Users, func(o types.UserType, i int) openapi.User {
-		return c.cognitoUserOutputToUserRecord(o.Attributes)
+		return c.cognitoUserOutputToUserRecord(o.Username, o.Attributes)
 	})
 	return users, nil
 }
@@ -78,7 +78,7 @@ func (c *CognitoService) GetUserInfoByAccessToken(ctx context.Context) (openapi.
 		log.Println(err)
 		return openapi.User{}, err
 	}
-	return c.cognitoUserOutputToUserRecord(userOutput.UserAttributes), nil
+	return c.cognitoUserOutputToUserRecord(userOutput.Username, userOutput.UserAttributes), nil
 }
 
 func (c *CognitoService) GetAdmins(ctx context.Context) (openapi.BasicUserInfoList, error) {
@@ -91,7 +91,7 @@ func (c *CognitoService) GetAdmins(ctx context.Context) (openapi.BasicUserInfoLi
 		return openapi.BasicUserInfoList{}, err
 	}
 	for _, u := range userOutput.Users {
-		users = append(users, c.cognitoUserOutputToUserRecord(u.Attributes))
+		users = append(users, c.cognitoUserOutputToUserRecord(u.Username, u.Attributes))
 	}
 	return openapi.BasicUserInfoList{
 		Total: int32(len(users)),
@@ -185,12 +185,12 @@ func (c *CognitoService) RemoveFromAdminGroup(ctx context.Context, ids []string)
 	return nil
 }
 
-func (c *CognitoService) cognitoUserOutputToUserRecord(attributes []types.AttributeType) openapi.User {
-	var user openapi.User
+func (c *CognitoService) cognitoUserOutputToUserRecord(username *string, attributes []types.AttributeType) openapi.User {
+	user := openapi.User{
+		Id: *username,
+	}
 	for _, attribute := range attributes {
 		switch *attribute.Name {
-		case "sub":
-			user.Id = *attribute.Value
 		case "given_name":
 			user.FirstName = *attribute.Value
 		case "family_name":
