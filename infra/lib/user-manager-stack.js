@@ -5,6 +5,9 @@ const dynamodb = require('aws-cdk-lib/aws-dynamodb');
 const s3 = require('aws-cdk-lib/aws-s3');
 const cognito = require('aws-cdk-lib/aws-cognito');
 const lambda = require('aws-cdk-lib/aws-lambda');
+const route53 = require('aws-cdk-lib/aws-route53');
+const targets = require('aws-cdk-lib/aws-route53-targets');
+const acm = require('aws-cdk-lib/aws-certificatemanager');
 const cloudfrontOrigins = require('aws-cdk-lib/aws-cloudfront-origins');
 const s3Deploy = require('aws-cdk-lib/aws-s3-deployment');
 const { OpenIdConnectProvider } = require('aws-cdk-lib/aws-eks');
@@ -19,6 +22,9 @@ class UserManagerStack extends cdk.Stack {
     const emailIndexName = 'emailIndex';
     const searchIndexName = 'searchIndex';
     const ttlAttribute = 'expDate';
+    const domainName = process.env.APP_DOMAIN_NAME;
+    let siteCertificate;
+    let zone;
 
     const userTable = new dynamodb.Table(this, id, {
       tableName: userTableName,
@@ -367,7 +373,24 @@ class UserManagerStack extends cdk.Stack {
       `),
     });
 
-    const cloudfrontDistribution = new cloudfront.Distribution(this, 'UserManagerCDNDist', {
+    if (domainName) {
+      zone = route53.HostedZone.fromLookup(this, 'Zone', {
+        domainName,
+      });
+
+      siteCertificate = new acm.DnsValidatedCertificate(
+        this,
+        'SiteCertificate',
+        {
+          domainName,
+          hostedZone: zone,
+          region: 'us-east-1', // Cloudfront only checks this region for certificates.
+        },
+      );
+      new cdk.CfnOutput(this, 'Certificate', { value: siteCertificate.certificateArn });
+    }
+
+    const cloudfrontDistributionProps = {
       defaultRootObject: 'index.html',
       priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
       defaultBehavior: {
@@ -389,7 +412,30 @@ class UserManagerStack extends cdk.Stack {
           httpStatus: 403,
         },
       ],
-    });
+    };
+
+    if (domainName) {
+      cloudfrontDistributionProps.certificate = siteCertificate;
+      cloudfrontDistributionProps.domainNames = [domainName];
+    }
+
+    const cloudfrontDistribution = new cloudfront.Distribution(this, 'UserManagerCDNDist', cloudfrontDistributionProps);
+
+    if (domainName) {
+      // Route53 alias record for the CloudFront distribution
+      new route53.ARecord(this, 'CDNARecord', {
+        target: route53.RecordTarget.fromAlias(
+          new targets.CloudFrontTarget(cloudfrontDistribution),
+        ),
+        zone,
+      });
+      new route53.AaaaRecord(this, 'AliasRecord', {
+        target: route53.RecordTarget.fromAlias(
+          new targets.CloudFrontTarget(cloudfrontDistribution),
+        ),
+        zone,
+      });
+    }
 
     const cachePolicy = new cloudfront.CachePolicy(this, 'UserManagerApiCachePolicy', {
       cachePolicyName: 'UserManagerAPI_CachePolicy',
