@@ -471,20 +471,29 @@ class UserManagerStack extends cdk.Stack {
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       });
 
+    const callbackUrls = [
+      'http://localhost:3000/index.html',
+    ];
+    const logoutUrls = [
+      'http://localhost:3000/',
+    ];
+
+    if (domainName) {
+      callbackUrls.push(`https://${domainName}/main/index.html`);
+      logoutUrls.push(`https://${domainName}/main/index.html`);
+    } else {
+      callbackUrls.push(`https://${cloudfrontDistribution.distributionDomainName}/main/index.html`);
+      logoutUrls.push(`https://${cloudfrontDistribution.distributionDomainName}/main/index.html`);
+    }
+
     const userPoolClient = new cognito.UserPoolClient(this, 'user-manager-userpool-client', {
       userPool,
       oAuth: {
         flows: {
           implicitCodeGrant: true,
         },
-        callbackUrls: [
-          'http://localhost:3000/index.html',
-          `https://${cloudfrontDistribution.distributionDomainName}/main/index.html`,
-        ],
-        logoutUrls: [
-          'http://localhost:3000/',
-          `https://${cloudfrontDistribution.distributionDomainName}/main/index.html`,
-        ],
+        callbackUrls,
+        logoutUrls,
       },
       supportedIdentityProviders: identityProviders,
       readAttributes: clientReadAttributes,
@@ -513,10 +522,17 @@ class UserManagerStack extends cdk.Stack {
       description: 'Cognito callback URL path',
     });
 
-    const cdnUrl = new cdk.CfnOutput(this, 'CdnUrl', {
-      value: `https://${cloudfrontDistribution.distributionDomainName}/`,
-      description: 'Cloudfront URL',
-    });
+    if (domainName) {
+      new cdk.CfnOutput(this, 'CdnUrl', {
+        value: `https://${domainName}`,
+        description: 'Domain URL',
+      });
+    } else {
+      new cdk.CfnOutput(this, 'CdnUrl', {
+        value: `https://${cloudfrontDistribution.distributionDomainName}`,
+        description: 'Cloudfront URL',
+      });
+    }
 
     const cdnId = new cdk.CfnOutput(this, 'CdnId', {
       value: cloudfrontDistribution.distributionId,

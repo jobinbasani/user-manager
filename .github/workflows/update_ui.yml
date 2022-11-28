@@ -43,7 +43,7 @@ jobs:
         partialSignUpUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CognitoSignUpURL'].OutputValue" | jq -r '.[0]')
         partialLogoutUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CognitoLogoutURL'].OutputValue" | jq -r '.[0]')
         cdnUrl=$(aws cloudformation describe-stacks --stack-name ${{ secrets.USER_MANAGER_AWS_STACK_NAME }} --query "Stacks[0].Outputs[?OutputKey=='CdnUrl'].OutputValue" | jq -r '.[0]')
-        callbackUrl=$(echo "${cdnUrl}${branchName}${callbackUrlPath}" | jq -rR @uri)
+        callbackUrl=$(echo "${cdnUrl}/${branchName}${callbackUrlPath}" | jq -rR @uri)
         completeSignInUrl="${partialSignInUrl}${callbackUrl}"
         completeSignInUrl=${completeSignInUrl//&/\\&}
         completeSignUpUrl="${partialSignUpUrl}${callbackUrl}"
