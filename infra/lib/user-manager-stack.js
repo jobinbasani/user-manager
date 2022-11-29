@@ -38,7 +38,8 @@ class UserManagerStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
       timeToLiveAttribute: ttlAttribute,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      pointInTimeRecovery: true,
     });
 
     userTable.addGlobalSecondaryIndex({
