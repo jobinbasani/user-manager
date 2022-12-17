@@ -26,6 +26,23 @@ class UserManagerStack extends cdk.Stack {
     let siteCertificate;
     let zone;
 
+    if (domainName) {
+      zone = route53.HostedZone.fromLookup(this, 'Zone', {
+        domainName,
+      });
+
+      siteCertificate = new acm.DnsValidatedCertificate(
+        this,
+        'SiteCertificate',
+        {
+          domainName,
+          hostedZone: zone,
+          region: 'us-east-1', // Cloudfront only checks this region for certificates.
+        },
+      );
+      new cdk.CfnOutput(this, 'Certificate', { value: siteCertificate.certificateArn });
+    }
+
     const userTable = new dynamodb.Table(this, id, {
       tableName: userTableName,
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -373,23 +390,6 @@ class UserManagerStack extends cdk.Stack {
           }
       `),
     });
-
-    if (domainName) {
-      zone = route53.HostedZone.fromLookup(this, 'Zone', {
-        domainName,
-      });
-
-      siteCertificate = new acm.DnsValidatedCertificate(
-        this,
-        'SiteCertificate',
-        {
-          domainName,
-          hostedZone: zone,
-          region: 'us-east-1', // Cloudfront only checks this region for certificates.
-        },
-      );
-      new cdk.CfnOutput(this, 'Certificate', { value: siteCertificate.certificateArn });
-    }
 
     const cloudfrontDistributionProps = {
       defaultRootObject: 'index.html',
