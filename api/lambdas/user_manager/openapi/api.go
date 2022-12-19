@@ -27,6 +27,7 @@ type AdminApiRouter interface {
 	SearchSignedUpUsers(http.ResponseWriter, *http.Request)
 	SetCatechismData(http.ResponseWriter, *http.Request)
 	SetCommitteeData(http.ResponseWriter, *http.Request)
+	SetLocation(http.ResponseWriter, *http.Request)
 	SetServiceData(http.ResponseWriter, *http.Request)
 }
 
@@ -47,6 +48,7 @@ type PublicApiRouter interface {
 	GetAnnouncements(http.ResponseWriter, *http.Request)
 	GetCatechism(http.ResponseWriter, *http.Request)
 	GetCommittee(http.ResponseWriter, *http.Request)
+	GetLocation(http.ResponseWriter, *http.Request)
 	GetServices(http.ResponseWriter, *http.Request)
 }
 
@@ -71,6 +73,7 @@ type AdminApiServicer interface {
 	SearchSignedUpUsers(context.Context, string) (ImplResponse, error)
 	SetCatechismData(context.Context, PageContent) (ImplResponse, error)
 	SetCommitteeData(context.Context, PageContent) (ImplResponse, error)
+	SetLocation(context.Context, Location) (ImplResponse, error)
 	SetServiceData(context.Context, PageContent) (ImplResponse, error)
 }
 
@@ -93,6 +96,7 @@ type PublicApiServicer interface {
 	GetAnnouncements(context.Context) (ImplResponse, error)
 	GetCatechism(context.Context) (ImplResponse, error)
 	GetCommittee(context.Context) (ImplResponse, error)
+	GetLocation(context.Context) (ImplResponse, error)
 	GetServices(context.Context) (ImplResponse, error)
 }
 

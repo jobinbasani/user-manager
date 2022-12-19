@@ -103,6 +103,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.SetCommitteeData,
 		},
 		{
+			"SetLocation",
+			strings.ToUpper("Put"),
+			"/api/v1/admin/location",
+			c.SetLocation,
+		},
+		{
 			"SetServiceData",
 			strings.ToUpper("Put"),
 			"/api/v1/admin/services",
@@ -276,6 +282,30 @@ func (c *AdminApiController) SetCommitteeData(w http.ResponseWriter, r *http.Req
 		return
 	}
 	result, err := c.service.SetCommitteeData(r.Context(), pageContentParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// SetLocation - Set location details
+func (c *AdminApiController) SetLocation(w http.ResponseWriter, r *http.Request) {
+	locationParam := Location{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&locationParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertLocationRequired(locationParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.SetLocation(r.Context(), locationParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -39,6 +39,8 @@ const (
 	committeeRecType   = "COMMITTEE"
 	announcementId     = "announcements"
 	pageContentId      = "pagecontent"
+	appdataContentId   = "appdata"
+	locationRecType    = "location"
 )
 
 var titleCaser = cases.Title(language.English)
@@ -54,6 +56,8 @@ type DataService interface {
 	DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error)
 	GetPageContent(ctx context.Context, key string) (openapi.PageContent, error)
 	SetPageContent(ctx context.Context, key string, content openapi.PageContent) error
+	SetAppData(ctx context.Context, id string, key string, content interface{}) error
+	GetAppData(ctx context.Context, id string, key string, target interface{}) error
 	SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error)
 }
 type DynamoDBService struct {
@@ -337,28 +341,9 @@ func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementId
 
 func (d DynamoDBService) GetPageContent(ctx context.Context, key string) (openapi.PageContent, error) {
 
-	data, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement: aws.String(fmt.Sprintf(
-			`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
-			d.cfg.UserDataTableName,
-			idAttribute,
-			pageContentId,
-			recTypeAttribute,
-			key,
-		)),
-	})
-	if err != nil {
-		return openapi.PageContent{}, err
-	}
-	if len(data.Items) == 0 {
-		return openapi.PageContent{}, nil
-	}
-	contentString := d.getStringValue(data.Items[0], infoAttribute)
-	if contentString == nil {
-		return openapi.PageContent{}, errors.New("no valid data found")
-	}
 	var content openapi.PageContent
-	err = json.Unmarshal([]byte(*contentString), &content)
+	err := d.GetAppData(ctx, pageContentId, key, &content)
+
 	if err != nil {
 		return openapi.PageContent{}, err
 	}
@@ -366,6 +351,10 @@ func (d DynamoDBService) GetPageContent(ctx context.Context, key string) (openap
 }
 
 func (d DynamoDBService) SetPageContent(ctx context.Context, key string, content openapi.PageContent) error {
+	return d.SetAppData(ctx, pageContentId, key, content)
+}
+
+func (d DynamoDBService) SetAppData(ctx context.Context, id string, key string, content interface{}) error {
 	contentData, err := json.Marshal(content)
 	if err != nil {
 		return err
@@ -374,7 +363,7 @@ func (d DynamoDBService) SetPageContent(ctx context.Context, key string, content
 		TableName: &d.cfg.UserDataTableName,
 		Item: map[string]types.AttributeValue{
 			idAttribute: &types.AttributeValueMemberS{
-				Value: pageContentId,
+				Value: id,
 			},
 			recTypeAttribute: &types.AttributeValueMemberS{
 				Value: key,
@@ -386,6 +375,35 @@ func (d DynamoDBService) SetPageContent(ctx context.Context, key string, content
 	})
 
 	return err
+}
+
+func (d DynamoDBService) GetAppData(ctx context.Context, id string, key string, target interface{}) error {
+
+	data, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			id,
+			recTypeAttribute,
+			key,
+		)),
+	})
+	if err != nil {
+		return err
+	}
+	if len(data.Items) == 0 {
+		return nil
+	}
+	contentString := d.getStringValue(data.Items[0], infoAttribute)
+	if contentString == nil {
+		return errors.New("no valid data found")
+	}
+	err = json.Unmarshal([]byte(*contentString), target)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (d DynamoDBService) SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error) {

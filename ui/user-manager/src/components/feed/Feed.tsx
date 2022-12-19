@@ -8,8 +8,9 @@ import Button from '@mui/material/Button';
 import FeedEntry from './FeedEntry';
 import AddAnnouncement from '../form/AddAnnouncement';
 import { RootState } from '../../store';
-import { Announcement } from '../../generated-sources/openapi';
+import { Announcement, Location } from '../../generated-sources/openapi';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
+import MapLocation from '../map/MapLocation';
 
 export default function Feed() {
   const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
@@ -17,6 +18,14 @@ export default function Feed() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteAnnouncementTitle, setDeleteAnnouncementTitle] = useState('');
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState('');
+  const [location, setLocation] = useState<Location>({
+    address: '',
+    apiKey: '',
+    latitude: 0,
+    longitude: 0,
+    url: '',
+  });
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [feeds, setFeeds] = useState<Array<Announcement>>([{
     id: 'default-announce',
@@ -48,6 +57,15 @@ export default function Feed() {
       .finally(() => setIsLoading(false));
   };
 
+  const loadLocation = () => {
+    setIsLocationLoading(true);
+    getPublicAPI().getLocation()
+      .then((locationResponse: AxiosResponse<Location>) => {
+        setLocation(locationResponse.data);
+      })
+      .finally(() => setIsLocationLoading(false));
+  };
+
   const deleteAnnouncement = async () => {
     console.log(deleteAnnouncementId);
     closeConfirmDialog();
@@ -61,6 +79,10 @@ export default function Feed() {
 
   useEffect(() => {
     loadAnnouncements();
+  }, [isAdmin]);
+
+  useEffect(() => {
+    loadLocation();
   }, [isAdmin]);
 
   return (
@@ -91,6 +113,8 @@ export default function Feed() {
       {
         feeds.map((announcement) => <FeedEntry key={announcement.id} announcement={announcement} isAdmin={isAdmin} onDelete={onDelete} />)
       }
+      {isLocationLoading && <LinearProgress />}
+      <MapLocation location={location} setLocation={setLocation} setLoading={setIsLocationLoading} isAdmin={isAdmin} />
     </Box>
   );
 }

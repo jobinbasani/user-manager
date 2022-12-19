@@ -66,6 +66,12 @@ func (c *PublicApiController) Routes() Routes {
 			c.GetCommittee,
 		},
 		{
+			"GetLocation",
+			strings.ToUpper("Get"),
+			"/api/v1/public/location",
+			c.GetLocation,
+		},
+		{
 			"GetServices",
 			strings.ToUpper("Get"),
 			"/api/v1/public/services",
@@ -103,6 +109,19 @@ func (c *PublicApiController) GetCatechism(w http.ResponseWriter, r *http.Reques
 // GetCommittee - Get committee details
 func (c *PublicApiController) GetCommittee(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetCommittee(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetLocation - Get location details
+func (c *PublicApiController) GetLocation(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetLocation(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -396,6 +396,31 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/location:
+    put:
+      operationId: setLocation
+      summary: Set location details
+      requestBody:
+        description: Location info
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set location data
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/public/announcements:
     get:
       operationId: getAnnouncements
@@ -467,6 +492,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PageContent'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/location:
+    get:
+      operationId: getLocation
+      summary: Get location details
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
         404:
           $ref: '#/components/responses/NotFound'
         default:
@@ -857,6 +901,25 @@ components:
           type: string
           example: "<p>Content goes here!</p>"
 
+    Location:
+      type: object
+      required:
+        - address
+        - latitude
+        - longitude
+        - apiKey
+        - url
+      properties:
+        address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        apiKey:
+          type: string
+        url:
+          type: string
 
     Announcement:
       type: object

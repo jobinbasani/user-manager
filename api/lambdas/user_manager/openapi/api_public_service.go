@@ -77,6 +77,23 @@ func (s *PublicApiService) GetCommittee(ctx context.Context) (ImplResponse, erro
 	return Response(http.StatusNotImplemented, nil), errors.New("GetCommittee method not implemented")
 }
 
+// GetLocation - Get location details
+func (s *PublicApiService) GetLocation(ctx context.Context) (ImplResponse, error) {
+	// TODO - update GetLocation with the required logic for this service method.
+	// Add api_public_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, Location{}) or use other options such as http.Ok ...
+	//return Response(200, Location{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("GetLocation method not implemented")
+}
+
 // GetServices - Get service details
 func (s *PublicApiService) GetServices(ctx context.Context) (ImplResponse, error) {
 	// TODO - update GetServices with the required logic for this service method.

@@ -210,6 +210,43 @@ export interface InternalServerErrorErrors {
     'message': string;
 }
 /**
+ * 
+ * @export
+ * @interface Location
+ */
+export interface Location {
+    /**
+     * 
+     * @type {string}
+     * @memberof Location
+     */
+    'address': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof Location
+     */
+    'latitude': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Location
+     */
+    'longitude': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Location
+     */
+    'apiKey': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Location
+     */
+    'url': string;
+}
+/**
  * The specified content was not found.
  * @export
  * @interface NotFoundError
@@ -933,6 +970,46 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Set location details
+         * @param {Location} location Location info
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setLocation: async (location: Location, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'location' is not null or undefined
+            assertParamExists('setLocation', 'location', location)
+            const localVarPath = `/api/v1/admin/location`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(location, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Set service details
          * @param {PageContent} pageContent Service page content
          * @param {*} [options] Override http request option.
@@ -1081,6 +1158,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Set location details
+         * @param {Location} location Location info
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async setLocation(location: Location, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.setLocation(location, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Set service details
          * @param {PageContent} pageContent Service page content
          * @param {*} [options] Override http request option.
@@ -1188,6 +1276,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         setCommitteeData(pageContent: PageContent, options?: any): AxiosPromise<void> {
             return localVarFp.setCommitteeData(pageContent, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Set location details
+         * @param {Location} location Location info
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        setLocation(location: Location, options?: any): AxiosPromise<void> {
+            return localVarFp.setLocation(location, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1314,6 +1412,18 @@ export class AdminApi extends BaseAPI {
      */
     public setCommitteeData(pageContent: PageContent, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).setCommitteeData(pageContent, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Set location details
+     * @param {Location} location Location info
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public setLocation(location: Location, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).setLocation(location, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1756,6 +1866,36 @@ export const PublicApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @summary Get location details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLocation: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/public/location`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get service details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1826,6 +1966,16 @@ export const PublicApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get location details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLocation(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Location>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLocation(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get service details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1870,6 +2020,15 @@ export const PublicApiFactory = function (configuration?: Configuration, basePat
          */
         getCommittee(options?: any): AxiosPromise<PageContent> {
             return localVarFp.getCommittee(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get location details
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLocation(options?: any): AxiosPromise<Location> {
+            return localVarFp.getLocation(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1921,6 +2080,17 @@ export class PublicApi extends BaseAPI {
      */
     public getCommittee(options?: AxiosRequestConfig) {
         return PublicApiFp(this.configuration).getCommittee(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get location details
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicApi
+     */
+    public getLocation(options?: AxiosRequestConfig) {
+        return PublicApiFp(this.configuration).getLocation(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
