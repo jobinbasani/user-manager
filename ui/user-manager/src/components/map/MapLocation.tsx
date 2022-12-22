@@ -7,9 +7,22 @@ import PlaceIcon from '@mui/icons-material/Place';
 import Card from '@mui/material/Card';
 import React from 'react';
 import AddLocation, { AddLocationProps } from '../form/AddLocation';
+import { Location } from '../../generated-sources/openapi';
 
 type LocationProps = AddLocationProps & {
   isAdmin: boolean,
+}
+
+function MapMarker({ location }:{location:Location}) {
+  return (
+    <Stack>
+      <PlaceIcon color="primary" />
+      <br />
+      {location.url.length > 0
+        ? <Link target="_blank" href={location.url}>{location.address}</Link>
+        : <p className="pin-text">{location.address}</p>}
+    </Stack>
+  );
 }
 
 export default function MapLocation({
@@ -36,15 +49,7 @@ export default function MapLocation({
                 defaultZoom={15}
               >
                 {location.address
-                  && (
-                    <Stack>
-                      <PlaceIcon color="primary" />
-                      <br />
-                      {location.url.length > 0
-                        ? <Link target="_blank" href={location.url}>{location.address}</Link>
-                        : <p className="pin-text">{location.address}</p>}
-                    </Stack>
-                  )}
+                  && <MapMarker location={location} />}
               </GoogleMapReact>
             </div>
           </CardContent>
