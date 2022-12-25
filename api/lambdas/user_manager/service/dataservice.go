@@ -1,10 +1,16 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"image"
+	"image/jpeg"
+	"image/png"
+	"io"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
@@ -14,9 +20,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/disintegration/imaging"
+
 	"github.com/aws/smithy-go"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	_ "image/jpeg"
+	_ "image/png"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -41,6 +52,8 @@ const (
 	pageContentId      = "pagecontent"
 	appdataContentId   = "appdata"
 	locationRecType    = "location"
+	carouselImageDir   = "images/carousel/"
+	carouselRecType    = "carousel"
 )
 
 var titleCaser = cases.Title(language.English)
@@ -59,11 +72,14 @@ type DataService interface {
 	SetAppData(ctx context.Context, id string, key string, content interface{}) error
 	GetAppData(ctx context.Context, id string, key string, target interface{}) error
 	SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error)
+	AddCarouselItem(ctx context.Context, img *bytes.Reader, title string, subtitle string) error
+	GetCarouselItems(ctx context.Context) ([]openapi.CarouselItem, error)
 }
-type DynamoDBService struct {
-	cfg         *config.Config
-	client      *dynamodb.Client
-	authService AuthService
+type UserManagerAppData struct {
+	cfg            *config.Config
+	dynamodbClient *dynamodb.Client
+	s3Client       *s3.Client
+	authService    AuthService
 }
 
 type userDataWithTime struct {
@@ -85,7 +101,7 @@ func (s stringSet) getAll() string {
 	return strings.Join(keys, ",")
 }
 
-func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData, error) {
+func (d UserManagerAppData) GetUserFamily(ctx context.Context) ([]openapi.UserData, error) {
 	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
 	if err != nil {
 		return nil, err
@@ -108,7 +124,7 @@ func (d DynamoDBService) GetUserFamily(ctx context.Context) ([]openapi.UserData,
 	return users, nil
 }
 
-func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
+func (d UserManagerAppData) AddFamilyMembers(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
 	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
 	if err != nil {
 		return openapi.FamilyId{}, err
@@ -126,11 +142,11 @@ func (d DynamoDBService) AddFamilyMembers(ctx context.Context, userData []openap
 	return d.insertFamilyMembers(ctx, familyID, user, userData)
 }
 
-func (d DynamoDBService) AdminLoadFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
+func (d UserManagerAppData) AdminLoadFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error) {
 	return d.insertFamilyMembers(ctx, nil, openapi.User{}, userData)
 }
 
-func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error) {
+func (d UserManagerAppData) UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error) {
 	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
 	if err != nil {
 		return openapi.UserId{}, err
@@ -159,7 +175,7 @@ func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, 
 	if err != nil {
 		return openapi.UserId{}, err
 	}
-	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+	_, err = d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(`UPDATE "%s" SET %s = ? SET %s = ? SET %s = ? WHERE "%s" = '%s' AND "%s" = '%s' AND "%s" = '%s'`,
 			d.cfg.UserDataTableName,
 			infoAttribute,
@@ -192,7 +208,7 @@ func (d DynamoDBService) UpdateFamilyMember(ctx context.Context, userId string, 
 	}, nil
 }
 
-func (d DynamoDBService) DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error) {
+func (d UserManagerAppData) DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error) {
 	user, err := d.authService.GetUserInfoBySub(ctx, util.GetUserIDFromContext(ctx))
 	if err != nil {
 		return nil, err
@@ -221,7 +237,7 @@ func (d DynamoDBService) DeleteFamilyMembers(ctx context.Context, memberIds []st
 			)),
 		}
 	}
-	_, err = d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
+	_, err = d.dynamodbClient.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
 		TransactStatements: statements,
 	})
 	if err != nil {
@@ -231,7 +247,7 @@ func (d DynamoDBService) DeleteFamilyMembers(ctx context.Context, memberIds []st
 	return memberIds, nil
 }
 
-func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error) {
+func (d UserManagerAppData) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error) {
 	now := time.Now()
 	ts := now.Unix()
 	today := now.Format("January 2, 2006")
@@ -247,7 +263,7 @@ func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement opena
 	if err != nil {
 		return "", err
 	}
-	_, err = d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+	_, err = d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
 			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : ?, '%s' : %d, '%s' : %d}`,
 			d.cfg.UserDataTableName,
@@ -275,8 +291,8 @@ func (d DynamoDBService) AddAnnouncement(ctx context.Context, announcement opena
 	return announcement.Id, nil
 }
 
-func (d DynamoDBService) GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error) {
-	data, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+func (d UserManagerAppData) GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error) {
+	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(
 			fmt.Sprintf(
 				`SELECT * FROM "%s" WHERE "%s" = '%s' ORDER BY "%s" DESC`,
@@ -317,7 +333,7 @@ func (d DynamoDBService) GetAnnouncements(ctx context.Context) ([]openapi.Announ
 	return announcements, nil
 }
 
-func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error) {
+func (d UserManagerAppData) DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error) {
 	statements := make([]types.ParameterizedStatement, len(announcementIds))
 	for i, id := range announcementIds {
 		statements[i] = types.ParameterizedStatement{
@@ -330,7 +346,7 @@ func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementId
 			)),
 		}
 	}
-	_, err := d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
+	_, err := d.dynamodbClient.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
 		TransactStatements: statements,
 	})
 	if err != nil {
@@ -339,7 +355,7 @@ func (d DynamoDBService) DeleteAnnouncements(ctx context.Context, announcementId
 	return announcementIds, nil
 }
 
-func (d DynamoDBService) GetPageContent(ctx context.Context, key string) (openapi.PageContent, error) {
+func (d UserManagerAppData) GetPageContent(ctx context.Context, key string) (openapi.PageContent, error) {
 
 	var content openapi.PageContent
 	err := d.GetAppData(ctx, pageContentId, key, &content)
@@ -350,16 +366,16 @@ func (d DynamoDBService) GetPageContent(ctx context.Context, key string) (openap
 	return content, nil
 }
 
-func (d DynamoDBService) SetPageContent(ctx context.Context, key string, content openapi.PageContent) error {
+func (d UserManagerAppData) SetPageContent(ctx context.Context, key string, content openapi.PageContent) error {
 	return d.SetAppData(ctx, pageContentId, key, content)
 }
 
-func (d DynamoDBService) SetAppData(ctx context.Context, id string, key string, content interface{}) error {
+func (d UserManagerAppData) SetAppData(ctx context.Context, id string, key string, content interface{}) error {
 	contentData, err := json.Marshal(content)
 	if err != nil {
 		return err
 	}
-	_, err = d.client.PutItem(ctx, &dynamodb.PutItemInput{
+	_, err = d.dynamodbClient.PutItem(ctx, &dynamodb.PutItemInput{
 		TableName: &d.cfg.UserDataTableName,
 		Item: map[string]types.AttributeValue{
 			idAttribute: &types.AttributeValueMemberS{
@@ -377,9 +393,9 @@ func (d DynamoDBService) SetAppData(ctx context.Context, id string, key string, 
 	return err
 }
 
-func (d DynamoDBService) GetAppData(ctx context.Context, id string, key string, target interface{}) error {
+func (d UserManagerAppData) GetAppData(ctx context.Context, id string, key string, target interface{}) error {
 
-	data, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
 			`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
 			d.cfg.UserDataTableName,
@@ -406,12 +422,12 @@ func (d DynamoDBService) GetAppData(ctx context.Context, id string, key string, 
 	return nil
 }
 
-func (d DynamoDBService) SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error) {
+func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error) {
 	if len(query) < 3 {
 		return nil, fmt.Errorf("invalid query - %s - must have atleast 3 characters", query)
 	}
 	var users []openapi.User
-	searchQueryOutput, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+	searchQueryOutput, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
 			`SELECT * FROM "%s"."%s" WHERE CONTAINS("%s", '%s')`,
 			d.cfg.UserDataTableName,
@@ -436,7 +452,7 @@ func (d DynamoDBService) SearchFamilyMembers(ctx context.Context, query string) 
 		allIds = append(allIds, fmt.Sprintf("'%s'", *userId))
 	}
 
-	userQueryOutput, err := d.client.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+	userQueryOutput, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
 			`SELECT * FROM "%s" WHERE "%s" IN [%s] AND "%s" = '%s'`,
 			d.cfg.UserDataTableName,
@@ -478,7 +494,143 @@ func (d DynamoDBService) SearchFamilyMembers(ctx context.Context, query string) 
 	return users, nil
 }
 
-func (d DynamoDBService) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {
+func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Reader, title string, subtitle string) error {
+	var imgToSave io.Reader
+	uploadedImage, imgType, err := image.Decode(img)
+	if err != nil {
+		return err
+	}
+	imgToSave = img
+	bounds := uploadedImage.Bounds()
+
+	if bounds.Dx() > 800 {
+		buf := new(bytes.Buffer)
+		resizedImage := imaging.Resize(uploadedImage, 800, 0, imaging.Lanczos)
+		switch imgType {
+		case "jpeg":
+			err = jpeg.Encode(buf, resizedImage, nil)
+			imgToSave = bytes.NewReader(buf.Bytes())
+		case "png":
+			err = png.Encode(buf, resizedImage)
+			imgToSave = bytes.NewReader(buf.Bytes())
+		}
+	}
+	itemId := uuid.New().String()
+	imgKey := itemId + "." + imgType
+	imgPath := carouselImageDir + imgKey
+
+	_, err = d.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket: &d.cfg.S3Bucket,
+		Key:    &imgPath,
+		Body:   imgToSave,
+	})
+	if err != nil {
+		return err
+	}
+
+	carouselItem := openapi.CarouselItem{
+		Id:       itemId,
+		Title:    title,
+		Subtitle: subtitle,
+		Url:      imgPath,
+	}
+
+	c, _ := json.Marshal(carouselItem)
+
+	_, err = d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		TableName: &d.cfg.UserDataTableName,
+		Key: map[string]types.AttributeValue{
+			idAttribute: &types.AttributeValueMemberS{
+				Value: appdataContentId,
+			},
+			recTypeAttribute: &types.AttributeValueMemberS{
+				Value: carouselRecType,
+			},
+		},
+		UpdateExpression: aws.String(fmt.Sprintf("SET %s.#itemId = :itemData", infoAttribute)),
+		ExpressionAttributeNames: map[string]string{
+			"#itemId": itemId,
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":itemData": &types.AttributeValueMemberS{
+				Value: string(c),
+			},
+		},
+		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", infoAttribute)),
+	})
+
+	if err != nil {
+		var cfe *types.ConditionalCheckFailedException
+		if errors.As(err, &cfe) {
+			_, err = d.dynamodbClient.PutItem(ctx, &dynamodb.PutItemInput{
+				TableName: &d.cfg.UserDataTableName,
+				Item: map[string]types.AttributeValue{
+					idAttribute: &types.AttributeValueMemberS{
+						Value: appdataContentId,
+					},
+					recTypeAttribute: &types.AttributeValueMemberS{
+						Value: carouselRecType,
+					},
+					infoAttribute: &types.AttributeValueMemberM{
+						Value: map[string]types.AttributeValue{
+							itemId: &types.AttributeValueMemberS{
+								Value: string(c),
+							},
+						},
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (d UserManagerAppData) GetCarouselItems(ctx context.Context) ([]openapi.CarouselItem, error) {
+	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			appdataContentId,
+			recTypeAttribute,
+			carouselRecType,
+		)),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(data.Items) == 0 {
+		return []openapi.CarouselItem{}, nil
+	}
+	attr, exists := data.Items[0][infoAttribute]
+	if exists {
+		mapEntries, ok := attr.(*types.AttributeValueMemberM)
+		if ok {
+			carouselItems := []openapi.CarouselItem{}
+			for _, v := range mapEntries.Value {
+				itemEntry, ok := v.(*types.AttributeValueMemberS)
+				if ok {
+					var itemInfo openapi.CarouselItem
+					err = json.Unmarshal([]byte(itemEntry.Value), &itemInfo)
+					if err != nil {
+						return nil, err
+					}
+					carouselItems = append(carouselItems, itemInfo)
+				}
+			}
+			return carouselItems, nil
+		}
+	}
+	return []openapi.CarouselItem{}, nil
+}
+
+func (d UserManagerAppData) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {
 
 	var statements []types.ParameterizedStatement
 
@@ -522,7 +674,7 @@ func (d DynamoDBService) insertFamilyMembers(ctx context.Context, familyID *stri
 			},
 		})
 	}
-	_, err := d.client.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
+	_, err := d.dynamodbClient.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
 		TransactStatements: statements,
 	})
 	if err != nil {
@@ -534,7 +686,7 @@ func (d DynamoDBService) insertFamilyMembers(ctx context.Context, familyID *stri
 	}, nil
 }
 
-func (d DynamoDBService) formatUser(user openapi.User, u openapi.UserData) (openapi.UserData, stringSet, string) {
+func (d UserManagerAppData) formatUser(user openapi.User, u openapi.UserData) (openapi.UserData, stringSet, string) {
 	emails := make(stringSet)
 	if len(user.Email) > 0 {
 		emails.add(user.Email)
@@ -549,7 +701,7 @@ func (d DynamoDBService) formatUser(user openapi.User, u openapi.UserData) (open
 	searchData := d.buildSearchIndex(u.FirstName, u.LastName, u.Email)
 	return u, emails, searchData
 }
-func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {
+func (d UserManagerAppData) getUserDetailsForIDs(ctx context.Context, ids []string) ([]openapi.UserData, error) {
 	if len(ids) == 0 {
 		return nil, errors.New("no user id's were provided")
 	}
@@ -567,7 +719,7 @@ func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string)
 		}
 	}
 
-	batchExecutionOutput, err := d.client.BatchExecuteStatement(ctx, &dynamodb.BatchExecuteStatementInput{
+	batchExecutionOutput, err := d.dynamodbClient.BatchExecuteStatement(ctx, &dynamodb.BatchExecuteStatementInput{
 		Statements: statements,
 	})
 	if err != nil {
@@ -610,7 +762,7 @@ func (d DynamoDBService) getUserDetailsForIDs(ctx context.Context, ids []string)
 	return users, nil
 }
 
-func (d DynamoDBService) getFamilyIDForEmail(ctx context.Context, email string) (*string, error) {
+func (d UserManagerAppData) getFamilyIDForEmail(ctx context.Context, email string) (*string, error) {
 	currentFamilyQueryInput := &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
 			`SELECT * FROM "%s"."%s" WHERE CONTAINS("%s", '%s')`,
@@ -620,7 +772,7 @@ func (d DynamoDBService) getFamilyIDForEmail(ctx context.Context, email string) 
 			email,
 		)),
 	}
-	currentFamilyQueryOutput, err := d.client.ExecuteStatement(ctx, currentFamilyQueryInput)
+	currentFamilyQueryOutput, err := d.dynamodbClient.ExecuteStatement(ctx, currentFamilyQueryInput)
 	if err != nil {
 		return nil, err
 	}
@@ -633,7 +785,7 @@ func (d DynamoDBService) getFamilyIDForEmail(ctx context.Context, email string) 
 	return nil, nil
 }
 
-func (d DynamoDBService) getFamilyMemberIDs(ctx context.Context, familyID string) ([]string, error) {
+func (d UserManagerAppData) getFamilyMemberIDs(ctx context.Context, familyID string) ([]string, error) {
 	familyMembersQueryInput := &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(fmt.Sprintf(
 			`SELECT * FROM "%s"."%s" WHERE "%s" = '%s'`,
@@ -643,7 +795,7 @@ func (d DynamoDBService) getFamilyMemberIDs(ctx context.Context, familyID string
 			familyID,
 		)),
 	}
-	familyMembersQueryOutput, err := d.client.ExecuteStatement(ctx, familyMembersQueryInput)
+	familyMembersQueryOutput, err := d.dynamodbClient.ExecuteStatement(ctx, familyMembersQueryInput)
 	if err != nil {
 		return nil, err
 	}
@@ -657,7 +809,7 @@ func (d DynamoDBService) getFamilyMemberIDs(ctx context.Context, familyID string
 	return userIds, nil
 }
 
-func (d DynamoDBService) getStringValue(attrMap map[string]types.AttributeValue, attrName string) *string {
+func (d UserManagerAppData) getStringValue(attrMap map[string]types.AttributeValue, attrName string) *string {
 	attr, exists := attrMap[attrName]
 	if exists {
 		member, ok := attr.(*types.AttributeValueMemberS)
@@ -668,7 +820,7 @@ func (d DynamoDBService) getStringValue(attrMap map[string]types.AttributeValue,
 	return nil
 }
 
-func (d DynamoDBService) getIntValue(attrMap map[string]types.AttributeValue, attrName string) *int {
+func (d UserManagerAppData) getIntValue(attrMap map[string]types.AttributeValue, attrName string) *int {
 	attr, exists := attrMap[attrName]
 	if exists {
 		member, ok := attr.(*types.AttributeValueMemberN)
@@ -680,11 +832,11 @@ func (d DynamoDBService) getIntValue(attrMap map[string]types.AttributeValue, at
 	return nil
 }
 
-func (d DynamoDBService) titleCase(s string) string {
+func (d UserManagerAppData) titleCase(s string) string {
 	return strings.TrimSpace(titleCaser.String(s))
 }
 
-func (d DynamoDBService) buildSearchIndex(s ...string) string {
+func (d UserManagerAppData) buildSearchIndex(s ...string) string {
 	var all []string
 	for i := range s {
 		entry := strings.TrimSpace(s[i])
@@ -698,9 +850,12 @@ func (d DynamoDBService) buildSearchIndex(s ...string) string {
 
 func NewDataService(cfg *config.Config, authService AuthService) DataService {
 
-	return DynamoDBService{
-		cfg:         cfg,
-		client:      dynamodb.NewFromConfig(cfg.AwsConfig),
+	return UserManagerAppData{
+		cfg:            cfg,
+		dynamodbClient: dynamodb.NewFromConfig(cfg.AwsConfig),
+		s3Client: s3.NewFromConfig(cfg.AwsConfig, func(options *s3.Options) {
+			options.UsePathStyle = true
+		}),
 		authService: authService,
 	}
 }

@@ -43,3 +43,4 @@ else
   awslocal dynamodb list-tables
 fi
 
+awslocal s3 mb s3://uibucket

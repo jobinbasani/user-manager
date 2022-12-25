@@ -13,6 +13,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"os"
 )
 
 // AdminApiService is a service that implements the logic for the AdminApiServicer
@@ -47,6 +48,29 @@ func (s *AdminApiService) AddAnnouncement(ctx context.Context, announcement Anno
 	//return Response(0, InternalServerError{}), nil
 
 	return Response(http.StatusNotImplemented, nil), errors.New("AddAnnouncement method not implemented")
+}
+
+// AddCarouselItem - Add an item to the carousel
+func (s *AdminApiService) AddCarouselItem(ctx context.Context, image *os.File, title string, subtitle string) (ImplResponse, error) {
+	// TODO - update AddCarouselItem with the required logic for this service method.
+	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(204, {}) or use other options such as http.Ok ...
+	//return Response(204, nil),nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("AddCarouselItem method not implemented")
 }
 
 // AddToAdminGroup - Add members to admin group

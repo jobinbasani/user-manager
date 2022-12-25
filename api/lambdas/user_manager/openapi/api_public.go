@@ -54,6 +54,12 @@ func (c *PublicApiController) Routes() Routes {
 			c.GetAnnouncements,
 		},
 		{
+			"GetCarouselItems",
+			strings.ToUpper("Get"),
+			"/api/v1/public/carousel",
+			c.GetCarouselItems,
+		},
+		{
 			"GetCatechism",
 			strings.ToUpper("Get"),
 			"/api/v1/public/catechism",
@@ -83,6 +89,19 @@ func (c *PublicApiController) Routes() Routes {
 // GetAnnouncements - Get all announcements
 func (c *PublicApiController) GetAnnouncements(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetAnnouncements(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetCarouselItems - Get carousel items
+func (c *PublicApiController) GetCarouselItems(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetCarouselItems(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

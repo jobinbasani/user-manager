@@ -12,9 +12,8 @@ services:
     environment:
       - SERVICES=dynamodb
       - DYNAMODB_SHARE_DB=1
-      - HOST_TMP_FOLDER=/tmp/localstack
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - DATA_DIR=/tmp/localstack/data
+      - PERSISTENCE=/var/lib/localstack/data
     volumes:
       - "./.localstack:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"

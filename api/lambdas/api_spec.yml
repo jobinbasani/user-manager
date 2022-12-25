@@ -421,6 +421,31 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/carousel:
+    post:
+      operationId: addCarouselItem
+      summary: Add an item to the carousel
+      requestBody:
+        description: Carousel item
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CarouselItemInput'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Added carousel item
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/public/announcements:
     get:
       operationId: getAnnouncements
@@ -511,6 +536,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Location'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/carousel:
+    get:
+      operationId: getCarouselItems
+      summary: Get carousel items
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarouselItems'
         404:
           $ref: '#/components/responses/NotFound'
         default:
@@ -920,6 +964,39 @@ components:
           type: string
         url:
           type: string
+
+    CarouselItemInput:
+      type: object
+      required:
+        - image
+      properties:
+        title:
+          type: string
+        subtitle:
+          type: string
+        image:
+          type: string
+          format: binary
+
+    CarouselItem:
+      type: object
+      required:
+        - image
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        subtitle:
+          type: string
+        url:
+          type: string
+
+    CarouselItems:
+      type: array
+      items:
+        $ref: '#/components/schemas/CarouselItem'
 
     Announcement:
       type: object

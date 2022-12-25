@@ -1,12 +1,14 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"log"
 	"net/http"
+	"os"
 )
 
 // UserManagerService represents the various operations related to User management
@@ -191,6 +193,23 @@ func (u *UserManagerService) GetLocation(ctx context.Context) (openapi.ImplRespo
 	var data openapi.Location
 	err := u.dataService.GetAppData(ctx, appdataContentId, locationRecType, &data)
 	return u.handleResponse(data, err)
+}
+
+func (u *UserManagerService) AddCarouselItem(ctx context.Context, img *os.File, title string, subtitle string) (openapi.ImplResponse, error) {
+	if img == nil {
+		return u.handleResponse(nil, errors.New("unable to process nil image"))
+	}
+	b, err := os.ReadFile(img.Name())
+	if err != nil {
+		return u.handleResponse(nil, err)
+	}
+	err = u.dataService.AddCarouselItem(ctx, bytes.NewReader(b), title, subtitle)
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) GetCarouselItems(ctx context.Context) (openapi.ImplResponse, error) {
+	results, err := u.dataService.GetCarouselItems(ctx)
+	return u.handleResponse(results, err)
 }
 
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {

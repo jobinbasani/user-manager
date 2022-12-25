@@ -55,6 +55,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.AddAnnouncement,
 		},
 		{
+			"AddCarouselItem",
+			strings.ToUpper("Post"),
+			"/api/v1/admin/carousel",
+			c.AddCarouselItem,
+		},
+		{
 			"AddToAdminGroup",
 			strings.ToUpper("Put"),
 			"/api/v1/admin/admins",
@@ -131,6 +137,31 @@ func (c *AdminApiController) AddAnnouncement(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	result, err := c.service.AddAnnouncement(r.Context(), announcementParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// AddCarouselItem - Add an item to the carousel
+func (c *AdminApiController) AddCarouselItem(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+
+	imageParam, err := ReadFormFileToTempFile(r, "image")
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	titleParam := r.FormValue("title")
+	subtitleParam := r.FormValue("subtitle")
+	result, err := c.service.AddCarouselItem(r.Context(), imageParam, titleParam, subtitleParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

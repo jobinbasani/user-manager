@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 )
@@ -17,15 +16,16 @@ type UserManagerJwkCache struct {
 
 // Config contains the application level configuration, which can be overridden by environment variables
 type Config struct {
-	AwsConfig           aws.Config
-	JwkCache            *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
-	CognitoUserPoolID   string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
-	CognitoAdminGroup   *string              `envconfig:"USERMANAGER_ADMIN_GROUP" default:"admin"`
-	UserDataTableName   string               `envconfig:"USERMANAGER_TABLE_NAME" required:"true"`
-	EmailIndexName      string               `envconfig:"USERMANAGER_EMAIL_INDEX_NAME" required:"true"`
-	SearchIndexName     string               `envconfig:"USERMANAGER_SEARCH_INDEX_NAME" required:"true"`
-	FamilyIndexName     string               `envconfig:"USERMANAGER_FAMILY_INDEX_NAME" required:"true"`
-	DynamoDBEndpointURL *string              `envconfig:"USERMANAGER_DYNAMODB_ENDPOINT_URL"`
+	AwsConfig         aws.Config
+	JwkCache          *UserManagerJwkCache `envconfig:"USERMANAGER_JWKS_URL" required:"true"`
+	CognitoUserPoolID string               `envconfig:"USERMANAGER_USER_POOL_ID" required:"true"`
+	CognitoAdminGroup *string              `envconfig:"USERMANAGER_ADMIN_GROUP" default:"admin"`
+	S3Bucket          string               `envconfig:"USERMANAGER_S3_BUCKET" required:"true"`
+	UserDataTableName string               `envconfig:"USERMANAGER_TABLE_NAME" required:"true"`
+	EmailIndexName    string               `envconfig:"USERMANAGER_EMAIL_INDEX_NAME" required:"true"`
+	SearchIndexName   string               `envconfig:"USERMANAGER_SEARCH_INDEX_NAME" required:"true"`
+	FamilyIndexName   string               `envconfig:"USERMANAGER_FAMILY_INDEX_NAME" required:"true"`
+	AWSEndpointURL    *string              `envconfig:"USERMANAGER_AWS_ENDPOINT_URL"`
 }
 
 // Configure creates a config by processing the environment variables and default values
@@ -41,8 +41,8 @@ func Configure(ctx context.Context) *Config {
 	}
 	config.AwsConfig, err = awsconfig.LoadDefaultConfig(ctx, awsconfig.WithEndpointResolverWithOptions(aws.EndpointResolverWithOptionsFunc(
 		func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-			if config.DynamoDBEndpointURL != nil && service == dynamodb.ServiceID {
-				return aws.Endpoint{URL: *config.DynamoDBEndpointURL}, nil
+			if config.AWSEndpointURL != nil {
+				return aws.Endpoint{URL: *config.AWSEndpointURL}, nil
 			}
 			// returning EndpointNotFoundError will allow the service to fallback to it's default resolution
 			return aws.Endpoint{}, &aws.EndpointNotFoundError{}

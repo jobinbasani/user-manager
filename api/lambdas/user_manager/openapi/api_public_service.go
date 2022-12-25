@@ -43,6 +43,23 @@ func (s *PublicApiService) GetAnnouncements(ctx context.Context) (ImplResponse, 
 	return Response(http.StatusNotImplemented, nil), errors.New("GetAnnouncements method not implemented")
 }
 
+// GetCarouselItems - Get carousel items
+func (s *PublicApiService) GetCarouselItems(ctx context.Context) (ImplResponse, error) {
+	// TODO - update GetCarouselItems with the required logic for this service method.
+	// Add api_public_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, []CarouselItem{}) or use other options such as http.Ok ...
+	//return Response(200, []CarouselItem{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("GetCarouselItems method not implemented")
+}
+
 // GetCatechism - Get catechism details
 func (s *PublicApiService) GetCatechism(ctx context.Context) (ImplResponse, error) {
 	// TODO - update GetCatechism with the required logic for this service method.

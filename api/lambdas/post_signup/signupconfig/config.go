@@ -11,7 +11,7 @@ type Config struct {
 	AwsConfig                      aws.Config
 	UserDataTableName              string  `envconfig:"USERMANAGER_TABLE_NAME" required:"true"`
 	EmailIndexName                 string  `envconfig:"USERMANAGER_EMAIL_INDEX_NAME" required:"true"`
-	DynamoDBEndpointURL            *string `envconfig:"USERMANAGER_DYNAMODB_ENDPOINT_URL"`
+	AWSEndpointURL                 *string `envconfig:"USERMANAGER_AWS_ENDPOINT_URL"`
 	ApprovedUserAttribute          string  `envconfig:"USERMANAGER_APPROVED_USER_ATTRIBUTE" required:"true"`
 	RequireAdminApprovalPostSignup bool    `envconfig:"USERMANAGER_ADMIN_APPROVAL_POST_SIGNUP"`
 }

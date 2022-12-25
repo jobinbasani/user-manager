@@ -112,8 +112,8 @@ func NewStartServerCommand() *cli.Command {
 		Action:  getStartServerAction,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "dynamo_endpoint",
-				Usage: "DynamoDB endpoint URL",
+				Name:  "aws_endpoint",
+				Usage: "AWS endpoint URL",
 			},
 			&cli.IntFlag{
 				Name:  "port",
@@ -230,9 +230,9 @@ func getStartServerAction(c *cli.Context) error {
 
 	cfg := config.Configure(c.Context)
 
-	endpointUrl := c.String("dynamo_endpoint")
+	endpointUrl := c.String("aws_endpoint")
 	if len(endpointUrl) > 0 {
-		cfg.DynamoDBEndpointURL = aws.String(endpointUrl)
+		cfg.AWSEndpointURL = aws.String(endpointUrl)
 	}
 
 	srv := &http.Server{
@@ -276,7 +276,7 @@ func getLoadFileAction(c *cli.Context) error {
 
 	endpointUrl := c.String("dynamo_endpoint")
 	if len(endpointUrl) > 0 {
-		cfg.DynamoDBEndpointURL = aws.String(endpointUrl)
+		cfg.AWSEndpointURL = aws.String(endpointUrl)
 	}
 	tableName := c.String("table")
 	if len(tableName) > 0 {
