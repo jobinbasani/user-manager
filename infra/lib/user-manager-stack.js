@@ -200,64 +200,6 @@ class UserManagerStack extends cdk.Stack {
       description: 'Cognito JWKS URL',
     });
 
-    const userManagerLambda = new GoFunction(this, 'userManagerAPIFunction', {
-      description: 'User Manager REST API Lambda',
-      functionName: 'userManagerAPIFunction',
-      entry: `${__dirname}/../../api/lambdas/user_manager`,
-      timeout: cdk.Duration.seconds(10),
-      environment: {
-        USERMANAGER_JWKS_URL: `https://cognito-idp.${cdk.Stack.of(this).region}.amazonaws.com/${userPool.userPoolId}/.well-known/jwks.json`,
-        USERMANAGER_USER_POOL_ID: userPool.userPoolId,
-        USERMANAGER_TABLE_NAME: userTable.tableName,
-        USERMANAGER_FAMILY_INDEX_NAME: familyIndexName,
-        USERMANAGER_EMAIL_INDEX_NAME: emailIndexName,
-        USERMANAGER_SEARCH_INDEX_NAME: searchIndexName,
-      },
-    });
-
-    userManagerLambda.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'dynamodb:PartiQLSelect',
-        'dynamodb:PartiQLInsert',
-        'dynamodb:PartiQLDelete',
-        'dynamodb:PartiQLUpdate',
-        'dynamodb:PutItem',
-      ],
-      resources: [
-        userTable.tableArn,
-        `${userTable.tableArn}/index/*`,
-      ],
-    }));
-
-    userManagerLambda.addToRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'cognito-idp:ListUsers',
-        'cognito-idp:ListUsersInGroup',
-        'cognito-idp:AdminAddUserToGroup',
-        'cognito-idp:AdminRemoveUserFromGroup',
-      ],
-      resources: [
-        userPool.userPoolArn,
-      ],
-    }));
-
-    const userManagerLambdaUrl = userManagerLambda.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-      cors: {
-        allowedOrigins: ['*'],
-      },
-    });
-
-    new cdk.CfnOutput(this, 'UserManagerLambdaUrl', {
-      value: userManagerLambdaUrl.url,
-      description: 'UserManager Lambda Function URL',
-    });
-
-    new cdk.CfnOutput(this, 'UserManagerLambda', {
-      value: userManagerLambda.functionName,
-      description: 'UserManager Lambda Function Name',
-    });
-
     const postSignupLambda = new GoFunction(this, 'postSignupFunction', {
       description: 'Post sign up trigger',
       functionName: 'postSignupFunction',
@@ -296,8 +238,6 @@ class UserManagerStack extends cdk.Stack {
     const cloudFrontOAI = new cloudfront.OriginAccessIdentity(this, 'OAI', {
       comment: 'OAI for User Manager website.',
     });
-
-    const apiEndPointDomainName = cdk.Fn.parseDomainName(userManagerLambdaUrl.url);
 
     const userManagerS3Bucket = new s3.Bucket(this, 'user_manager', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -345,6 +285,65 @@ class UserManagerStack extends cdk.Stack {
       resources: [userManagerS3Bucket.arnForObjects('*')],
       principals: [new iam.CanonicalUserPrincipal(userManagerOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
     }));
+
+    const userManagerLambda = new GoFunction(this, 'userManagerAPIFunction', {
+      description: 'User Manager REST API Lambda',
+      functionName: 'userManagerAPIFunction',
+      entry: `${__dirname}/../../api/lambdas/user_manager`,
+      timeout: cdk.Duration.seconds(10),
+      environment: {
+        USERMANAGER_JWKS_URL: `https://cognito-idp.${cdk.Stack.of(this).region}.amazonaws.com/${userPool.userPoolId}/.well-known/jwks.json`,
+        USERMANAGER_USER_POOL_ID: userPool.userPoolId,
+        USERMANAGER_TABLE_NAME: userTable.tableName,
+        USERMANAGER_FAMILY_INDEX_NAME: familyIndexName,
+        USERMANAGER_EMAIL_INDEX_NAME: emailIndexName,
+        USERMANAGER_SEARCH_INDEX_NAME: searchIndexName,
+        USERMANAGER_S3_BUCKET: userManagerS3Bucket.bucketName,
+      },
+    });
+
+    userManagerLambda.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'dynamodb:PartiQLSelect',
+        'dynamodb:PartiQLInsert',
+        'dynamodb:PartiQLDelete',
+        'dynamodb:PartiQLUpdate',
+        'dynamodb:PutItem',
+      ],
+      resources: [
+        userTable.tableArn,
+        `${userTable.tableArn}/index/*`,
+      ],
+    }));
+
+    userManagerLambda.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'cognito-idp:ListUsers',
+        'cognito-idp:ListUsersInGroup',
+        'cognito-idp:AdminAddUserToGroup',
+        'cognito-idp:AdminRemoveUserFromGroup',
+      ],
+      resources: [
+        userPool.userPoolArn,
+      ],
+    }));
+
+    const userManagerLambdaUrl = userManagerLambda.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+      },
+    });
+
+    new cdk.CfnOutput(this, 'UserManagerLambdaUrl', {
+      value: userManagerLambdaUrl.url,
+      description: 'UserManager Lambda Function URL',
+    });
+
+    new cdk.CfnOutput(this, 'UserManagerLambda', {
+      value: userManagerLambda.functionName,
+      description: 'UserManager Lambda Function Name',
+    });
 
     const spaUrlRewriteFn = new cloudfront.Function(this, 'SPA_URL_Rewrite', {
       functionName: 'webAppUrlRewriteFunction',
@@ -455,6 +454,8 @@ class UserManagerStack extends cdk.Stack {
       headerBehavior: cloudfront.OriginRequestHeaderBehavior.allowList('Origin'),
       queryStringBehavior: cloudfront.OriginRequestQueryStringBehavior.all(),
     });
+
+    const apiEndPointDomainName = cdk.Fn.parseDomainName(userManagerLambdaUrl.url);
 
     cloudfrontDistribution.addBehavior('/api/*',
       new cloudfrontOrigins.HttpOrigin(apiEndPointDomainName, {
