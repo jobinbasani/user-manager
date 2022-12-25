@@ -446,6 +446,32 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/carousel/{carouselItemId}:
+    delete:
+      operationId: deleteCarouselItem
+      summary: Delete an item from the carousel
+      parameters:
+        - name: carouselItemId
+          description: The unique identifier for the carousel item.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Removed carousel item
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/public/announcements:
     get:
       operationId: getAnnouncements

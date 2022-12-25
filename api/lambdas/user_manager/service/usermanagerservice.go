@@ -212,6 +212,11 @@ func (u *UserManagerService) GetCarouselItems(ctx context.Context) (openapi.Impl
 	return u.handleResponse(results, err)
 }
 
+func (u *UserManagerService) DeleteCarouselItem(ctx context.Context, carouselItemId string) (openapi.ImplResponse, error) {
+	err := u.dataService.DeleteCarouselItem(ctx, carouselItemId)
+	return u.handleResponse(nil, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

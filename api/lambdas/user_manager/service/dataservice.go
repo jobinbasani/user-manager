@@ -74,6 +74,8 @@ type DataService interface {
 	SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error)
 	AddCarouselItem(ctx context.Context, img *bytes.Reader, title string, subtitle string) error
 	GetCarouselItems(ctx context.Context) ([]openapi.CarouselItem, error)
+	GetCarouselItem(ctx context.Context, itemId string) (openapi.CarouselItem, error)
+	DeleteCarouselItem(ctx context.Context, itemId string) error
 }
 type UserManagerAppData struct {
 	cfg            *config.Config
@@ -628,6 +630,81 @@ func (d UserManagerAppData) GetCarouselItems(ctx context.Context) ([]openapi.Car
 		}
 	}
 	return []openapi.CarouselItem{}, nil
+}
+
+func (d UserManagerAppData) GetCarouselItem(ctx context.Context, itemId string) (openapi.CarouselItem, error) {
+	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT "%s"."%s" FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
+			infoAttribute,
+			itemId,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			appdataContentId,
+			recTypeAttribute,
+			carouselRecType,
+		)),
+	})
+	if err != nil {
+		return openapi.CarouselItem{}, err
+	}
+	if len(data.Items) == 0 {
+		return openapi.CarouselItem{}, errors.New("unable to find requested carousel item")
+	}
+
+	var itemInfo openapi.CarouselItem
+
+	attr, exists := data.Items[0][itemId]
+	if exists {
+		dataStr, ok := attr.(*types.AttributeValueMemberS)
+		if ok {
+			err = json.Unmarshal([]byte(dataStr.Value), &itemInfo)
+			if err != nil {
+				return openapi.CarouselItem{}, err
+			}
+			return itemInfo, nil
+		}
+	}
+	return openapi.CarouselItem{}, errors.New("unable to find matching record")
+}
+
+func (d UserManagerAppData) DeleteCarouselItem(ctx context.Context, itemId string) error {
+
+	item, err := d.GetCarouselItem(ctx, itemId)
+	if err != nil {
+		return err
+	}
+	_, err = d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		TableName: &d.cfg.UserDataTableName,
+		Key: map[string]types.AttributeValue{
+			idAttribute: &types.AttributeValueMemberS{
+				Value: appdataContentId,
+			},
+			recTypeAttribute: &types.AttributeValueMemberS{
+				Value: carouselRecType,
+			},
+		},
+		UpdateExpression: aws.String(fmt.Sprintf("REMOVE %s.#itemId", infoAttribute)),
+		ExpressionAttributeNames: map[string]string{
+			"#itemId": itemId,
+		},
+		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", infoAttribute)),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	_, err = d.s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: &d.cfg.S3Bucket,
+		Key:    &item.Url,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (d UserManagerAppData) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {
