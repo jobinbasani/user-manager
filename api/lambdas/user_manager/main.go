@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/routes"
 
@@ -24,12 +25,22 @@ func Handler(ctx context.Context, req events.LambdaFunctionURLRequest) (events.A
 	if gorillaMux == nil {
 		gorillaMux = gorillamux.New(routes.GetRoutes(ctx, cfg))
 	}
+	var requestBody string
+	if req.IsBase64Encoded {
+		decoded, err := base64.StdEncoding.DecodeString(req.Body)
+		if err != nil {
+			return events.APIGatewayProxyResponse{}, err
+		}
+		requestBody = string(decoded)
+	} else {
+		requestBody = req.Body
+	}
 	resp, err := gorillaMux.ProxyWithContext(ctx, *core.NewSwitchableAPIGatewayRequestV1(&events.APIGatewayProxyRequest{
 		Path:                  req.RequestContext.HTTP.Path,
 		HTTPMethod:            req.RequestContext.HTTP.Method,
 		Headers:               req.Headers,
 		QueryStringParameters: req.QueryStringParameters,
-		Body:                  req.Body,
+		Body:                  requestBody,
 	}))
 	return *resp.Version1(), err
 }
