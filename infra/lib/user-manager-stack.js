@@ -309,6 +309,7 @@ class UserManagerStack extends cdk.Stack {
         'dynamodb:PartiQLDelete',
         'dynamodb:PartiQLUpdate',
         'dynamodb:PutItem',
+        'dynamodb:UpdateItem',
       ],
       resources: [
         userTable.tableArn,
@@ -326,6 +327,14 @@ class UserManagerStack extends cdk.Stack {
       resources: [
         userPool.userPoolArn,
       ],
+    }));
+
+    userManagerLambda.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        's3:PutObject',
+        's3:DeleteObject',
+      ],
+      resources: [userManagerS3Bucket.arnForObjects('*')],
     }));
 
     const userManagerLambdaUrl = userManagerLambda.addFunctionUrl({

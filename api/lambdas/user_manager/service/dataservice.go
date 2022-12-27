@@ -504,7 +504,7 @@ func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Read
 	}
 	imgToSave = img
 	bounds := uploadedImage.Bounds()
-
+	var contentType string
 	if bounds.Dx() > 800 {
 		buf := new(bytes.Buffer)
 		resizedImage := imaging.Resize(uploadedImage, 800, 0, imaging.Lanczos)
@@ -512,9 +512,11 @@ func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Read
 		case "jpeg":
 			err = jpeg.Encode(buf, resizedImage, nil)
 			imgToSave = bytes.NewReader(buf.Bytes())
+			contentType = "image/jpeg"
 		case "png":
 			err = png.Encode(buf, resizedImage)
 			imgToSave = bytes.NewReader(buf.Bytes())
+			contentType = "image/png"
 		}
 	}
 	itemId := uuid.New().String()
@@ -522,9 +524,10 @@ func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Read
 	imgPath := carouselImageDir + imgKey
 
 	_, err = d.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: &d.cfg.S3Bucket,
-		Key:    &imgPath,
-		Body:   imgToSave,
+		Bucket:      &d.cfg.S3Bucket,
+		Key:         &imgPath,
+		Body:        imgToSave,
+		ContentType: &contentType,
 	})
 	if err != nil {
 		return err
