@@ -124,6 +124,37 @@ export interface BasicUserInfoList {
 /**
  * 
  * @export
+ * @interface CarouselItem
+ */
+export interface CarouselItem {
+    /**
+     * 
+     * @type {string}
+     * @memberof CarouselItem
+     */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CarouselItem
+     */
+    'title'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CarouselItem
+     */
+    'subtitle'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CarouselItem
+     */
+    'url'?: string;
+}
+/**
+ * 
+ * @export
  * @interface FamilyId
  */
 export interface FamilyId {
@@ -654,6 +685,61 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Add an item to the carousel
+         * @param {any} image 
+         * @param {string} [title] 
+         * @param {string} [subtitle] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addCarouselItem: async (image: any, title?: string, subtitle?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'image' is not null or undefined
+            assertParamExists('addCarouselItem', 'image', image)
+            const localVarPath = `/api/v1/admin/carousel`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (title !== undefined) { 
+                localVarFormParams.append('title', title as any);
+            }
+    
+            if (subtitle !== undefined) { 
+                localVarFormParams.append('subtitle', subtitle as any);
+            }
+    
+            if (image !== undefined) { 
+                localVarFormParams.append('image', image as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Add members to admin group
          * @param {Array<string>} requestBody User id\&#39;s of new members
          * @param {*} [options] Override http request option.
@@ -726,6 +812,44 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete an item from the carousel
+         * @param {string} carouselItemId The unique identifier for the carousel item.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteCarouselItem: async (carouselItemId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'carouselItemId' is not null or undefined
+            assertParamExists('deleteCarouselItem', 'carouselItemId', carouselItemId)
+            const localVarPath = `/api/v1/admin/carousel/{carouselItemId}`
+                .replace(`{${"carouselItemId"}}`, encodeURIComponent(String(carouselItemId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1071,6 +1195,19 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Add an item to the carousel
+         * @param {any} image 
+         * @param {string} [title] 
+         * @param {string} [subtitle] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addCarouselItem(image: any, title?: string, subtitle?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addCarouselItem(image, title, subtitle, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Add members to admin group
          * @param {Array<string>} requestBody User id\&#39;s of new members
          * @param {*} [options] Override http request option.
@@ -1089,6 +1226,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
          */
         async deleteAnnouncements(requestBody: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAnnouncements(requestBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete an item from the carousel
+         * @param {string} carouselItemId The unique identifier for the carousel item.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteCarouselItem(carouselItemId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteCarouselItem(carouselItemId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1200,6 +1348,18 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Add an item to the carousel
+         * @param {any} image 
+         * @param {string} [title] 
+         * @param {string} [subtitle] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addCarouselItem(image: any, title?: string, subtitle?: string, options?: any): AxiosPromise<void> {
+            return localVarFp.addCarouselItem(image, title, subtitle, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Add members to admin group
          * @param {Array<string>} requestBody User id\&#39;s of new members
          * @param {*} [options] Override http request option.
@@ -1217,6 +1377,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         deleteAnnouncements(requestBody: Array<string>, options?: any): AxiosPromise<Array<string>> {
             return localVarFp.deleteAnnouncements(requestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete an item from the carousel
+         * @param {string} carouselItemId The unique identifier for the carousel item.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteCarouselItem(carouselItemId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteCarouselItem(carouselItemId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1321,6 +1491,20 @@ export class AdminApi extends BaseAPI {
 
     /**
      * 
+     * @summary Add an item to the carousel
+     * @param {any} image 
+     * @param {string} [title] 
+     * @param {string} [subtitle] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public addCarouselItem(image: any, title?: string, subtitle?: string, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).addCarouselItem(image, title, subtitle, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Add members to admin group
      * @param {Array<string>} requestBody User id\&#39;s of new members
      * @param {*} [options] Override http request option.
@@ -1341,6 +1525,18 @@ export class AdminApi extends BaseAPI {
      */
     public deleteAnnouncements(requestBody: Array<string>, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).deleteAnnouncements(requestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete an item from the carousel
+     * @param {string} carouselItemId The unique identifier for the carousel item.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public deleteCarouselItem(carouselItemId: string, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).deleteCarouselItem(carouselItemId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1806,6 +2002,36 @@ export const PublicApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @summary Get carousel items
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCarouselItems: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/public/carousel`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get catechism details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1946,6 +2172,16 @@ export const PublicApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get carousel items
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCarouselItems(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<CarouselItem>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCarouselItems(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get catechism details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2005,6 +2241,15 @@ export const PublicApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @summary Get carousel items
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCarouselItems(options?: any): AxiosPromise<Array<CarouselItem>> {
+            return localVarFp.getCarouselItems(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get catechism details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2058,6 +2303,17 @@ export class PublicApi extends BaseAPI {
      */
     public getAnnouncements(options?: AxiosRequestConfig) {
         return PublicApiFp(this.configuration).getAnnouncements(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get carousel items
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicApi
+     */
+    public getCarouselItems(options?: AxiosRequestConfig) {
+        return PublicApiFp(this.configuration).getCarouselItems(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

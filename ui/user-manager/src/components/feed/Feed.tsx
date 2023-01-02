@@ -11,6 +11,7 @@ import { RootState } from '../../store';
 import { Announcement, Location } from '../../generated-sources/openapi';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
 import MapLocation from '../map/MapLocation';
+import ManageCarousel from '../carousel/ManageCarousel';
 
 export default function Feed() {
   const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
@@ -87,6 +88,7 @@ export default function Feed() {
 
   return (
     <Box height="85vh" flex={4} p={2}>
+      <ManageCarousel user={user} />
       <Dialog
         open={confirmDialogOpen}
         onClose={closeConfirmDialog}

@@ -69,7 +69,6 @@ export default function AddLocation({ location, setLocation, setLoading }:AddLoc
           enableReinitialize
           validationSchema={locationSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            console.log(values);
             const loc:Location = {
               apiKey: values.apiKey,
               address: values.address,
@@ -77,7 +76,6 @@ export default function AddLocation({ location, setLocation, setLoading }:AddLoc
               latitude: Number(values.latitude),
               longitude: Number(values.longitude),
             };
-            console.log(loc);
             await saveLocation(loc, setSubmitting);
           }}
         >
