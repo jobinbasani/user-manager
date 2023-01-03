@@ -20,12 +20,18 @@ function CarouselSlide({
         image={url}
       />
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div">
-          {title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {subtitle}
-        </Typography>
+        {title && title.length > 0
+        && (
+          <Typography gutterBottom variant="h5" component="div">
+            {title}
+          </Typography>
+        )}
+        {subtitle && subtitle.length > 0
+        && (
+          <Typography variant="body2" color="text.secondary">
+            {subtitle}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
@@ -48,7 +54,7 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
       {user.isAdmin ? <AddCarouselItem user={user} /> : null}
       {carouselItems.length > 0
       && (
-        <Card sx={{ margin: 5 }}>
+        <Card sx={{ margin: 0 }}>
           <Carousel>
             {
               carouselItems.map((item) => <CarouselSlide key={item.id} url={item.url} title={item.title} subtitle={item.subtitle} />)
