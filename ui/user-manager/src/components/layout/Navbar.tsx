@@ -2,7 +2,6 @@ import {
   AppBar, Avatar, Box, styled, Toolbar,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import ChurchIcon from '@mui/icons-material/Church';
 import { useSelector } from 'react-redux';
 import { UserDetails } from '../../store/user/user-slice';
 import { RootState } from '../../store';
@@ -25,9 +24,13 @@ export default function Navbar() {
   return (
     <AppBar position="sticky">
       <StyledToolbar>
-        <ChurchIcon />
+        <Avatar
+          alt="Logo"
+          src="/images/logo.png"
+          sx={{ width: 60, height: 60 }}
+        />
         <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
-          <Typography variant="h6">
+          <Typography variant="h5">
             Holy Family Catholic Church
           </Typography>
         </Box>
