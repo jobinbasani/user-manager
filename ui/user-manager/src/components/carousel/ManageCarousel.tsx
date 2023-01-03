@@ -16,7 +16,7 @@ function CarouselSlide({
   return (
     <Card sx={{ maxHeight: 400 }}>
       <CardMedia
-        sx={{ height: '100%' }}
+        sx={{ height: 400 }}
         image={url}
       />
       <CardContent>
