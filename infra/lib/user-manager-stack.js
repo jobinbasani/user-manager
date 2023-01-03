@@ -380,7 +380,7 @@ class UserManagerStack extends cdk.Stack {
               // Check whether the URI is missing a file name.
               else if (uri.endsWith('/')) {
                   request.uri += 'index.html';
-              }else if (uri.startsWith('/static')){
+              }else if (uri.startsWith('/static') || uri.startsWith('/images')){
                   request.uri = '/main'+uri;
               }
               // Check whether the URI is missing a file extension.

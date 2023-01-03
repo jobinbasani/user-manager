@@ -27,7 +27,7 @@ export default function Navbar() {
         <Avatar
           alt="Logo"
           src="/images/logo.png"
-          sx={{ width: 60, height: 60 }}
+          sx={{ width: 60, height: 60, border: '0.1px solid white' }}
         />
         <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
           <Typography variant="h5">
