@@ -21,7 +21,7 @@ export default function MenuList() {
         .map((item) => (
           <ListItem key={item.key} sx={{ paddingLeft: 1 }}>
             <ListItemIcon sx={{ paddingRight: 0 }}>
-              <item.Icon />
+              <item.Icon color="secondary" />
             </ListItemIcon>
             {item.navLink.startsWith('https://')
               ? (
