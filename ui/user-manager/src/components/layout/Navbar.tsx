@@ -26,7 +26,7 @@ export default function Navbar() {
       <StyledToolbar>
         <Avatar
           alt="Logo"
-          src="/images/logo.png"
+          src="/assets/images/logo.png"
           sx={{ width: 60, height: 60, border: '0.1px solid white' }}
         />
         <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
