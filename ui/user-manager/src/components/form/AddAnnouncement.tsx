@@ -1,7 +1,6 @@
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CampaignIcon from '@mui/icons-material/Campaign';
-import Card from '@mui/material/Card';
 import { Stack } from '@mui/material';
 import React from 'react';
 import { Form, Formik } from 'formik';
@@ -15,6 +14,7 @@ import {
 } from './FormFields';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
 import { RootState } from '../../store';
+import ContentBox from '../layout/ContentBox';
 
 type AddAnnouncementProps = {
   setFeeds: React.Dispatch<React.SetStateAction<Announcement[]>>;
@@ -74,7 +74,7 @@ export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncement
   };
 
   return (
-    <Card sx={{ margin: 5 }}>
+    <ContentBox>
       <CardContent>
         <Stack direction="row" spacing={1} alignItems="center">
           <Typography variant="h6" component="div">
@@ -114,6 +114,6 @@ export default function AddAnnouncement({ setFeeds, setLoading }:AddAnnouncement
           )}
         </Formik>
       </CardContent>
-    </Card>
+    </ContentBox>
   );
 }

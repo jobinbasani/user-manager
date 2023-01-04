@@ -1,6 +1,5 @@
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
 import { Box, Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Form, Formik } from 'formik';
@@ -11,6 +10,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { FormTextField } from './FormFields';
 import { getAdminAPI } from '../../api/api';
 import { UserDetails } from '../../store/user/user-slice';
+import ContentBox from '../layout/ContentBox';
 
 export type AddCarouselProps = {
   user: UserDetails
@@ -64,7 +64,7 @@ export default function AddCarouselItem({ user }:AddCarouselProps) {
   };
 
   return (
-    <Card sx={{ margin: 5 }}>
+    <ContentBox>
       <CardContent>
         <Stack direction="row" spacing={1} alignItems="center">
           <CollectionsIcon color="primary" />
@@ -136,6 +136,6 @@ export default function AddCarouselItem({ user }:AddCarouselProps) {
           )}
         </Formik>
       </CardContent>
-    </Card>
+    </ContentBox>
   );
 }

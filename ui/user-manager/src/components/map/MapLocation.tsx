@@ -4,10 +4,10 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import FestivalIcon from '@mui/icons-material/Festival';
 import PlaceIcon from '@mui/icons-material/Place';
-import Card from '@mui/material/Card';
 import React from 'react';
 import AddLocation, { AddLocationProps } from '../form/AddLocation';
 import { Location } from '../../generated-sources/openapi';
+import ContentBox from '../layout/ContentBox';
 
 type LocationProps = AddLocationProps & {
   isAdmin: boolean,
@@ -33,7 +33,7 @@ export default function MapLocation({
       {isAdmin && <AddLocation location={location} setLocation={setLocation} setLoading={setLoading} />}
       {location.apiKey && location.apiKey.length > 0
       && (
-        <Card sx={{ margin: 5 }}>
+        <ContentBox>
           <CardContent>
             <Stack direction="row" spacing={1} alignItems="center">
               <Typography variant="h6" component="div">
@@ -53,7 +53,7 @@ export default function MapLocation({
               </GoogleMapReact>
             </div>
           </CardContent>
-        </Card>
+        </ContentBox>
       )}
     </>
   );

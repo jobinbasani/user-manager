@@ -51,7 +51,6 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
 
   return (
     <>
-      {user.isAdmin ? <AddCarouselItem user={user} /> : null}
       {carouselItems.length > 0
       && (
         <Card sx={{ margin: 0 }}>
@@ -62,6 +61,7 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
           </Carousel>
         </Card>
       )}
+      {user.isAdmin ? <AddCarouselItem user={user} /> : null}
     </>
   );
 }

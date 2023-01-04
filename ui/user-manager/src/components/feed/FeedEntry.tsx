@@ -1,10 +1,10 @@
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton, Stack } from '@mui/material';
 import React from 'react';
 import { Announcement } from '../../generated-sources/openapi';
+import ContentBox from '../layout/ContentBox';
 
 type FeedProps={
   announcement:Announcement
@@ -14,7 +14,7 @@ type FeedProps={
 
 export default function FeedEntry({ announcement, isAdmin, onDelete }: FeedProps) {
   return (
-    <Card sx={{ margin: 5 }}>
+    <ContentBox>
       <CardContent>
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -37,6 +37,6 @@ export default function FeedEntry({ announcement, isAdmin, onDelete }: FeedProps
           {announcement.description}
         </Typography>
       </CardContent>
-    </Card>
+    </ContentBox>
   );
 }
