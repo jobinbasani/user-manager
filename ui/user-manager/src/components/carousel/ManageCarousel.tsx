@@ -9,27 +9,20 @@ import AddCarouselItem, { AddCarouselProps } from '../form/AddCarouselItem';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
 import { CarouselItem } from '../../generated-sources/openapi';
 import { UserDetails } from '../../store/user/user-slice';
+import ConfirmMessage from '../common/ConfirmMessage';
 
 type CarouselSlideProps = CarouselItem & {
   user: UserDetails
-  loader: () => void
+  deletionHandler: (id:string)=>void
 }
 
-function deleteCarouselImage(user:UserDetails, id:string, loader:(() => void)) {
-  getAdminAPI(user.accessToken).deleteCarouselItem(id)
-    .then((delResp) => {
-      if (delResp.status >= 200 && delResp.status < 300) {
-        loader();
-      }
-    });
-}
 function CarouselSlide({
   id,
   subtitle,
   title,
   url,
   user,
-  loader,
+  deletionHandler,
 }: CarouselSlideProps) {
   return (
     <Card sx={{ maxHeight: 400 }}>
@@ -56,7 +49,7 @@ function CarouselSlide({
           && <Typography variant="body2">{subtitle}</Typography>}
           {user.isAdmin
           && (
-            <Button variant="outlined" startIcon={<DeleteForeverIcon />} onClick={() => { deleteCarouselImage(user, id, loader); }}>
+            <Button variant="contained" startIcon={<DeleteForeverIcon />} onClick={() => { deletionHandler(id); }}>
               Delete
             </Button>
           )}
@@ -67,10 +60,26 @@ function CarouselSlide({
 }
 export default function ManageCarousel({ user }:AddCarouselProps) {
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [idToDelete, setIdToDelete] = useState('');
   const loadCarousel = () => {
     getPublicAPI().getCarouselItems()
       .then((itemsResp) => {
         setCarouselItems(itemsResp.data);
+      });
+  };
+
+  const confirmImageDeletion = (id:string) => {
+    setIdToDelete(id);
+    setConfirmDialogOpen(true);
+  };
+  const deleteImage = () => {
+    setConfirmDialogOpen(false);
+    getAdminAPI(user.accessToken).deleteCarouselItem(idToDelete)
+      .then((delResp) => {
+        if (delResp.status >= 200 && delResp.status < 300) {
+          loadCarousel();
+        }
       });
   };
 
@@ -80,6 +89,12 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
 
   return (
     <>
+      <ConfirmMessage
+        isOpen={confirmDialogOpen}
+        onClose={() => { setConfirmDialogOpen(false); }}
+        onConfirm={() => { deleteImage(); }}
+        message="Delete image?"
+      />
       {carouselItems.length > 0
       && (
         <Card sx={{ margin: 0 }}>
@@ -93,7 +108,7 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
                   url={item.url}
                   title={item.title}
                   subtitle={item.subtitle}
-                  loader={loadCarousel}
+                  deletionHandler={confirmImageDeletion}
                 />
               ))
             }
