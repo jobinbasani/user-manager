@@ -8,11 +8,6 @@ import {
   CardHeader,
   Chip,
   Collapse,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Divider,
   LinearProgress,
   List,
@@ -31,6 +26,7 @@ import { UserDetails as UserDetailsModel } from '../../store/user/user-slice';
 import AddUpdateFamilyMember, { AddUpdateFamilyDetailsProps, UserRecord } from '../form/AddUpdateFamilyMember';
 import UserDetails from '../user/UserDetails';
 import { UserDataProvinceEnum } from '../../generated-sources/openapi';
+import ConfirmMessage from '../common/ConfirmMessage';
 
 type FamilyDetailsProps = Omit<AddUpdateFamilyDetailsProps, 'showFormFn'|'initialValues'|'editUserId'> & {
   isLoading: boolean;
@@ -206,27 +202,12 @@ export default function FamilyDetails({
         {isLoading && <LinearProgress />}
         {family.members.length === 0 && !isLoading && <Chip label="No members added yet!" color="error" variant="outlined" />}
 
-        <Dialog
-          open={confirmDialogOpen}
+        <ConfirmMessage
+          isOpen={confirmDialogOpen}
           onClose={closeConfirmDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            Confirm
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {`This will remove ${deleteUserName} from the family. Continue?`}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeConfirmDialog}>No</Button>
-            <Button onClick={deleteUser} autoFocus>
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
+          onConfirm={deleteUser}
+          message={`This will remove ${deleteUserName} from the family. Continue?`}
+        />
 
         <List sx={{
           width: '100%',
