@@ -132,7 +132,7 @@ export interface CarouselItem {
      * @type {string}
      * @memberof CarouselItem
      */
-    'id'?: string;
+    'id': string;
     /**
      * 
      * @type {string}

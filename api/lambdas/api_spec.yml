@@ -1007,6 +1007,7 @@ components:
     CarouselItem:
       type: object
       required:
+        - id
         - image
       properties:
         id:

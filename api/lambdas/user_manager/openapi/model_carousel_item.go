@@ -10,7 +10,7 @@
 package openapi
 
 type CarouselItem struct {
-	Id string `json:"id,omitempty"`
+	Id string `json:"id"`
 
 	Title string `json:"title,omitempty"`
 
@@ -21,6 +21,15 @@ type CarouselItem struct {
 
 // AssertCarouselItemRequired checks if the required fields are not zero-ed
 func AssertCarouselItemRequired(obj CarouselItem) error {
+	elements := map[string]interface{}{
+		"id": obj.Id,
+	}
+	for name, el := range elements {
+		if isZero := IsZeroValue(el); isZero {
+			return &RequiredError{Field: name}
+		}
+	}
+
 	return nil
 }
 
