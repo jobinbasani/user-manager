@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from 'react-material-ui-carousel';
-import { Box, CardMedia } from '@mui/material';
+import { AlertColor, Box, CardMedia } from '@mui/material';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -10,6 +10,7 @@ import { getAdminAPI, getPublicAPI } from '../../api/api';
 import { CarouselItem } from '../../generated-sources/openapi';
 import { UserDetails } from '../../store/user/user-slice';
 import ConfirmMessage from '../common/ConfirmMessage';
+import InfoBar from '../common/InfoBar';
 
 type CarouselSlideProps = CarouselItem & {
   user: UserDetails
@@ -61,6 +62,9 @@ function CarouselSlide({
 export default function ManageCarousel({ user }:AddCarouselProps) {
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [infoBarOpen, setInfoBarOpen] = useState(false);
+  const [infoBarMessage, setInfoBarMessage] = useState('');
+  const [infoBarSeverity, setInfoBarSeverity] = useState<AlertColor>('success');
   const [idToDelete, setIdToDelete] = useState('');
   const loadCarousel = () => {
     getPublicAPI().getCarouselItems()
@@ -78,7 +82,14 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
     getAdminAPI(user.accessToken).deleteCarouselItem(idToDelete)
       .then((delResp) => {
         if (delResp.status >= 200 && delResp.status < 300) {
+          setInfoBarMessage('Image deleted successfully!');
+          setInfoBarSeverity('success');
+          setInfoBarOpen(true);
           loadCarousel();
+        } else {
+          setInfoBarMessage('Failed to delete image');
+          setInfoBarSeverity('error');
+          setInfoBarOpen(true);
         }
       });
   };
@@ -95,6 +106,7 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
         onConfirm={() => { deleteImage(); }}
         message="Delete image?"
       />
+      <InfoBar isOpen={infoBarOpen} onClose={() => { setInfoBarOpen(false); }} message={infoBarMessage} severity={infoBarSeverity} />
       {carouselItems.length > 0
       && (
         <Card sx={{ margin: 0 }}>
