@@ -8,15 +8,13 @@ import Button from '@mui/material/Button';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { FormTextField } from './FormFields';
-import { getAdminAPI } from '../../api/api';
-import { UserDetails } from '../../store/user/user-slice';
 import ContentBox from '../layout/ContentBox';
 
 export type AddCarouselProps = {
-  user: UserDetails
+  onAddImage:(setSubmitting: (isSubmitting: boolean) => void, image: any, title?: string, subtitle?: string) => Promise<void>
 };
 
-export default function AddCarouselItem({ user }:AddCarouselProps) {
+export default function AddCarouselItem({ onAddImage }:AddCarouselProps) {
   const [selectedFile, setSelectedFile] = useState<File>();
   const [preview, setPreview] = useState<string>();
 
@@ -53,30 +51,20 @@ export default function AddCarouselItem({ user }:AddCarouselProps) {
     image: '',
   };
 
-  const addCarouselItem = async (setSubmitting:((isSubmitting: boolean) => void), image: any, title?: string, subtitle?: string) => {
-    await getAdminAPI(user.accessToken).addCarouselItem(image, title, subtitle)
-      .then((resp) => {
-        console.log(resp.status);
-      })
-      .finally(() => {
-        setSubmitting(false);
-      });
-  };
-
   return (
     <ContentBox>
       <CardContent>
         <Stack direction="row" spacing={1} alignItems="center">
           <CollectionsIcon color="primary" />
           <Typography variant="h6" component="div">
-            Manage Carousel
+            Add Image
           </Typography>
         </Stack>
         <Formik
           initialValues={initialValues}
           validationSchema={carouselSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            await addCarouselItem(setSubmitting, values.image[0], values.title, values.subtitle);
+            await onAddImage(setSubmitting, values.image[0], values.title, values.subtitle);
           }}
         >
           {({

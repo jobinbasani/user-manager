@@ -5,15 +5,18 @@ import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Button from '@mui/material/Button';
-import AddCarouselItem, { AddCarouselProps } from '../form/AddCarouselItem';
+import AddCarouselItem from '../form/AddCarouselItem';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
 import { CarouselItem } from '../../generated-sources/openapi';
 import { UserDetails } from '../../store/user/user-slice';
 import ConfirmMessage from '../common/ConfirmMessage';
 import InfoBar from '../common/InfoBar';
 
-type CarouselSlideProps = CarouselItem & {
+type ManageCarouselProps = {
   user: UserDetails
+}
+
+type CarouselSlideProps = ManageCarouselProps & CarouselItem & {
   deletionHandler: (id:string)=>void
 }
 
@@ -59,7 +62,7 @@ function CarouselSlide({
     </Card>
   );
 }
-export default function ManageCarousel({ user }:AddCarouselProps) {
+export default function ManageCarousel({ user }:ManageCarouselProps) {
   const [carouselItems, setCarouselItems] = useState<CarouselItem[]>([]);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [infoBarOpen, setInfoBarOpen] = useState(false);
@@ -91,6 +94,24 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
           setInfoBarSeverity('error');
           setInfoBarOpen(true);
         }
+      });
+  };
+  const addCarouselItem = async (setSubmitting:((isSubmitting: boolean) => void), image: any, title?: string, subtitle?: string) => {
+    await getAdminAPI(user.accessToken).addCarouselItem(image, title, subtitle)
+      .then((resp) => {
+        if (resp.status >= 200 && resp.status < 300) {
+          setInfoBarMessage('Image added successfully!');
+          setInfoBarSeverity('success');
+          setInfoBarOpen(true);
+          loadCarousel();
+        } else {
+          setInfoBarMessage('Failed to add image');
+          setInfoBarSeverity('error');
+          setInfoBarOpen(true);
+        }
+      })
+      .finally(() => {
+        setSubmitting(false);
       });
   };
 
@@ -127,7 +148,7 @@ export default function ManageCarousel({ user }:AddCarouselProps) {
           </Carousel>
         </Card>
       )}
-      {user.isAdmin ? <AddCarouselItem user={user} /> : null}
+      {user.isAdmin ? <AddCarouselItem onAddImage={addCarouselItem} /> : null}
     </>
   );
 }
