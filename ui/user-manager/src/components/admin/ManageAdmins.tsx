@@ -1,21 +1,17 @@
-import { Snackbar, Stack, TextField } from '@mui/material';
+import {
+  AlertColor, Stack, TextField,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import React, {
-  Dispatch,
-  forwardRef, SetStateAction, SyntheticEvent, useEffect, useState,
+  useEffect, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { RootState } from '../../store';
 import { User } from '../../generated-sources/openapi';
 import { getAdminAPI } from '../../api/api';
 import AdminList from './AdminList';
-
-const Alert = forwardRef<HTMLDivElement, AlertProps>((
-  props,
-  ref,
-) => <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />);
+import InfoBar from '../common/InfoBar';
 
 export default function ManageAdmins() {
   const user = useSelector((state: RootState) => state.user);
@@ -27,32 +23,14 @@ export default function ManageAdmins() {
   const [rows, setRows] = useState([] as Array<User>);
   const [searchRows, setSearchRows] = useState([] as Array<User>);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showSuccessAdminAdd, setShowSuccessAdminAdd] = useState(false);
-  const [showFailureAdminAdd, setShowFailureAdminAdd] = useState(false);
-  const [showSuccessAdminRemove, setShowSuccessAdminRemove] = useState(false);
-  const [showFailureAdminRemove, setShowFailureAdminRemove] = useState(false);
+  const [infoBarOpen, setInfoBarOpen] = useState(false);
+  const [infoBarMessage, setInfoBarMessage] = useState('');
+  const [infoBarSeverity, setInfoBarSeverity] = useState<AlertColor>('success');
 
-  const checkAndCloseSnackBar = (fn: Dispatch<SetStateAction<boolean>>, event?: SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    fn(false);
-  };
-
-  const closeSuccessAdminAddMessage = (event?: SyntheticEvent | Event, reason?: string) => {
-    checkAndCloseSnackBar(setShowSuccessAdminAdd, event, reason);
-  };
-
-  const closeFailureAdminAddMessage = (event?: SyntheticEvent | Event, reason?: string) => {
-    checkAndCloseSnackBar(setShowFailureAdminAdd, event, reason);
-  };
-
-  const closeSuccessAdminRemoveMessage = (event?: SyntheticEvent | Event, reason?: string) => {
-    checkAndCloseSnackBar(setShowSuccessAdminRemove, event, reason);
-  };
-
-  const closeFailureAdminRemoveMessage = (event?: SyntheticEvent | Event, reason?: string) => {
-    checkAndCloseSnackBar(setShowFailureAdminRemove, event, reason);
+  const setInfoBarValues = (severity:AlertColor, message:string, isOpen?:boolean) => {
+    setInfoBarMessage(message);
+    setInfoBarSeverity(severity);
+    setInfoBarOpen(isOpen || true);
   };
 
   const loadAdmins = () => {
@@ -104,9 +82,9 @@ export default function ManageAdmins() {
     getAdminAPI(user.accessToken)
       .addToAdminGroup(selectedAdminResults.map((sa) => sa.id))
       .then(() => {
-        setShowSuccessAdminAdd(true);
+        setInfoBarValues('success', 'Admins added successfully!');
       })
-      .catch(() => setShowFailureAdminAdd(true))
+      .catch(() => setInfoBarValues('error', 'There was an error adding selected users to admin group'))
       .finally(() => {
         loadAdmins();
         cancelSearch();
@@ -117,9 +95,9 @@ export default function ManageAdmins() {
     getAdminAPI(user.accessToken)
       .removeFromAdminGroup(selectedAdmins.map((sa) => sa.id))
       .then(() => {
-        setShowSuccessAdminRemove(true);
+        setInfoBarValues('success', 'Admins removed successfully!');
       })
-      .catch(() => setShowFailureAdminRemove(true))
+      .catch(() => setInfoBarValues('error', 'There was an error removing selected users from admin group'))
       .finally(() => loadAdmins());
   };
 
@@ -174,26 +152,7 @@ export default function ManageAdmins() {
             </Container>
           </>
         )}
-      <Snackbar open={showSuccessAdminAdd} autoHideDuration={3000} onClose={closeSuccessAdminAddMessage}>
-        <Alert onClose={closeSuccessAdminAddMessage} severity="success" sx={{ width: '100%' }}>
-          Admins added successfully!
-        </Alert>
-      </Snackbar>
-      <Snackbar open={showFailureAdminAdd} autoHideDuration={3000} onClose={closeFailureAdminAddMessage}>
-        <Alert onClose={closeFailureAdminAddMessage} severity="error" sx={{ width: '100%' }}>
-          There was an error adding selected users to admin group
-        </Alert>
-      </Snackbar>
-      <Snackbar open={showSuccessAdminRemove} autoHideDuration={3000} onClose={closeSuccessAdminRemoveMessage}>
-        <Alert onClose={closeSuccessAdminRemoveMessage} severity="success" sx={{ width: '100%' }}>
-          Admins removed successfully!
-        </Alert>
-      </Snackbar>
-      <Snackbar open={showFailureAdminRemove} autoHideDuration={3000} onClose={closeFailureAdminRemoveMessage}>
-        <Alert onClose={closeFailureAdminRemoveMessage} severity="error" sx={{ width: '100%' }}>
-          There was an error removing selected users from admin group
-        </Alert>
-      </Snackbar>
+      <InfoBar isOpen={infoBarOpen} onClose={() => { setInfoBarOpen(false); }} message={infoBarMessage} severity={infoBarSeverity} />
     </Stack>
   );
 }

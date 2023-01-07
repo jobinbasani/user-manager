@@ -1,10 +1,9 @@
 import {
-  Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, LinearProgress,
+  Box, LinearProgress,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { AxiosResponse } from 'axios';
-import Button from '@mui/material/Button';
 import FeedEntry from './FeedEntry';
 import AddAnnouncement from '../form/AddAnnouncement';
 import { RootState } from '../../store';
@@ -12,6 +11,7 @@ import { Announcement, Location } from '../../generated-sources/openapi';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
 import MapLocation from '../map/MapLocation';
 import ManageCarousel from '../carousel/ManageCarousel';
+import ConfirmMessage from '../common/ConfirmMessage';
 
 export default function Feed() {
   const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
@@ -68,7 +68,6 @@ export default function Feed() {
   };
 
   const deleteAnnouncement = async () => {
-    console.log(deleteAnnouncementId);
     closeConfirmDialog();
     if (!isAdmin || !user.isLoggedIn) {
       return;
@@ -89,27 +88,14 @@ export default function Feed() {
   return (
     <Box height="85vh" flex={4} p={2}>
       <ManageCarousel user={user} />
-      <Dialog
-        open={confirmDialogOpen}
+
+      <ConfirmMessage
+        isOpen={confirmDialogOpen}
         onClose={closeConfirmDialog}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Confirm
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {`This will remove ${deleteAnnouncementTitle}. Continue?`}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeConfirmDialog}>No</Button>
-          <Button onClick={deleteAnnouncement} autoFocus>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={deleteAnnouncement}
+        message={`This will remove ${deleteAnnouncementTitle}. Continue?`}
+      />
+
       {isAdmin && <AddAnnouncement setFeeds={setFeeds} setLoading={setIsLoading} />}
       {isLoading && <LinearProgress />}
       {
