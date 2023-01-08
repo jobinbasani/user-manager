@@ -134,7 +134,7 @@ export default function ManageCarousel({ user }:ManageCarouselProps) {
       {carouselItems.length > 0
       && (
         <Card sx={{ margin: 0 }}>
-          <Carousel navButtonsAlwaysVisible>
+          <Carousel navButtonsAlwaysVisible autoPlay>
             {
               carouselItems.map((item) => (
                 <CarouselSlide
