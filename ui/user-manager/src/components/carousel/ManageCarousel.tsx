@@ -96,17 +96,20 @@ export default function ManageCarousel({ user }:ManageCarouselProps) {
         }
       });
   };
+
+  const setInfoBarValues = (severity:AlertColor, message:string, isOpen?:boolean) => {
+    setInfoBarMessage(message);
+    setInfoBarSeverity(severity);
+    setInfoBarOpen(isOpen || true);
+  };
   const addCarouselItem = async (setSubmitting:((isSubmitting: boolean) => void), image: any, title?: string, subtitle?: string) => {
     await getAdminAPI(user.accessToken).addCarouselItem(image, title, subtitle)
       .then((resp) => {
         if (resp.status >= 200 && resp.status < 300) {
-          setInfoBarMessage('Image added successfully!');
-          setInfoBarSeverity('success');
-          setInfoBarOpen(true);
+          setInfoBarValues('success', 'Image added successfully!');
           loadCarousel();
         } else {
-          setInfoBarMessage('Failed to add image');
-          setInfoBarSeverity('error');
+          setInfoBarValues('error', 'Failed to add image');
           setInfoBarOpen(true);
         }
       })
@@ -131,7 +134,7 @@ export default function ManageCarousel({ user }:ManageCarouselProps) {
       {carouselItems.length > 0
       && (
         <Card sx={{ margin: 0 }}>
-          <Carousel>
+          <Carousel navButtonsAlwaysVisible>
             {
               carouselItems.map((item) => (
                 <CarouselSlide
