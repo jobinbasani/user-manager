@@ -50,7 +50,13 @@ export default function EditablePage({
       <Typography variant="h6">
         {title}
       </Typography>
-      { !showEditor && parse(services)}
+
+      {!showEditor && (
+        <Typography component="span">
+          {parse(services)}
+        </Typography>
+      )}
+
       <Box>
         {user.isAdmin
           && !showEditor
