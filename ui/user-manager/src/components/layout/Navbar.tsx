@@ -10,6 +10,7 @@ import { stringAvatar } from '../../util/util';
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
   justifyContent: 'space-between',
+  padding: 6,
 });
 
 const UserInfo = styled(Box)(() => ({
@@ -31,7 +32,10 @@ export default function Navbar() {
         />
         <Box sx={{ flexGrow: 1, paddingLeft: 2 }}>
           <Typography variant="h5">
-            Holy Family Catholic Church
+            Holy Family Syro Malabar Catholic Church
+          </Typography>
+          <Typography variant="h6">
+            Halifax
           </Typography>
         </Box>
         {user?.isLoggedIn
