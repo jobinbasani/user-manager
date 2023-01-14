@@ -10,7 +10,8 @@ import { stringAvatar } from '../../util/util';
 const StyledToolbar = styled(Toolbar)({
   display: 'flex',
   justifyContent: 'space-between',
-  padding: 6,
+  paddingTop: 2,
+  paddingBottom: 2,
 });
 
 const UserInfo = styled(Box)(() => ({
