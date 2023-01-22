@@ -12,6 +12,7 @@ import { getAdminAPI, getPublicAPI } from '../../api/api';
 import MapLocation from '../map/MapLocation';
 import ManageCarousel from '../carousel/ManageCarousel';
 import ConfirmMessage from '../common/ConfirmMessage';
+import MessageCard from '../common/MessageCard';
 
 export default function Feed() {
   const isAdmin = useSelector((state: RootState) => state.user.isAdmin);
@@ -103,6 +104,15 @@ export default function Feed() {
       }
       {isLocationLoading && <LinearProgress />}
       <MapLocation location={location} setLocation={setLocation} setLoading={setIsLocationLoading} isAdmin={isAdmin} />
+      <MessageCard
+        headerImage="https://images.unsplash.com/photo-1594857373854-0314626c18e7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+        title="Title gors here"
+        subtitle1="Subtitle"
+        subtitle2="Jan 1"
+        message="Main message is here"
+        showOptions
+        onDelete={() => console.log('deleted')}
+      />
     </Box>
   );
 }

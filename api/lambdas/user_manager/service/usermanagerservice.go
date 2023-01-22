@@ -217,6 +217,23 @@ func (u *UserManagerService) DeleteCarouselItem(ctx context.Context, carouselIte
 	return u.handleResponse(nil, err)
 }
 
+func (u *UserManagerService) AddBackgroundImage(ctx context.Context, image *os.File) (openapi.ImplResponse, error) {
+	if image == nil {
+		return u.handleResponse(nil, errors.New("unable to process nil image"))
+	}
+	b, err := os.ReadFile(image.Name())
+	if err != nil {
+		return u.handleResponse(nil, err)
+	}
+	err = u.dataService.AddBackgroundImage(ctx, bytes.NewReader(b))
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) GetBackgroundImages(ctx context.Context) (openapi.ImplResponse, error) {
+	results, err := u.dataService.GetBackgroundImages(ctx)
+	return u.handleResponse(results, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

@@ -57,6 +57,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.AddAnnouncement,
 		},
 		{
+			"AddBackgroundImage",
+			strings.ToUpper("Post"),
+			"/api/v1/admin/images/backgrounds",
+			c.AddBackgroundImage,
+		},
+		{
 			"AddCarouselItem",
 			strings.ToUpper("Post"),
 			"/api/v1/admin/carousel",
@@ -85,6 +91,12 @@ func (c *AdminApiController) Routes() Routes {
 			strings.ToUpper("Get"),
 			"/api/v1/admin/admins",
 			c.GetAdmins,
+		},
+		{
+			"GetBackgroundImages",
+			strings.ToUpper("Get"),
+			"/api/v1/admin/images/backgrounds",
+			c.GetBackgroundImages,
 		},
 		{
 			"RemoveFromAdminGroup",
@@ -145,6 +157,29 @@ func (c *AdminApiController) AddAnnouncement(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	result, err := c.service.AddAnnouncement(r.Context(), announcementParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// AddBackgroundImage - Add a background image
+func (c *AdminApiController) AddBackgroundImage(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(32 << 20); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+
+	imageParam, err := ReadFormFileToTempFile(r, "image")
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	result, err := c.service.AddBackgroundImage(r.Context(), imageParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -239,6 +274,19 @@ func (c *AdminApiController) DeleteCarouselItem(w http.ResponseWriter, r *http.R
 // GetAdmins - List of users with Admin access
 func (c *AdminApiController) GetAdmins(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetAdmins(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetBackgroundImages - Get list of background images
+func (c *AdminApiController) GetBackgroundImages(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetBackgroundImages(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -50,6 +50,29 @@ func (s *AdminApiService) AddAnnouncement(ctx context.Context, announcement Anno
 	return Response(http.StatusNotImplemented, nil), errors.New("AddAnnouncement method not implemented")
 }
 
+// AddBackgroundImage - Add a background image
+func (s *AdminApiService) AddBackgroundImage(ctx context.Context, image *os.File) (ImplResponse, error) {
+	// TODO - update AddBackgroundImage with the required logic for this service method.
+	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(204, {}) or use other options such as http.Ok ...
+	//return Response(204, nil),nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("AddBackgroundImage method not implemented")
+}
+
 // AddCarouselItem - Add an item to the carousel
 func (s *AdminApiService) AddCarouselItem(ctx context.Context, image *os.File, title string, subtitle string) (ImplResponse, error) {
 	// TODO - update AddCarouselItem with the required logic for this service method.
@@ -163,6 +186,29 @@ func (s *AdminApiService) GetAdmins(ctx context.Context) (ImplResponse, error) {
 	//return Response(0, InternalServerError{}), nil
 
 	return Response(http.StatusNotImplemented, nil), errors.New("GetAdmins method not implemented")
+}
+
+// GetBackgroundImages - Get list of background images
+func (s *AdminApiService) GetBackgroundImages(ctx context.Context) (ImplResponse, error) {
+	// TODO - update GetBackgroundImages with the required logic for this service method.
+	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, []string{}) or use other options such as http.Ok ...
+	//return Response(200, []string{}), nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("GetBackgroundImages method not implemented")
 }
 
 // RemoveFromAdminGroup - Remove members from admin group

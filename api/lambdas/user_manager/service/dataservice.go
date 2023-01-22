@@ -36,27 +36,31 @@ import (
 )
 
 const (
-	idAttribute        = "id"
-	recTypeAttribute   = "recType"
-	createdAtAttribute = "createdAt"
-	searchAttribute    = "search"
-	familyIdAttribute  = "familyId"
-	emailIdAttribute   = "emailId"
-	infoAttribute      = "info"
-	ttlAttribute       = "expDate"
-	userRecType        = "USER"
-	servicesRecType    = "SERVICES"
-	catechismRecType   = "CATECHISM"
-	committeeRecType   = "COMMITTEE"
-	announcementId     = "announcements"
-	pageContentId      = "pagecontent"
-	appdataContentId   = "appdata"
-	locationRecType    = "location"
-	carouselImageDir   = "images/carousel/"
-	carouselRecType    = "carousel"
+	idAttribute            = "id"
+	recTypeAttribute       = "recType"
+	createdAtAttribute     = "createdAt"
+	searchAttribute        = "search"
+	familyIdAttribute      = "familyId"
+	emailIdAttribute       = "emailId"
+	infoAttribute          = "info"
+	ttlAttribute           = "expDate"
+	userRecType            = "USER"
+	servicesRecType        = "SERVICES"
+	catechismRecType       = "CATECHISM"
+	committeeRecType       = "COMMITTEE"
+	announcementId         = "announcements"
+	pageContentId          = "pagecontent"
+	appdataContentId       = "appdata"
+	locationRecType        = "location"
+	carouselImageDir       = "/images/carousel/"
+	carouselRecType        = "carousel"
+	backgroundImageDir     = "/images/backgrounds/"
+	backgroundImageRecType = "backgroundImage"
 )
 
 var titleCaser = cases.Title(language.English)
+
+type dataUnmarshaller func(data []byte) error
 
 type DataService interface {
 	GetUserFamily(ctx context.Context) ([]openapi.UserData, error)
@@ -76,6 +80,8 @@ type DataService interface {
 	GetCarouselItems(ctx context.Context) ([]openapi.CarouselItem, error)
 	GetCarouselItem(ctx context.Context, itemId string) (openapi.CarouselItem, error)
 	DeleteCarouselItem(ctx context.Context, itemId string) error
+	AddBackgroundImage(ctx context.Context, img *bytes.Reader) error
+	GetBackgroundImages(ctx context.Context) ([]string, error)
 }
 type UserManagerAppData struct {
 	cfg            *config.Config
@@ -497,38 +503,16 @@ func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query strin
 }
 
 func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Reader, title string, subtitle string) error {
-	var imgToSave io.Reader
-	uploadedImage, imgType, err := image.Decode(img)
+	imgToSave, imgType, contentType, err := d.processImage(img)
 	if err != nil {
 		return err
 	}
-	imgToSave = img
-	bounds := uploadedImage.Bounds()
-	var contentType string
-	if bounds.Dx() > 800 {
-		buf := new(bytes.Buffer)
-		resizedImage := imaging.Resize(uploadedImage, 800, 0, imaging.Lanczos)
-		switch imgType {
-		case "jpeg":
-			err = jpeg.Encode(buf, resizedImage, nil)
-			imgToSave = bytes.NewReader(buf.Bytes())
-			contentType = "image/jpeg"
-		case "png":
-			err = png.Encode(buf, resizedImage)
-			imgToSave = bytes.NewReader(buf.Bytes())
-			contentType = "image/png"
-		}
-	}
+
 	itemId := uuid.New().String()
 	imgKey := itemId + "." + imgType
 	imgPath := carouselImageDir + imgKey
 
-	_, err = d.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:      &d.cfg.S3Bucket,
-		Key:         &imgPath,
-		Body:        imgToSave,
-		ContentType: &contentType,
-	})
+	err = d.saveToBucket(ctx, imgPath, imgToSave, contentType)
 	if err != nil {
 		return err
 	}
@@ -540,135 +524,47 @@ func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Read
 		Url:      imgPath,
 	}
 
-	c, _ := json.Marshal(carouselItem)
-
-	_, err = d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
-		TableName: &d.cfg.UserDataTableName,
-		Key: map[string]types.AttributeValue{
-			idAttribute: &types.AttributeValueMemberS{
-				Value: appdataContentId,
-			},
-			recTypeAttribute: &types.AttributeValueMemberS{
-				Value: carouselRecType,
-			},
-		},
-		UpdateExpression: aws.String(fmt.Sprintf("SET %s.#itemId = :itemData", infoAttribute)),
-		ExpressionAttributeNames: map[string]string{
-			"#itemId": itemId,
-		},
-		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":itemData": &types.AttributeValueMemberS{
-				Value: string(c),
-			},
-		},
-		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", infoAttribute)),
-	})
-
-	if err != nil {
-		var cfe *types.ConditionalCheckFailedException
-		if errors.As(err, &cfe) {
-			_, err = d.dynamodbClient.PutItem(ctx, &dynamodb.PutItemInput{
-				TableName: &d.cfg.UserDataTableName,
-				Item: map[string]types.AttributeValue{
-					idAttribute: &types.AttributeValueMemberS{
-						Value: appdataContentId,
-					},
-					recTypeAttribute: &types.AttributeValueMemberS{
-						Value: carouselRecType,
-					},
-					infoAttribute: &types.AttributeValueMemberM{
-						Value: map[string]types.AttributeValue{
-							itemId: &types.AttributeValueMemberS{
-								Value: string(c),
-							},
-						},
-					},
-				},
-			})
-			if err != nil {
-				return err
-			}
-		} else {
-			return err
-		}
-	}
-
-	return nil
+	return d.addOrUpdateInfo(ctx, appdataContentId, carouselRecType, itemId, carouselItem)
 }
 
 func (d UserManagerAppData) GetCarouselItems(ctx context.Context) ([]openapi.CarouselItem, error) {
-	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement: aws.String(fmt.Sprintf(
-			`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
-			d.cfg.UserDataTableName,
-			idAttribute,
-			appdataContentId,
-			recTypeAttribute,
-			carouselRecType,
-		)),
-	})
+
+	carouselItems := []openapi.CarouselItem{}
+	unmarshaller := func(input []byte) error {
+		var itemInfo openapi.CarouselItem
+		err := json.Unmarshal(input, &itemInfo)
+		if err != nil {
+			return err
+		}
+		carouselItems = append(carouselItems, itemInfo)
+		return nil
+	}
+
+	err := d.getInfoDataMap(ctx, appdataContentId, carouselRecType, unmarshaller)
 	if err != nil {
 		return nil, err
 	}
-	if len(data.Items) == 0 {
-		return []openapi.CarouselItem{}, nil
-	}
-	attr, exists := data.Items[0][infoAttribute]
-	if exists {
-		mapEntries, ok := attr.(*types.AttributeValueMemberM)
-		if ok {
-			carouselItems := []openapi.CarouselItem{}
-			for _, v := range mapEntries.Value {
-				itemEntry, ok := v.(*types.AttributeValueMemberS)
-				if ok {
-					var itemInfo openapi.CarouselItem
-					err = json.Unmarshal([]byte(itemEntry.Value), &itemInfo)
-					if err != nil {
-						return nil, err
-					}
-					carouselItems = append(carouselItems, itemInfo)
-				}
-			}
-			return carouselItems, nil
-		}
-	}
-	return []openapi.CarouselItem{}, nil
+	return carouselItems, nil
 }
 
 func (d UserManagerAppData) GetCarouselItem(ctx context.Context, itemId string) (openapi.CarouselItem, error) {
-	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement: aws.String(fmt.Sprintf(
-			`SELECT "%s"."%s" FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
-			infoAttribute,
-			itemId,
-			d.cfg.UserDataTableName,
-			idAttribute,
-			appdataContentId,
-			recTypeAttribute,
-			carouselRecType,
-		)),
-	})
+	var itemInfo openapi.CarouselItem
+	unmarshaller := func(input []byte) error {
+		return json.Unmarshal(input, &itemInfo)
+	}
+
+	exists, err := d.getInfoDataMapItem(ctx, appdataContentId, carouselRecType, itemId, unmarshaller)
+
 	if err != nil {
 		return openapi.CarouselItem{}, err
 	}
-	if len(data.Items) == 0 {
+
+	if !exists {
 		return openapi.CarouselItem{}, errors.New("unable to find requested carousel item")
 	}
 
-	var itemInfo openapi.CarouselItem
+	return itemInfo, nil
 
-	attr, exists := data.Items[0][itemId]
-	if exists {
-		dataStr, ok := attr.(*types.AttributeValueMemberS)
-		if ok {
-			err = json.Unmarshal([]byte(dataStr.Value), &itemInfo)
-			if err != nil {
-				return openapi.CarouselItem{}, err
-			}
-			return itemInfo, nil
-		}
-	}
-	return openapi.CarouselItem{}, errors.New("unable to find matching record")
 }
 
 func (d UserManagerAppData) DeleteCarouselItem(ctx context.Context, itemId string) error {
@@ -708,6 +604,43 @@ func (d UserManagerAppData) DeleteCarouselItem(ctx context.Context, itemId strin
 	}
 
 	return err
+}
+
+func (d UserManagerAppData) AddBackgroundImage(ctx context.Context, img *bytes.Reader) error {
+	imgToSave, imgType, contentType, err := d.processImage(img)
+	if err != nil {
+		return err
+	}
+
+	itemId := uuid.New().String()
+	imgKey := itemId + "." + imgType
+	imgPath := backgroundImageDir + imgKey
+
+	err = d.saveToBucket(ctx, imgPath, imgToSave, contentType)
+	if err != nil {
+		return err
+	}
+
+	return d.addOrUpdateInfo(ctx, appdataContentId, backgroundImageRecType, itemId, imgPath)
+}
+
+func (d UserManagerAppData) GetBackgroundImages(ctx context.Context) ([]string, error) {
+	allImages := []string{}
+	unmarshaller := func(input []byte) error {
+		var item string
+		err := json.Unmarshal(input, &item)
+		if err != nil {
+			return err
+		}
+		allImages = append(allImages, item)
+		return nil
+	}
+
+	err := d.getInfoDataMap(ctx, appdataContentId, backgroundImageRecType, unmarshaller)
+	if err != nil {
+		return nil, err
+	}
+	return allImages, nil
 }
 
 func (d UserManagerAppData) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {
@@ -926,6 +859,166 @@ func (d UserManagerAppData) buildSearchIndex(s ...string) string {
 		}
 	}
 	return strings.Join(all, ",")
+}
+func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string, string, error) {
+	var imgToSave io.Reader
+	uploadedImage, imgType, err := image.Decode(img)
+	if err != nil {
+		return nil, "", "", err
+	}
+	imgToSave = img
+	bounds := uploadedImage.Bounds()
+	var contentType string
+	if bounds.Dx() > 800 {
+		buf := new(bytes.Buffer)
+		resizedImage := imaging.Resize(uploadedImage, 800, 0, imaging.Lanczos)
+		switch imgType {
+		case "jpeg":
+			err = jpeg.Encode(buf, resizedImage, nil)
+			imgToSave = bytes.NewReader(buf.Bytes())
+			contentType = "image/jpeg"
+		case "png":
+			err = png.Encode(buf, resizedImage)
+			imgToSave = bytes.NewReader(buf.Bytes())
+			contentType = "image/png"
+		}
+	}
+	return &imgToSave, imgType, contentType, nil
+}
+
+func (d UserManagerAppData) saveToBucket(ctx context.Context, key string, body *io.Reader, contentType string) error {
+	_, err := d.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:      &d.cfg.S3Bucket,
+		Key:         &key,
+		Body:        *body,
+		ContentType: &contentType,
+	})
+	return err
+}
+
+func (d UserManagerAppData) addOrUpdateInfo(ctx context.Context, keyId string, keyType string, itemId string, item interface{}) error {
+	c, _ := json.Marshal(item)
+
+	_, err := d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		TableName: &d.cfg.UserDataTableName,
+		Key: map[string]types.AttributeValue{
+			idAttribute: &types.AttributeValueMemberS{
+				Value: keyId,
+			},
+			recTypeAttribute: &types.AttributeValueMemberS{
+				Value: keyType,
+			},
+		},
+		UpdateExpression: aws.String(fmt.Sprintf("SET %s.#itemId = :itemData", infoAttribute)),
+		ExpressionAttributeNames: map[string]string{
+			"#itemId": itemId,
+		},
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":itemData": &types.AttributeValueMemberS{
+				Value: string(c),
+			},
+		},
+		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", infoAttribute)),
+	})
+
+	if err != nil {
+		var cfe *types.ConditionalCheckFailedException
+		if errors.As(err, &cfe) {
+			_, err = d.dynamodbClient.PutItem(ctx, &dynamodb.PutItemInput{
+				TableName: &d.cfg.UserDataTableName,
+				Item: map[string]types.AttributeValue{
+					idAttribute: &types.AttributeValueMemberS{
+						Value: keyId,
+					},
+					recTypeAttribute: &types.AttributeValueMemberS{
+						Value: keyType,
+					},
+					infoAttribute: &types.AttributeValueMemberM{
+						Value: map[string]types.AttributeValue{
+							itemId: &types.AttributeValueMemberS{
+								Value: string(c),
+							},
+						},
+					},
+				},
+			})
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+	return err
+}
+
+func (d UserManagerAppData) getInfoDataMap(ctx context.Context, id string, recType string, unmarshaller dataUnmarshaller) error {
+	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT * FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			id,
+			recTypeAttribute,
+			recType,
+		)),
+	})
+	if err != nil {
+		return err
+	}
+	if len(data.Items) == 0 {
+		return nil
+	}
+	attr, exists := data.Items[0][infoAttribute]
+	if exists {
+		mapEntries, ok := attr.(*types.AttributeValueMemberM)
+		if ok {
+			for _, v := range mapEntries.Value {
+				itemEntry, ok := v.(*types.AttributeValueMemberS)
+				if ok {
+					err = unmarshaller([]byte(itemEntry.Value))
+					if err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (d UserManagerAppData) getInfoDataMapItem(ctx context.Context, id string, recType string, itemId string, unmarshaller dataUnmarshaller) (bool, error) {
+	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
+		Statement: aws.String(fmt.Sprintf(
+			`SELECT "%s"."%s" FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
+			infoAttribute,
+			itemId,
+			d.cfg.UserDataTableName,
+			idAttribute,
+			id,
+			recTypeAttribute,
+			recType,
+		)),
+	})
+	if err != nil {
+		return false, err
+	}
+	if len(data.Items) == 0 {
+		return false, nil
+	}
+
+	attr, exists := data.Items[0][itemId]
+	if exists {
+		dataStr, ok := attr.(*types.AttributeValueMemberS)
+		if ok {
+			err = unmarshaller([]byte(dataStr.Value))
+			if err != nil {
+				return false, err
+			}
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func NewDataService(cfg *config.Config, authService AuthService) DataService {

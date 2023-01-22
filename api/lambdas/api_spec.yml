@@ -472,6 +472,59 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/images/backgrounds:
+    post:
+      operationId: addBackgroundImage
+      summary: Add a background image
+      requestBody:
+        description: Background image
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Added carousel item
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      operationId: getBackgroundImages
+      summary: Get list of background images
+      tags:
+        - Admin
+      responses:
+        200:
+          description: Background images
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/public/announcements:
     get:
       operationId: getAnnouncements
