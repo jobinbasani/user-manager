@@ -1113,6 +1113,10 @@ components:
           format: uuid
         url:
           type: string
+        width:
+          type: integer
+        height:
+          type: integer
 
     BackgroundImageItems:
       type: array

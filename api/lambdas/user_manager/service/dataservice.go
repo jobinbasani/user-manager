@@ -505,7 +505,7 @@ func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query strin
 }
 
 func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Reader, title string, subtitle string) error {
-	imgToSave, imgType, contentType, err := d.processImage(img)
+	imgToSave, imgType, contentType, _, _, err := d.processImage(img)
 	if err != nil {
 		return err
 	}
@@ -595,7 +595,7 @@ func (d UserManagerAppData) DeleteCarouselItem(ctx context.Context, itemId strin
 }
 
 func (d UserManagerAppData) AddBackgroundImage(ctx context.Context, img *bytes.Reader) error {
-	imgToSave, imgType, contentType, err := d.processImage(img)
+	imgToSave, imgType, contentType, width, height, err := d.processImage(img)
 	if err != nil {
 		return err
 	}
@@ -605,8 +605,10 @@ func (d UserManagerAppData) AddBackgroundImage(ctx context.Context, img *bytes.R
 	imgPath := backgroundImageDir + imgKey
 
 	bgImage := openapi.BackgroundImageItem{
-		Id:  itemId,
-		Url: imgPath,
+		Id:     itemId,
+		Url:    imgPath,
+		Width:  int32(width),
+		Height: int32(height),
 	}
 
 	err = d.saveToBucket(ctx, imgPath, imgToSave, contentType)
@@ -896,11 +898,11 @@ func (d UserManagerAppData) buildSearchIndex(s ...string) string {
 	}
 	return strings.Join(all, ",")
 }
-func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string, string, error) {
+func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string, string, int, int, error) {
 	var imgToSave io.Reader
 	uploadedImage, imgType, err := image.Decode(img)
 	if err != nil {
-		return nil, "", "", err
+		return nil, "", "", 0, 0, err
 	}
 	imgToSave = img
 	bounds := uploadedImage.Bounds()
@@ -908,6 +910,7 @@ func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string,
 	if bounds.Dx() > 800 {
 		buf := new(bytes.Buffer)
 		resizedImage := imaging.Resize(uploadedImage, 800, 0, imaging.Lanczos)
+		bounds = resizedImage.Bounds()
 		switch imgType {
 		case "jpeg":
 			err = jpeg.Encode(buf, resizedImage, nil)
@@ -919,7 +922,7 @@ func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string,
 			contentType = "image/png"
 		}
 	}
-	return &imgToSave, imgType, contentType, nil
+	return &imgToSave, imgType, contentType, bounds.Dx(), bounds.Dy(), nil
 }
 
 func (d UserManagerAppData) saveToBucket(ctx context.Context, key string, body *io.Reader, contentType string) error {

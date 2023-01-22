@@ -13,6 +13,10 @@ type BackgroundImageItem struct {
 	Id string `json:"id"`
 
 	Url string `json:"url"`
+
+	Width int32 `json:"width,omitempty"`
+
+	Height int32 `json:"height,omitempty"`
 }
 
 // AssertBackgroundImageItemRequired checks if the required fields are not zero-ed
