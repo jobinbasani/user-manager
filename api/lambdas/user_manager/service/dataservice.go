@@ -81,7 +81,9 @@ type DataService interface {
 	GetCarouselItem(ctx context.Context, itemId string) (openapi.CarouselItem, error)
 	DeleteCarouselItem(ctx context.Context, itemId string) error
 	AddBackgroundImage(ctx context.Context, img *bytes.Reader) error
-	GetBackgroundImages(ctx context.Context) ([]string, error)
+	GetBackgroundImages(ctx context.Context) ([]openapi.BackgroundImageItem, error)
+	GetBackgroundImage(ctx context.Context, itemId string) (openapi.BackgroundImageItem, error)
+	DeleteBackgroundImage(ctx context.Context, itemId string) error
 }
 type UserManagerAppData struct {
 	cfg            *config.Config
@@ -573,22 +575,8 @@ func (d UserManagerAppData) DeleteCarouselItem(ctx context.Context, itemId strin
 	if err != nil {
 		return err
 	}
-	_, err = d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
-		TableName: &d.cfg.UserDataTableName,
-		Key: map[string]types.AttributeValue{
-			idAttribute: &types.AttributeValueMemberS{
-				Value: appdataContentId,
-			},
-			recTypeAttribute: &types.AttributeValueMemberS{
-				Value: carouselRecType,
-			},
-		},
-		UpdateExpression: aws.String(fmt.Sprintf("REMOVE %s.#itemId", infoAttribute)),
-		ExpressionAttributeNames: map[string]string{
-			"#itemId": itemId,
-		},
-		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", infoAttribute)),
-	})
+
+	err = d.deleteInfoDataMapItem(ctx, carouselRecType, itemId)
 
 	if err != nil {
 		return err
@@ -616,18 +604,23 @@ func (d UserManagerAppData) AddBackgroundImage(ctx context.Context, img *bytes.R
 	imgKey := itemId + "." + imgType
 	imgPath := backgroundImageDir + imgKey
 
+	bgImage := openapi.BackgroundImageItem{
+		Id:  itemId,
+		Url: imgPath,
+	}
+
 	err = d.saveToBucket(ctx, imgPath, imgToSave, contentType)
 	if err != nil {
 		return err
 	}
 
-	return d.addOrUpdateInfo(ctx, appdataContentId, backgroundImageRecType, itemId, imgPath)
+	return d.addOrUpdateInfo(ctx, appdataContentId, backgroundImageRecType, itemId, bgImage)
 }
 
-func (d UserManagerAppData) GetBackgroundImages(ctx context.Context) ([]string, error) {
-	allImages := []string{}
+func (d UserManagerAppData) GetBackgroundImages(ctx context.Context) ([]openapi.BackgroundImageItem, error) {
+	allImages := []openapi.BackgroundImageItem{}
 	unmarshaller := func(input []byte) error {
-		var item string
+		var item openapi.BackgroundImageItem
 		err := json.Unmarshal(input, &item)
 		if err != nil {
 			return err
@@ -641,6 +634,49 @@ func (d UserManagerAppData) GetBackgroundImages(ctx context.Context) ([]string, 
 		return nil, err
 	}
 	return allImages, nil
+}
+
+func (d UserManagerAppData) GetBackgroundImage(ctx context.Context, itemId string) (openapi.BackgroundImageItem, error) {
+	var itemInfo openapi.BackgroundImageItem
+	unmarshaller := func(input []byte) error {
+		return json.Unmarshal(input, &itemInfo)
+	}
+
+	exists, err := d.getInfoDataMapItem(ctx, appdataContentId, backgroundImageRecType, itemId, unmarshaller)
+
+	if err != nil {
+		return openapi.BackgroundImageItem{}, err
+	}
+
+	if !exists {
+		return openapi.BackgroundImageItem{}, errors.New("unable to find requested background image")
+	}
+
+	return itemInfo, nil
+}
+
+func (d UserManagerAppData) DeleteBackgroundImage(ctx context.Context, itemId string) error {
+	item, err := d.GetBackgroundImage(ctx, itemId)
+	if err != nil {
+		return err
+	}
+
+	err = d.deleteInfoDataMapItem(ctx, backgroundImageRecType, itemId)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = d.s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
+		Bucket: &d.cfg.S3Bucket,
+		Key:    &item.Url,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (d UserManagerAppData) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {
@@ -1019,6 +1055,27 @@ func (d UserManagerAppData) getInfoDataMapItem(ctx context.Context, id string, r
 		}
 	}
 	return false, nil
+}
+
+func (d UserManagerAppData) deleteInfoDataMapItem(ctx context.Context, recType, itemId string) error {
+	_, err := d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		TableName: &d.cfg.UserDataTableName,
+		Key: map[string]types.AttributeValue{
+			idAttribute: &types.AttributeValueMemberS{
+				Value: appdataContentId,
+			},
+			recTypeAttribute: &types.AttributeValueMemberS{
+				Value: recType,
+			},
+		},
+		UpdateExpression: aws.String(fmt.Sprintf("REMOVE %s.#itemId", infoAttribute)),
+		ExpressionAttributeNames: map[string]string{
+			"#itemId": itemId,
+		},
+		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", infoAttribute)),
+	})
+
+	return err
 }
 
 func NewDataService(cfg *config.Config, authService AuthService) DataService {

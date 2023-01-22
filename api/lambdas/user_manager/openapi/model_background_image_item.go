@@ -9,18 +9,14 @@
 
 package openapi
 
-type CarouselItem struct {
+type BackgroundImageItem struct {
 	Id string `json:"id"`
-
-	Title string `json:"title,omitempty"`
-
-	Subtitle string `json:"subtitle,omitempty"`
 
 	Url string `json:"url"`
 }
 
-// AssertCarouselItemRequired checks if the required fields are not zero-ed
-func AssertCarouselItemRequired(obj CarouselItem) error {
+// AssertBackgroundImageItemRequired checks if the required fields are not zero-ed
+func AssertBackgroundImageItemRequired(obj BackgroundImageItem) error {
 	elements := map[string]interface{}{
 		"id":  obj.Id,
 		"url": obj.Url,
@@ -34,14 +30,14 @@ func AssertCarouselItemRequired(obj CarouselItem) error {
 	return nil
 }
 
-// AssertRecurseCarouselItemRequired recursively checks if required fields are not zero-ed in a nested slice.
-// Accepts only nested slice of CarouselItem (e.g. [][]CarouselItem), otherwise ErrTypeAssertionError is thrown.
-func AssertRecurseCarouselItemRequired(objSlice interface{}) error {
+// AssertRecurseBackgroundImageItemRequired recursively checks if required fields are not zero-ed in a nested slice.
+// Accepts only nested slice of BackgroundImageItem (e.g. [][]BackgroundImageItem), otherwise ErrTypeAssertionError is thrown.
+func AssertRecurseBackgroundImageItemRequired(objSlice interface{}) error {
 	return AssertRecurseInterfaceRequired(objSlice, func(obj interface{}) error {
-		aCarouselItem, ok := obj.(CarouselItem)
+		aBackgroundImageItem, ok := obj.(BackgroundImageItem)
 		if !ok {
 			return ErrTypeAssertionError
 		}
-		return AssertCarouselItemRequired(aCarouselItem)
+		return AssertBackgroundImageItemRequired(aBackgroundImageItem)
 	})
 }

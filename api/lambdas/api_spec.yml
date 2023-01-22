@@ -513,9 +513,33 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
+                $ref: '#/components/schemas/BackgroundImageItems'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/images/backgrounds/{backgroundImageItemId}:
+    delete:
+      operationId: deleteBackgroundImage
+      summary: Delete an item from the backgrounds
+      parameters:
+        - name: backgroundImageItemId
+          description: The unique identifier for the background image.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Removed background image
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -1061,7 +1085,7 @@ components:
       type: object
       required:
         - id
-        - image
+        - url
       properties:
         id:
           type: string
@@ -1077,6 +1101,23 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/CarouselItem'
+
+    BackgroundImageItem:
+      type: object
+      required:
+        - id
+        - url
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+
+    BackgroundImageItems:
+      type: array
+      items:
+        $ref: '#/components/schemas/BackgroundImageItem'
 
     Announcement:
       type: object

@@ -234,6 +234,11 @@ func (u *UserManagerService) GetBackgroundImages(ctx context.Context) (openapi.I
 	return u.handleResponse(results, err)
 }
 
+func (u *UserManagerService) DeleteBackgroundImage(ctx context.Context, backgroundImageItemId string) (openapi.ImplResponse, error) {
+	err := u.dataService.DeleteBackgroundImage(ctx, backgroundImageItemId)
+	return u.handleResponse(nil, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

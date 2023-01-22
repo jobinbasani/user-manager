@@ -81,6 +81,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.DeleteAnnouncements,
 		},
 		{
+			"DeleteBackgroundImage",
+			strings.ToUpper("Delete"),
+			"/api/v1/admin/images/backgrounds/{backgroundImageItemId}",
+			c.DeleteBackgroundImage,
+		},
+		{
 			"DeleteCarouselItem",
 			strings.ToUpper("Delete"),
 			"/api/v1/admin/carousel/{carouselItemId}",
@@ -245,6 +251,22 @@ func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.
 		return
 	}
 	result, err := c.service.DeleteAnnouncements(r.Context(), requestBodyParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// DeleteBackgroundImage - Delete an item from the backgrounds
+func (c *AdminApiController) DeleteBackgroundImage(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	backgroundImageItemIdParam := params["backgroundImageItemId"]
+
+	result, err := c.service.DeleteBackgroundImage(r.Context(), backgroundImageItemIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
