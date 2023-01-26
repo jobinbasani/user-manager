@@ -78,6 +78,37 @@ export interface AnnouncementId {
     'id': string;
 }
 /**
+ * 
+ * @export
+ * @interface BackgroundImageItem
+ */
+export interface BackgroundImageItem {
+    /**
+     * 
+     * @type {string}
+     * @memberof BackgroundImageItem
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof BackgroundImageItem
+     */
+    'src': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof BackgroundImageItem
+     */
+    'width'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof BackgroundImageItem
+     */
+    'height'?: number;
+}
+/**
  * The specified content was not found.
  * @export
  * @interface BadRequestError
@@ -150,7 +181,7 @@ export interface CarouselItem {
      * @type {string}
      * @memberof CarouselItem
      */
-    'url'?: string;
+    'url': string;
 }
 /**
  * 
@@ -685,6 +716,51 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Add a background image
+         * @param {any} image 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addBackgroundImage: async (image: any, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'image' is not null or undefined
+            assertParamExists('addBackgroundImage', 'image', image)
+            const localVarPath = `/api/v1/admin/images/backgrounds`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+            if (image !== undefined) { 
+                localVarFormParams.append('image', image as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Add an item to the carousel
          * @param {any} image 
          * @param {string} [title] 
@@ -820,6 +896,44 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Delete an item from the backgrounds
+         * @param {string} backgroundImageItemId The unique identifier for the background image.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteBackgroundImage: async (backgroundImageItemId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'backgroundImageItemId' is not null or undefined
+            assertParamExists('deleteBackgroundImage', 'backgroundImageItemId', backgroundImageItemId)
+            const localVarPath = `/api/v1/admin/images/backgrounds/{backgroundImageItemId}`
+                .replace(`{${"backgroundImageItemId"}}`, encodeURIComponent(String(backgroundImageItemId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Delete an item from the carousel
          * @param {string} carouselItemId The unique identifier for the carousel item.
          * @param {*} [options] Override http request option.
@@ -864,6 +978,40 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
          */
         getAdmins: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/v1/admin/admins`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get list of background images
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBackgroundImages: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/admin/images/backgrounds`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1195,6 +1343,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Add a background image
+         * @param {any} image 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addBackgroundImage(image: any, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addBackgroundImage(image, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Add an item to the carousel
          * @param {any} image 
          * @param {string} [title] 
@@ -1230,6 +1389,17 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Delete an item from the backgrounds
+         * @param {string} backgroundImageItemId The unique identifier for the background image.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteBackgroundImage(backgroundImageItemId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteBackgroundImage(backgroundImageItemId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Delete an item from the carousel
          * @param {string} carouselItemId The unique identifier for the carousel item.
          * @param {*} [options] Override http request option.
@@ -1247,6 +1417,16 @@ export const AdminApiFp = function(configuration?: Configuration) {
          */
         async getAdmins(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicUserInfoList>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAdmins(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get list of background images
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getBackgroundImages(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BackgroundImageItem>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBackgroundImages(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1348,6 +1528,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Add a background image
+         * @param {any} image 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addBackgroundImage(image: any, options?: any): AxiosPromise<void> {
+            return localVarFp.addBackgroundImage(image, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Add an item to the carousel
          * @param {any} image 
          * @param {string} [title] 
@@ -1380,6 +1570,16 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Delete an item from the backgrounds
+         * @param {string} backgroundImageItemId The unique identifier for the background image.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteBackgroundImage(backgroundImageItemId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteBackgroundImage(backgroundImageItemId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Delete an item from the carousel
          * @param {string} carouselItemId The unique identifier for the carousel item.
          * @param {*} [options] Override http request option.
@@ -1396,6 +1596,15 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         getAdmins(options?: any): AxiosPromise<BasicUserInfoList> {
             return localVarFp.getAdmins(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get list of background images
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBackgroundImages(options?: any): AxiosPromise<Array<BackgroundImageItem>> {
+            return localVarFp.getBackgroundImages(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1491,6 +1700,18 @@ export class AdminApi extends BaseAPI {
 
     /**
      * 
+     * @summary Add a background image
+     * @param {any} image 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public addBackgroundImage(image: any, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).addBackgroundImage(image, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Add an item to the carousel
      * @param {any} image 
      * @param {string} [title] 
@@ -1529,6 +1750,18 @@ export class AdminApi extends BaseAPI {
 
     /**
      * 
+     * @summary Delete an item from the backgrounds
+     * @param {string} backgroundImageItemId The unique identifier for the background image.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public deleteBackgroundImage(backgroundImageItemId: string, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).deleteBackgroundImage(backgroundImageItemId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Delete an item from the carousel
      * @param {string} carouselItemId The unique identifier for the carousel item.
      * @param {*} [options] Override http request option.
@@ -1548,6 +1781,17 @@ export class AdminApi extends BaseAPI {
      */
     public getAdmins(options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).getAdmins(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get list of background images
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public getBackgroundImages(options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).getBackgroundImages(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

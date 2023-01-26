@@ -1106,12 +1106,12 @@ components:
       type: object
       required:
         - id
-        - url
+        - src
       properties:
         id:
           type: string
           format: uuid
-        url:
+        src:
           type: string
         width:
           type: integer

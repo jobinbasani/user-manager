@@ -12,7 +12,7 @@ package openapi
 type BackgroundImageItem struct {
 	Id string `json:"id"`
 
-	Url string `json:"url"`
+	Src string `json:"src"`
 
 	Width int32 `json:"width,omitempty"`
 
@@ -23,7 +23,7 @@ type BackgroundImageItem struct {
 func AssertBackgroundImageItemRequired(obj BackgroundImageItem) error {
 	elements := map[string]interface{}{
 		"id":  obj.Id,
-		"url": obj.Url,
+		"src": obj.Src,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {

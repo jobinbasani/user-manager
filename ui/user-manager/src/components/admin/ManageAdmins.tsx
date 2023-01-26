@@ -12,6 +12,7 @@ import { User } from '../../generated-sources/openapi';
 import { getAdminAPI } from '../../api/api';
 import AdminList from './AdminList';
 import InfoBar from '../common/InfoBar';
+import StackContainer from '../layout/StackContainer';
 
 export default function ManageAdmins() {
   const user = useSelector((state: RootState) => state.user);
@@ -102,18 +103,7 @@ export default function ManageAdmins() {
   };
 
   return (
-    <Stack
-      direction="column"
-      spacing={2}
-      sx={{
-        height: 400,
-        width: {
-          sm: 0.92,
-          md: 0.5,
-        },
-      }}
-      p={2}
-    >
+    <StackContainer>
       {!showAddForm
         && (
           <>
@@ -153,6 +143,6 @@ export default function ManageAdmins() {
           </>
         )}
       <InfoBar isOpen={infoBarOpen} onClose={() => { setInfoBarOpen(false); }} message={infoBarMessage} severity={infoBarSeverity} />
-    </Stack>
+    </StackContainer>
   );
 }

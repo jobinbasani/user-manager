@@ -606,7 +606,7 @@ func (d UserManagerAppData) AddBackgroundImage(ctx context.Context, img *bytes.R
 
 	bgImage := openapi.BackgroundImageItem{
 		Id:     itemId,
-		Url:    imgPath,
+		Src:    imgPath,
 		Width:  int32(width),
 		Height: int32(height),
 	}
@@ -671,7 +671,7 @@ func (d UserManagerAppData) DeleteBackgroundImage(ctx context.Context, itemId st
 
 	_, err = d.s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
 		Bucket: &d.cfg.S3Bucket,
-		Key:    &item.Url,
+		Key:    &item.Src,
 	})
 
 	if err != nil {
