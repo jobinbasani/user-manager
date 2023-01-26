@@ -926,6 +926,9 @@ func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string,
 }
 
 func (d UserManagerAppData) saveToBucket(ctx context.Context, key string, body *io.Reader, contentType string) error {
+	if strings.HasPrefix(key, "/") {
+		key = key[1:]
+	}
 	_, err := d.s3Client.PutObject(ctx, &s3.PutObjectInput{
 		Bucket:      &d.cfg.S3Bucket,
 		Key:         &key,
