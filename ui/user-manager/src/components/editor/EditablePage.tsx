@@ -72,7 +72,7 @@ export default function EditablePage({
           )}
       </Box>
       {showEditor
-        && <RichTextEditor content={services} onEditCancel={cancelEdit} onEditSave={onSave} />}
+        && <RichTextEditor content={services} onEditCancel={cancelEdit} onEditSave={onSave} user={user} />}
     </Stack>
   );
 }
