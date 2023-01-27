@@ -582,9 +582,14 @@ func (d UserManagerAppData) DeleteCarouselItem(ctx context.Context, itemId strin
 		return err
 	}
 
+	key := item.Url
+	if strings.HasPrefix(key, "/") {
+		key = key[1:]
+	}
+
 	_, err = d.s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
 		Bucket: &d.cfg.S3Bucket,
-		Key:    &item.Url,
+		Key:    &key,
 	})
 
 	if err != nil {
@@ -669,9 +674,14 @@ func (d UserManagerAppData) DeleteBackgroundImage(ctx context.Context, itemId st
 		return err
 	}
 
+	key := item.Src
+	if strings.HasPrefix(key, "/") {
+		key = key[1:]
+	}
+
 	_, err = d.s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
 		Bucket: &d.cfg.S3Bucket,
-		Key:    &item.Src,
+		Key:    &key,
 	})
 
 	if err != nil {
