@@ -22,10 +22,12 @@ type AdminApiRouter interface {
 	AddAnnouncement(http.ResponseWriter, *http.Request)
 	AddBackgroundImage(http.ResponseWriter, *http.Request)
 	AddCarouselItem(http.ResponseWriter, *http.Request)
+	AddPageContent(http.ResponseWriter, *http.Request)
 	AddToAdminGroup(http.ResponseWriter, *http.Request)
 	DeleteAnnouncements(http.ResponseWriter, *http.Request)
 	DeleteBackgroundImage(http.ResponseWriter, *http.Request)
 	DeleteCarouselItem(http.ResponseWriter, *http.Request)
+	DeletePageContent(http.ResponseWriter, *http.Request)
 	GetAdmins(http.ResponseWriter, *http.Request)
 	GetBackgroundImages(http.ResponseWriter, *http.Request)
 	RemoveFromAdminGroup(http.ResponseWriter, *http.Request)
@@ -56,6 +58,7 @@ type PublicApiRouter interface {
 	GetCatechism(http.ResponseWriter, *http.Request)
 	GetCommittee(http.ResponseWriter, *http.Request)
 	GetLocation(http.ResponseWriter, *http.Request)
+	GetPageContents(http.ResponseWriter, *http.Request)
 	GetServices(http.ResponseWriter, *http.Request)
 }
 
@@ -74,10 +77,12 @@ type AdminApiServicer interface {
 	AddAnnouncement(context.Context, Announcement) (ImplResponse, error)
 	AddBackgroundImage(context.Context, *os.File) (ImplResponse, error)
 	AddCarouselItem(context.Context, *os.File, string, string) (ImplResponse, error)
+	AddPageContent(context.Context, string, PageContent) (ImplResponse, error)
 	AddToAdminGroup(context.Context, []string) (ImplResponse, error)
 	DeleteAnnouncements(context.Context, []string) (ImplResponse, error)
 	DeleteBackgroundImage(context.Context, string) (ImplResponse, error)
 	DeleteCarouselItem(context.Context, string) (ImplResponse, error)
+	DeletePageContent(context.Context, string, string) (ImplResponse, error)
 	GetAdmins(context.Context) (ImplResponse, error)
 	GetBackgroundImages(context.Context) (ImplResponse, error)
 	RemoveFromAdminGroup(context.Context, []string) (ImplResponse, error)
@@ -110,6 +115,7 @@ type PublicApiServicer interface {
 	GetCatechism(context.Context) (ImplResponse, error)
 	GetCommittee(context.Context) (ImplResponse, error)
 	GetLocation(context.Context) (ImplResponse, error)
+	GetPageContents(context.Context, string) (ImplResponse, error)
 	GetServices(context.Context) (ImplResponse, error)
 }
 

@@ -12,6 +12,8 @@ package openapi
 import (
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 // PublicApiController binds http requests to an api service and writes the service results to the http response
@@ -78,6 +80,12 @@ func (c *PublicApiController) Routes() Routes {
 			c.GetLocation,
 		},
 		{
+			"GetPageContents",
+			strings.ToUpper("Get"),
+			"/api/v1/public/pages/{pageId}",
+			c.GetPageContents,
+		},
+		{
 			"GetServices",
 			strings.ToUpper("Get"),
 			"/api/v1/public/services",
@@ -141,6 +149,22 @@ func (c *PublicApiController) GetCommittee(w http.ResponseWriter, r *http.Reques
 // GetLocation - Get location details
 func (c *PublicApiController) GetLocation(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetLocation(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetPageContents - Get page contents
+func (c *PublicApiController) GetPageContents(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pageIdParam := params["pageId"]
+
+	result, err := c.service.GetPageContents(r.Context(), pageIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

@@ -239,6 +239,21 @@ func (u *UserManagerService) DeleteBackgroundImage(ctx context.Context, backgrou
 	return u.handleResponse(nil, err)
 }
 
+func (u *UserManagerService) AddPageContent(ctx context.Context, pageId string, pageContent openapi.PageContent) (openapi.ImplResponse, error) {
+	err := u.dataService.AddPageContent(ctx, pageId, pageContent)
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) DeletePageContent(ctx context.Context, pageId string, contentId string) (openapi.ImplResponse, error) {
+	err := u.dataService.DeletePageContent(ctx, pageId, contentId)
+	return u.handleResponse(nil, err)
+}
+
+func (u *UserManagerService) GetPageContents(ctx context.Context, pageId string) (openapi.ImplResponse, error) {
+	results, err := u.dataService.GetPageContents(ctx, pageId)
+	return u.handleResponse(results, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

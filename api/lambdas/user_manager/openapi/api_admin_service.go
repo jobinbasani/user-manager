@@ -96,6 +96,29 @@ func (s *AdminApiService) AddCarouselItem(ctx context.Context, image *os.File, t
 	return Response(http.StatusNotImplemented, nil), errors.New("AddCarouselItem method not implemented")
 }
 
+// AddPageContent - Add content to a page
+func (s *AdminApiService) AddPageContent(ctx context.Context, pageId string, pageContent PageContent) (ImplResponse, error) {
+	// TODO - update AddPageContent with the required logic for this service method.
+	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(204, {}) or use other options such as http.Ok ...
+	//return Response(204, nil),nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("AddPageContent method not implemented")
+}
+
 // AddToAdminGroup - Add members to admin group
 func (s *AdminApiService) AddToAdminGroup(ctx context.Context, requestBody []string) (ImplResponse, error) {
 	// TODO - update AddToAdminGroup with the required logic for this service method.
@@ -186,6 +209,29 @@ func (s *AdminApiService) DeleteCarouselItem(ctx context.Context, carouselItemId
 	//return Response(0, InternalServerError{}), nil
 
 	return Response(http.StatusNotImplemented, nil), errors.New("DeleteCarouselItem method not implemented")
+}
+
+// DeletePageContent - Delete content of a page
+func (s *AdminApiService) DeletePageContent(ctx context.Context, pageId string, contentId string) (ImplResponse, error) {
+	// TODO - update DeletePageContent with the required logic for this service method.
+	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(204, {}) or use other options such as http.Ok ...
+	//return Response(204, nil),nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("DeletePageContent method not implemented")
 }
 
 // GetAdmins - List of users with Admin access

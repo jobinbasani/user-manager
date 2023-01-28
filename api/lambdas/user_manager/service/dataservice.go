@@ -56,6 +56,7 @@ const (
 	carouselRecType        = "carousel"
 	backgroundImageDir     = "/images/backgrounds/"
 	backgroundImageRecType = "backgroundImage"
+	pageContentsId         = "pagecontents"
 )
 
 var titleCaser = cases.Title(language.English)
@@ -84,6 +85,9 @@ type DataService interface {
 	GetBackgroundImages(ctx context.Context) ([]openapi.BackgroundImageItem, error)
 	GetBackgroundImage(ctx context.Context, itemId string) (openapi.BackgroundImageItem, error)
 	DeleteBackgroundImage(ctx context.Context, itemId string) error
+	AddPageContent(ctx context.Context, pageId string, content openapi.PageContent) error
+	DeletePageContent(ctx context.Context, pageId string, contentId string) error
+	GetPageContents(ctx context.Context, pageId string) ([]openapi.PageContent, error)
 }
 type UserManagerAppData struct {
 	cfg            *config.Config
@@ -576,7 +580,7 @@ func (d UserManagerAppData) DeleteCarouselItem(ctx context.Context, itemId strin
 		return err
 	}
 
-	err = d.deleteInfoDataMapItem(ctx, carouselRecType, itemId)
+	err = d.deleteInfoDataMapItem(ctx, appdataContentId, carouselRecType, itemId)
 
 	if err != nil {
 		return err
@@ -668,7 +672,7 @@ func (d UserManagerAppData) DeleteBackgroundImage(ctx context.Context, itemId st
 		return err
 	}
 
-	err = d.deleteInfoDataMapItem(ctx, backgroundImageRecType, itemId)
+	err = d.deleteInfoDataMapItem(ctx, appdataContentId, backgroundImageRecType, itemId)
 
 	if err != nil {
 		return err
@@ -689,6 +693,35 @@ func (d UserManagerAppData) DeleteBackgroundImage(ctx context.Context, itemId st
 	}
 
 	return err
+}
+
+func (d UserManagerAppData) AddPageContent(ctx context.Context, pageId string, content openapi.PageContent) error {
+	itemId := strconv.FormatInt(time.Now().Unix(), 10)
+	content.Id = itemId
+	return d.addOrUpdateInfo(ctx, pageContentsId, pageId, itemId, content)
+}
+
+func (d UserManagerAppData) DeletePageContent(ctx context.Context, pageId string, contentId string) error {
+	return d.deleteInfoDataMapItem(ctx, pageContentsId, pageId, contentId)
+}
+
+func (d UserManagerAppData) GetPageContents(ctx context.Context, pageId string) ([]openapi.PageContent, error) {
+	allPageContents := []openapi.PageContent{}
+	unmarshaller := func(input []byte) error {
+		var item openapi.PageContent
+		err := json.Unmarshal(input, &item)
+		if err != nil {
+			return err
+		}
+		allPageContents = append(allPageContents, item)
+		return nil
+	}
+
+	err := d.getInfoDataMap(ctx, pageContentsId, pageId, unmarshaller)
+	if err != nil {
+		return nil, err
+	}
+	return allPageContents, nil
 }
 
 func (d UserManagerAppData) insertFamilyMembers(ctx context.Context, familyID *string, currentUser openapi.User, userData []openapi.UserData) (openapi.FamilyId, error) {
@@ -1073,12 +1106,12 @@ func (d UserManagerAppData) getInfoDataMapItem(ctx context.Context, id string, r
 	return false, nil
 }
 
-func (d UserManagerAppData) deleteInfoDataMapItem(ctx context.Context, recType, itemId string) error {
+func (d UserManagerAppData) deleteInfoDataMapItem(ctx context.Context, recId, recType, itemId string) error {
 	_, err := d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		TableName: &d.cfg.UserDataTableName,
 		Key: map[string]types.AttributeValue{
 			idAttribute: &types.AttributeValueMemberS{
-				Value: appdataContentId,
+				Value: recId,
 			},
 			recTypeAttribute: &types.AttributeValueMemberS{
 				Value: recType,

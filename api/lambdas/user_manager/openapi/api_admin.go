@@ -69,6 +69,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.AddCarouselItem,
 		},
 		{
+			"AddPageContent",
+			strings.ToUpper("Post"),
+			"/api/v1/admin/pages/{pageId}",
+			c.AddPageContent,
+		},
+		{
 			"AddToAdminGroup",
 			strings.ToUpper("Put"),
 			"/api/v1/admin/admins",
@@ -91,6 +97,12 @@ func (c *AdminApiController) Routes() Routes {
 			strings.ToUpper("Delete"),
 			"/api/v1/admin/carousel/{carouselItemId}",
 			c.DeleteCarouselItem,
+		},
+		{
+			"DeletePageContent",
+			strings.ToUpper("Delete"),
+			"/api/v1/admin/pages/{pageId}/{contentId}",
+			c.DeletePageContent,
 		},
 		{
 			"GetAdmins",
@@ -221,6 +233,33 @@ func (c *AdminApiController) AddCarouselItem(w http.ResponseWriter, r *http.Requ
 
 }
 
+// AddPageContent - Add content to a page
+func (c *AdminApiController) AddPageContent(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pageIdParam := params["pageId"]
+
+	pageContentParam := PageContent{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&pageContentParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertPageContentRequired(pageContentParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.AddPageContent(r.Context(), pageIdParam, pageContentParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
 // AddToAdminGroup - Add members to admin group
 func (c *AdminApiController) AddToAdminGroup(w http.ResponseWriter, r *http.Request) {
 	requestBodyParam := []string{}
@@ -283,6 +322,24 @@ func (c *AdminApiController) DeleteCarouselItem(w http.ResponseWriter, r *http.R
 	carouselItemIdParam := params["carouselItemId"]
 
 	result, err := c.service.DeleteCarouselItem(r.Context(), carouselItemIdParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// DeletePageContent - Delete content of a page
+func (c *AdminApiController) DeletePageContent(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pageIdParam := params["pageId"]
+
+	contentIdParam := params["contentId"]
+
+	result, err := c.service.DeletePageContent(r.Context(), pageIdParam, contentIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

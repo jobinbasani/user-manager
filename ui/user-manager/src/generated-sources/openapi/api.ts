@@ -345,6 +345,12 @@ export interface PageContent {
      * @memberof PageContent
      */
     'html'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PageContent
+     */
+    'backgroundImage'?: string;
 }
 /**
  * User must be authenticated in order to access this endpoint.

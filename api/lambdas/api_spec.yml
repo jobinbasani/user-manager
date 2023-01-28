@@ -549,6 +549,79 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/pages/{pageId}:
+    post:
+      operationId: addPageContent
+      summary: Add content to a page
+      parameters:
+        - name: pageId
+          description: The unique identifier for the page
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - catechism
+              - services
+              - committee
+              - homepage
+      requestBody:
+        description: Page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Added content
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/pages/{pageId}/{contentId}:
+    delete:
+      operationId: deletePageContent
+      summary: Delete content of a page
+      parameters:
+        - name: pageId
+          description: The unique identifier for the page
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - catechism
+              - services
+              - committee
+              - homepage
+        - name: contentId
+          description: Unique identifier of the page content
+          in: path
+          required: true
+          schema:
+            type: string
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Deleted content
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/public/announcements:
     get:
       operationId: getAnnouncements
@@ -658,6 +731,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CarouselItems'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/pages/{pageId}:
+    get:
+      operationId: getPageContents
+      summary: Get page contents
+      parameters:
+        - name: pageId
+          description: The unique identifier for the page
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - catechism
+              - services
+              - committee
+              - homepage
+      tags:
+        - Public
+      responses:
+        200:
+          description: Page contents
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContents'
         404:
           $ref: '#/components/responses/NotFound'
         default:
@@ -1044,9 +1147,31 @@ components:
     PageContent:
       type: object
       properties:
+        id:
+          type: string
+        title:
+          type: string
+        subtitles:
+          type: array
+          items:
+            type: string
+        expiresOn:
+          type: string
         html:
           type: string
           example: "<p>Content goes here!</p>"
+        backgroundImage:
+          type: string
+          example: "/images/background.jpg"
+        updatedBy:
+          type: string
+        updatedOn:
+          type: string
+
+    PageContents:
+      type: array
+      items:
+        $ref: '#/components/schemas/PageContent'
 
     Location:
       type: object

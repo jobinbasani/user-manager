@@ -10,7 +10,21 @@
 package openapi
 
 type PageContent struct {
+	Id string `json:"id,omitempty"`
+
+	Title string `json:"title,omitempty"`
+
+	Subtitles []string `json:"subtitles,omitempty"`
+
+	ExpiresOn string `json:"expiresOn,omitempty"`
+
 	Html string `json:"html,omitempty"`
+
+	BackgroundImage string `json:"backgroundImage,omitempty"`
+
+	UpdatedBy string `json:"updatedBy,omitempty"`
+
+	UpdatedOn string `json:"updatedOn,omitempty"`
 }
 
 // AssertPageContentRequired checks if the required fields are not zero-ed
