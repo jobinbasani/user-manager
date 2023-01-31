@@ -56,6 +56,7 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
             showOptions={user.isAdmin}
             deletionMessage="Delete content?"
             onDelete={() => deleteContent(pc.id)}
+            onEdit={() => console.log('edit')}
             key={pc.id}
           />
         ))}

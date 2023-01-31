@@ -14,10 +14,11 @@ type MessageCardProps = {
   message:string | React.ReactNode
   showOptions: boolean
   onDelete: ()=>void
+  onEdit?: ()=>void
   deletionMessage?:string
 }
 export default function MessageCard({
-  headerImage, headerImageHeight, title, subtitles, message, showOptions, onDelete, deletionMessage,
+  headerImage, headerImageHeight, title, subtitles, message, showOptions, onDelete, onEdit, deletionMessage,
 }:MessageCardProps) {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
@@ -53,7 +54,7 @@ export default function MessageCard({
           )}
           {subtitles
           && subtitles.map((s) => (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" key={s}>
               {s}
             </Typography>
           ))}
@@ -64,6 +65,8 @@ export default function MessageCard({
         {showOptions
         && (
           <CardActions>
+            {onEdit
+              && <Button size="small" variant="contained" color="secondary" onClick={onEdit}>Edit</Button>}
             <Button size="small" variant="contained" color="primary" onClick={() => { setConfirmDialogOpen(true); }}>Delete</Button>
           </CardActions>
         )}
