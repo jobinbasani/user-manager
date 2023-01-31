@@ -163,7 +163,7 @@ export default function RichTextEditor({
       <Typography variant="h6" component="div">
         Select Background
       </Typography>
-      <ImageGallery images={images} setImages={setImages} singleSelectOnly />
+      <ImageGallery images={images} onSelect={setImages} singleSelectOnly />
       <Typography variant="h6" component="div">
         Edit Content
       </Typography>

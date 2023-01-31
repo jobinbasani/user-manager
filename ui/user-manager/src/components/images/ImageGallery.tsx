@@ -4,9 +4,9 @@ import React from 'react';
 type ImageGalleryProps={
   images: Image[]
   singleSelectOnly?:boolean
-  setImages: React.Dispatch<React.SetStateAction<Image[]>>;
+  onSelect: (images:Image[])=>void;
 }
-export default function ImageGallery({ images, setImages, singleSelectOnly }:ImageGalleryProps) {
+export default function ImageGallery({ images, onSelect, singleSelectOnly }:ImageGalleryProps) {
   const selectionHandler = (index: number) => {
     let nextImages;
     if (singleSelectOnly) {
@@ -14,7 +14,7 @@ export default function ImageGallery({ images, setImages, singleSelectOnly }:Ima
     } else {
       nextImages = images.map((image, i) => (i === index ? { ...image, isSelected: !image.isSelected } : image));
     }
-    setImages(nextImages);
+    onSelect(nextImages);
   };
   return (
     <Gallery images={images} onSelect={selectionHandler} />

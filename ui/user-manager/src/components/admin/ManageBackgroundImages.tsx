@@ -95,7 +95,7 @@ export default function ManageBackgroundImages({ user }: AdminProps) {
               onConfirm={() => { deleteImages(); }}
               message="Delete selected images?"
             />
-            <ImageGallery images={images} setImages={setImages} />
+            <ImageGallery images={images} onSelect={setImages} />
             <Button
               variant="contained"
               color="primary"

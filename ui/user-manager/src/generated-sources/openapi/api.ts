@@ -344,6 +344,30 @@ export interface PageContent {
      * @type {string}
      * @memberof PageContent
      */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PageContent
+     */
+    'title'?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof PageContent
+     */
+    'subtitles'?: Array<string>;
+    /**
+     * 
+     * @type {string}
+     * @memberof PageContent
+     */
+    'expiresOn'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PageContent
+     */
     'html'?: string;
     /**
      * 
@@ -351,6 +375,18 @@ export interface PageContent {
      * @memberof PageContent
      */
     'backgroundImage'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PageContent
+     */
+    'updatedBy'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PageContent
+     */
+    'updatedOn'?: string;
 }
 /**
  * User must be authenticated in order to access this endpoint.
@@ -822,6 +858,50 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Add content to a page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {PageContent} pageContent Page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addPageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pageId' is not null or undefined
+            assertParamExists('addPageContent', 'pageId', pageId)
+            // verify required parameter 'pageContent' is not null or undefined
+            assertParamExists('addPageContent', 'pageContent', pageContent)
+            const localVarPath = `/api/v1/admin/pages/{pageId}`
+                .replace(`{${"pageId"}}`, encodeURIComponent(String(pageId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(pageContent, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Add members to admin group
          * @param {Array<string>} requestBody User id\&#39;s of new members
          * @param {*} [options] Override http request option.
@@ -950,6 +1030,48 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
             assertParamExists('deleteCarouselItem', 'carouselItemId', carouselItemId)
             const localVarPath = `/api/v1/admin/carousel/{carouselItemId}`
                 .replace(`{${"carouselItemId"}}`, encodeURIComponent(String(carouselItemId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Delete content of a page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {string} contentId Unique identifier of the page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pageId' is not null or undefined
+            assertParamExists('deletePageContent', 'pageId', pageId)
+            // verify required parameter 'contentId' is not null or undefined
+            assertParamExists('deletePageContent', 'contentId', contentId)
+            const localVarPath = `/api/v1/admin/pages/{pageId}/{contentId}`
+                .replace(`{${"pageId"}}`, encodeURIComponent(String(pageId)))
+                .replace(`{${"contentId"}}`, encodeURIComponent(String(contentId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1373,6 +1495,18 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Add content to a page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {PageContent} pageContent Page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addPageContent(pageId, pageContent, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Add members to admin group
          * @param {Array<string>} requestBody User id\&#39;s of new members
          * @param {*} [options] Override http request option.
@@ -1413,6 +1547,18 @@ export const AdminApiFp = function(configuration?: Configuration) {
          */
         async deleteCarouselItem(carouselItemId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteCarouselItem(carouselItemId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Delete content of a page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {string} contentId Unique identifier of the page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePageContent(pageId, contentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1556,6 +1702,17 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
+         * @summary Add content to a page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {PageContent} pageContent Page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options?: any): AxiosPromise<void> {
+            return localVarFp.addPageContent(pageId, pageContent, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Add members to admin group
          * @param {Array<string>} requestBody User id\&#39;s of new members
          * @param {*} [options] Override http request option.
@@ -1593,6 +1750,17 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         deleteCarouselItem(carouselItemId: string, options?: any): AxiosPromise<void> {
             return localVarFp.deleteCarouselItem(carouselItemId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Delete content of a page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {string} contentId Unique identifier of the page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePageContent(pageId, contentId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1732,6 +1900,19 @@ export class AdminApi extends BaseAPI {
 
     /**
      * 
+     * @summary Add content to a page
+     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {PageContent} pageContent Page content
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).addPageContent(pageId, pageContent, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Add members to admin group
      * @param {Array<string>} requestBody User id\&#39;s of new members
      * @param {*} [options] Override http request option.
@@ -1776,6 +1957,19 @@ export class AdminApi extends BaseAPI {
      */
     public deleteCarouselItem(carouselItemId: string, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).deleteCarouselItem(carouselItemId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Delete content of a page
+     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {string} contentId Unique identifier of the page content
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).deletePageContent(pageId, contentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2372,6 +2566,44 @@ export const PublicApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @summary Get page contents
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPageContents: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pageId' is not null or undefined
+            assertParamExists('getPageContents', 'pageId', pageId)
+            const localVarPath = `/api/v1/public/pages/{pageId}`
+                .replace(`{${"pageId"}}`, encodeURIComponent(String(pageId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get service details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2462,6 +2694,17 @@ export const PublicApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get page contents
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PageContent>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPageContents(pageId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get service details
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2524,6 +2767,16 @@ export const PublicApiFactory = function (configuration?: Configuration, basePat
          */
         getLocation(options?: any): AxiosPromise<Location> {
             return localVarFp.getLocation(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get page contents
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage', options?: any): AxiosPromise<Array<PageContent>> {
+            return localVarFp.getPageContents(pageId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2597,6 +2850,18 @@ export class PublicApi extends BaseAPI {
      */
     public getLocation(options?: AxiosRequestConfig) {
         return PublicApiFp(this.configuration).getLocation(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get page contents
+     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PublicApi
+     */
+    public getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage', options?: AxiosRequestConfig) {
+        return PublicApiFp(this.configuration).getPageContents(pageId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
