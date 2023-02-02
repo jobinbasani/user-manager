@@ -65,7 +65,7 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
     loadPageContents();
   }, [user]);
   return (
-    <Stack spacing={2} p={2} sx={{ width: { xs: 0.8, sm: 0.6 } }}>
+    <Stack spacing={2} p={2} sx={{ width: { sm: 0.92, md: 0.5 } }}>
       <InfoBar isOpen={infoBarOpen} onClose={() => { setInfoBarOpen(false); }} message={infoBarMessage} severity={infoBarSeverity} />
       <>
         {pageContents.map((pc) => (
