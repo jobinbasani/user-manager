@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { AlertColor, Stack } from '@mui/material';
+import {
+  AlertColor, Chip, Divider, Stack,
+} from '@mui/material';
 import parse from 'html-react-parser';
 import { AdminProps } from '../../pages/private/Admin';
 import { getAdminAPI, getPublicAPI } from '../../api/api';
 import { PageContent } from '../../generated-sources/openapi';
 import MessageCard from '../common/MessageCard';
 import InfoBar from '../common/InfoBar';
+import EditPageContent from './EditPageContent';
 
 type PageManagerProps = AdminProps & {
   pageId: 'catechism' | 'services' | 'committee' | 'homepage'
@@ -19,6 +22,24 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
     getPublicAPI().getPageContents(pageId)
       .then((pageContentsResp) => {
         setPageContents(pageContentsResp.data);
+      });
+  };
+
+  const saveContent = async (data:PageContent) => {
+    await getAdminAPI(user.accessToken)
+      .addPageContent(pageId, data)
+      .then(() => {
+        setInfoBarMessage('Content added');
+        setInfoBarSeverity('success');
+        setInfoBarOpen(true);
+      })
+      .catch((err) => {
+        setInfoBarMessage(`Error adding content:${err.message}`);
+        setInfoBarSeverity('error');
+        setInfoBarOpen(true);
+      })
+      .finally(() => {
+        loadPageContents();
       });
   };
 
@@ -61,6 +82,10 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
           />
         ))}
       </>
+      {user.isAdmin && pageContents && pageContents.length > 0
+      && <Divider><Chip label="Add More" /></Divider>}
+      {user.isAdmin
+      && <EditPageContent user={user} onSave={saveContent} />}
     </Stack>
   );
 }

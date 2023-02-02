@@ -1,22 +1,15 @@
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Box } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { Image } from 'react-grid-gallery';
-import { AdminProps } from '../../pages/private/Admin';
-import { getAdminAPI } from '../../api/api';
-import ImageGallery from '../images/ImageGallery';
+import React from 'react';
 
 type MenuBarProps={
   editor:Editor|null
 }
 
-type EditorProps = AdminProps & {
-  content:string
-  onEditCancel:(() => void)
-  onEditSave:((html: string|undefined)=> void)
+type EditorProps = {
+  content?:string
+  onChange:((html: string|undefined)=> void)
 }
 
 function MenuBar({ editor }:MenuBarProps) {
@@ -139,48 +132,22 @@ function MenuBar({ editor }:MenuBarProps) {
   );
 }
 export default function RichTextEditor({
-  content, onEditCancel, onEditSave, user,
+  content, onChange,
 }:EditorProps) {
-  const [images, setImages] = useState<Image[]>([]);
-  const editor = useEditor({
+  const richTextEditor = useEditor({
     extensions: [
       StarterKit,
     ],
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
     content,
   });
 
-  const loadImages = () => {
-    getAdminAPI(user.accessToken).getBackgroundImages()
-      .then((itemsResp) => setImages(itemsResp.data.map((bg) => bg as Image)));
-  };
-
-  useEffect(() => {
-    loadImages();
-  }, [user]);
-
   return (
     <Box pt={2} sx={{ border: '1px solid grey', p: 2 }}>
-      <Typography variant="h6" component="div">
-        Select Background
-      </Typography>
-      <ImageGallery images={images} onSelect={setImages} singleSelectOnly />
-      <Typography variant="h6" component="div">
-        Edit Content
-      </Typography>
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
-      <Button
-        color="primary"
-        onClick={() => onEditSave(editor?.getHTML())}
-      >
-        Save
-      </Button>
-      <Button
-        color="error"
-        onClick={() => onEditCancel()}
-      >
-        Cancel
-      </Button>
+      <MenuBar editor={richTextEditor} />
+      <EditorContent editor={richTextEditor} />
     </Box>
   );
 }

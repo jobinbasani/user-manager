@@ -949,7 +949,7 @@ func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string,
 	}
 	imgToSave = img
 	bounds := uploadedImage.Bounds()
-	var contentType string
+	contentType := "image/" + imgType
 	if bounds.Dx() > 800 {
 		buf := new(bytes.Buffer)
 		resizedImage := imaging.Resize(uploadedImage, 800, 0, imaging.Lanczos)
@@ -958,11 +958,9 @@ func (d UserManagerAppData) processImage(img *bytes.Reader) (*io.Reader, string,
 		case "jpeg":
 			err = jpeg.Encode(buf, resizedImage, nil)
 			imgToSave = bytes.NewReader(buf.Bytes())
-			contentType = "image/jpeg"
 		case "png":
 			err = png.Encode(buf, resizedImage)
 			imgToSave = bytes.NewReader(buf.Bytes())
-			contentType = "image/png"
 		}
 	}
 	return &imgToSave, imgType, contentType, bounds.Dx(), bounds.Dy(), nil

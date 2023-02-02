@@ -21,7 +21,6 @@ export default function EditablePage({
 }:EditablePageProps) {
   const [services, setServices] = useState('');
   const [showEditor, setShowEditor] = useState(false);
-  const cancelEdit = () => setShowEditor(false);
   const onSave = (html:string|undefined) => {
     if (!html) {
       return;
@@ -72,7 +71,7 @@ export default function EditablePage({
           )}
       </Box>
       {showEditor
-        && <RichTextEditor content={services} onEditCancel={cancelEdit} onEditSave={onSave} user={user} />}
+        && <RichTextEditor content={services} onChange={onSave} />}
     </Stack>
   );
 }
