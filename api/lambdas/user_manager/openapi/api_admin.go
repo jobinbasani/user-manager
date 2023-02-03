@@ -158,6 +158,12 @@ func (c *AdminApiController) Routes() Routes {
 			"/api/v1/admin/services",
 			c.SetServiceData,
 		},
+		{
+			"UpdatePageContent",
+			strings.ToUpper("Put"),
+			"/api/v1/admin/pages/{pageId}/{contentId}",
+			c.UpdatePageContent,
+		},
 	}
 }
 
@@ -512,6 +518,35 @@ func (c *AdminApiController) SetServiceData(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	result, err := c.service.SetServiceData(r.Context(), pageContentParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// UpdatePageContent - Update page content
+func (c *AdminApiController) UpdatePageContent(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pageIdParam := params["pageId"]
+
+	contentIdParam := params["contentId"]
+
+	pageContentParam := PageContent{}
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields()
+	if err := d.Decode(&pageContentParam); err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	if err := AssertPageContentRequired(pageContentParam); err != nil {
+		c.errorHandler(w, r, err, nil)
+		return
+	}
+	result, err := c.service.UpdatePageContent(r.Context(), pageIdParam, contentIdParam, pageContentParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

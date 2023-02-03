@@ -37,6 +37,7 @@ type AdminApiRouter interface {
 	SetCommitteeData(http.ResponseWriter, *http.Request)
 	SetLocation(http.ResponseWriter, *http.Request)
 	SetServiceData(http.ResponseWriter, *http.Request)
+	UpdatePageContent(http.ResponseWriter, *http.Request)
 }
 
 // FamilyManagementApiRouter defines the required methods for binding the api requests to a responses for the FamilyManagementApi
@@ -92,6 +93,7 @@ type AdminApiServicer interface {
 	SetCommitteeData(context.Context, PageContent) (ImplResponse, error)
 	SetLocation(context.Context, Location) (ImplResponse, error)
 	SetServiceData(context.Context, PageContent) (ImplResponse, error)
+	UpdatePageContent(context.Context, string, string, PageContent) (ImplResponse, error)
 }
 
 // FamilyManagementApiServicer defines the api actions for the FamilyManagementApi service

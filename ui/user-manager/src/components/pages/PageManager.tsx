@@ -18,27 +18,38 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
   const [infoBarOpen, setInfoBarOpen] = useState(false);
   const [infoBarMessage, setInfoBarMessage] = useState('');
   const [infoBarSeverity, setInfoBarSeverity] = useState<AlertColor>('success');
+  const [editModes, setEditModes] = useState<Map<string, boolean>>(new Map<string, boolean>());
   const loadPageContents = () => {
     getPublicAPI().getPageContents(pageId)
-      .then((pageContentsResp) => {
-        setPageContents(pageContentsResp.data);
-      });
+      .then((pageContentsResp) => setPageContents(pageContentsResp.data));
+  };
+
+  const updateInfoBar = (message:string, severity:AlertColor) => {
+    setInfoBarMessage(message);
+    setInfoBarSeverity(severity);
+    setInfoBarOpen(true);
   };
 
   const saveContent = async (data:PageContent) => {
     await getAdminAPI(user.accessToken)
       .addPageContent(pageId, data)
-      .then(() => {
-        setInfoBarMessage('Content added');
-        setInfoBarSeverity('success');
-        setInfoBarOpen(true);
-      })
-      .catch((err) => {
-        setInfoBarMessage(`Error adding content:${err.message}`);
-        setInfoBarSeverity('error');
-        setInfoBarOpen(true);
-      })
+      .then(() => updateInfoBar('Content added', 'success'))
+      .catch((err) => updateInfoBar(`Error adding content:${err.message}`, 'error'))
+      .finally(() => loadPageContents());
+  };
+  const setEditMode = (id:string|undefined, editMode:boolean) => {
+    setEditModes((map) => new Map(map.set(id || '', editMode)));
+  };
+  const updateContent = async (contentId:string|undefined, data:PageContent) => {
+    if (!contentId) {
+      return;
+    }
+    await getAdminAPI(user.accessToken)
+      .updatePageContent(pageId, contentId, data)
+      .then(() => updateInfoBar('Content updated', 'success'))
+      .catch((err) => updateInfoBar(`Error updating content:${err.message}`, 'error'))
       .finally(() => {
+        setEditMode(contentId, false);
         loadPageContents();
       });
   };
@@ -48,16 +59,8 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
       return;
     }
     getAdminAPI(user.accessToken).deletePageContent(pageId, contentId)
-      .then(() => {
-        setInfoBarMessage('Content deleted');
-        setInfoBarSeverity('success');
-        setInfoBarOpen(true);
-      })
-      .catch((err) => {
-        setInfoBarMessage(`Error deleting content:${err.message}`);
-        setInfoBarSeverity('error');
-        setInfoBarOpen(true);
-      })
+      .then(() => updateInfoBar('Content deleted', 'success'))
+      .catch((err) => updateInfoBar(`Error deleting content:${err.message}`, 'error'))
       .finally(() => loadPageContents());
   };
 
@@ -69,17 +72,32 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
       <InfoBar isOpen={infoBarOpen} onClose={() => { setInfoBarOpen(false); }} message={infoBarMessage} severity={infoBarSeverity} />
       <>
         {pageContents.map((pc) => (
-          <MessageCard
-            headerImage={pc.backgroundImage}
-            title={pc.title}
-            subtitles={pc.subtitles}
-            message={pc.html ? parse(pc.html) : ''}
-            showOptions={user.isAdmin}
-            deletionMessage="Delete content?"
-            onDelete={() => deleteContent(pc.id)}
-            onEdit={() => console.log('edit')}
-            key={pc.id}
-          />
+          <>
+            <MessageCard
+              hidden={(editModes.get(pc.id || '') || false)}
+              headerImage={pc.backgroundImage}
+              title={pc.title}
+              subtitles={pc.subtitles}
+              message={pc.html ? parse(pc.html) : ''}
+              showOptions={user.isAdmin}
+              deletionMessage="Delete content?"
+              onDelete={() => deleteContent(pc.id)}
+              onEdit={() => setEditMode(pc.id, true)}
+              key={pc.id}
+            />
+            <EditPageContent
+              key={`edit${pc.id}`}
+              hidden={!(editModes.get(pc.id || '') || false)}
+              title={pc.title}
+              subtitles={pc.subtitles}
+              backgroundImage={pc.backgroundImage}
+              html={pc.html}
+              user={user}
+              saveButtonLabel="Update"
+              onSave={(data: PageContent) => updateContent(pc.id, data)}
+              onCancel={() => setEditMode(pc.id, false)}
+            />
+          </>
         ))}
       </>
       {user.isAdmin && pageContents && pageContents.length > 0

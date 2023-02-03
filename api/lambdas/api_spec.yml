@@ -587,6 +587,47 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   /api/v1/admin/pages/{pageId}/{contentId}:
+    put:
+      operationId: updatePageContent
+      summary: Update page content
+      parameters:
+        - name: pageId
+          description: The unique identifier for the page
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - catechism
+              - services
+              - committee
+              - homepage
+        - name: contentId
+          description: Unique identifier of the page content
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set page content
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
     delete:
       operationId: deletePageContent
       summary: Delete content of a page

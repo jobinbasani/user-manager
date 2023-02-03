@@ -1448,6 +1448,54 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Update page content
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {string} contentId Unique identifier of the page content
+         * @param {PageContent} pageContent Updated page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'pageId' is not null or undefined
+            assertParamExists('updatePageContent', 'pageId', pageId)
+            // verify required parameter 'contentId' is not null or undefined
+            assertParamExists('updatePageContent', 'contentId', contentId)
+            // verify required parameter 'pageContent' is not null or undefined
+            assertParamExists('updatePageContent', 'pageContent', pageContent)
+            const localVarPath = `/api/v1/admin/pages/{pageId}/{contentId}`
+                .replace(`{${"pageId"}}`, encodeURIComponent(String(pageId)))
+                .replace(`{${"contentId"}}`, encodeURIComponent(String(contentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(pageContent, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -1658,6 +1706,19 @@ export const AdminApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.setServiceData(pageContent, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary Update page content
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {string} contentId Unique identifier of the page content
+         * @param {PageContent} pageContent Updated page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePageContent(pageId, contentId, pageContent, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -1849,6 +1910,18 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         setServiceData(pageContent: PageContent, options?: any): AxiosPromise<void> {
             return localVarFp.setServiceData(pageContent, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Update page content
+         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {string} contentId Unique identifier of the page content
+         * @param {PageContent} pageContent Updated page content
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options?: any): AxiosPromise<void> {
+            return localVarFp.updatePageContent(pageId, contentId, pageContent, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -2076,6 +2149,20 @@ export class AdminApi extends BaseAPI {
      */
     public setServiceData(pageContent: PageContent, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).setServiceData(pageContent, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Update page content
+     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {string} contentId Unique identifier of the page content
+     * @param {PageContent} pageContent Updated page content
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).updatePageContent(pageId, contentId, pageContent, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

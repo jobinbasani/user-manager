@@ -16,10 +16,15 @@ type MessageCardProps = {
   onDelete: ()=>void
   onEdit?: ()=>void
   deletionMessage?:string
+  hidden?:boolean
 }
 export default function MessageCard({
-  headerImage, headerImageHeight, title, subtitles, message, showOptions, onDelete, onEdit, deletionMessage,
+  hidden, headerImage, headerImageHeight, title, subtitles, message, showOptions, onDelete, onEdit, deletionMessage,
 }:MessageCardProps) {
+  if (hidden) {
+    return null;
+  }
+
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   return (

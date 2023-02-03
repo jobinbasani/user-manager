@@ -19,10 +19,16 @@ type EditPageContentProps = AdminProps & {
   backgroundImage?:string
   html?:string
   onSave:(data: PageContent)=> Promise<void>
+  onCancel?:()=>void
+  hidden?:boolean
+  saveButtonLabel?:string
 }
 export default function EditPageContent({
-  user, title, subtitles, backgroundImage, html, onSave,
+  hidden, user, title, subtitles, backgroundImage, html, onSave, onCancel, saveButtonLabel,
 }:EditPageContentProps) {
+  if (hidden) {
+    return null;
+  }
   const [images, setImages] = useState<Image[]>([]);
 
   const loadImages = () => {
@@ -101,7 +107,7 @@ export default function EditPageContent({
               <Typography variant="h6" component="div">
                 Content
               </Typography>
-              <RichTextEditor onChange={(ct) => { setFieldValue('html', ct); }} />
+              <RichTextEditor content={html} onChange={(ct) => { setFieldValue('html', ct); }} />
               <br />
               <br />
               <Button
@@ -110,8 +116,19 @@ export default function EditPageContent({
                 disabled={isSubmitting}
                 onClick={submitForm}
               >
-                Submit
+                {saveButtonLabel || 'Submit'}
               </Button>
+              {onCancel
+                && (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={onCancel}
+                    sx={{ marginLeft: 2 }}
+                  >
+                    Cancel
+                  </Button>
+                )}
             </Form>
           )}
         </Formik>

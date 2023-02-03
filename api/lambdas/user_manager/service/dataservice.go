@@ -86,6 +86,7 @@ type DataService interface {
 	GetBackgroundImage(ctx context.Context, itemId string) (openapi.BackgroundImageItem, error)
 	DeleteBackgroundImage(ctx context.Context, itemId string) error
 	AddPageContent(ctx context.Context, pageId string, content openapi.PageContent) error
+	UpdatePageContent(ctx context.Context, pageId string, contentId string, content openapi.PageContent) error
 	DeletePageContent(ctx context.Context, pageId string, contentId string) error
 	GetPageContents(ctx context.Context, pageId string) ([]openapi.PageContent, error)
 }
@@ -701,6 +702,25 @@ func (d UserManagerAppData) AddPageContent(ctx context.Context, pageId string, c
 	return d.addOrUpdateInfo(ctx, pageContentsId, pageId, itemId, content)
 }
 
+func (d UserManagerAppData) UpdatePageContent(ctx context.Context, pageId string, contentId string, content openapi.PageContent) error {
+	currentContents, err := d.GetPageContents(ctx, pageId)
+	if err != nil {
+		return err
+	}
+	var hasContent bool
+	for _, c := range currentContents {
+		if c.Id == contentId {
+			hasContent = true
+			break
+		}
+	}
+	if !hasContent {
+		return errors.New("unable to find content with id " + contentId)
+	}
+	content.Id = contentId
+	return d.updateInfo(ctx, pageContentsId, pageId, contentId, content)
+}
+
 func (d UserManagerAppData) DeletePageContent(ctx context.Context, pageId string, contentId string) error {
 	return d.deleteInfoDataMapItem(ctx, pageContentsId, pageId, contentId)
 }
@@ -978,8 +998,7 @@ func (d UserManagerAppData) saveToBucket(ctx context.Context, key string, body *
 	})
 	return err
 }
-
-func (d UserManagerAppData) addOrUpdateInfo(ctx context.Context, keyId string, keyType string, itemId string, item interface{}) error {
+func (d UserManagerAppData) updateInfo(ctx context.Context, keyId string, keyType string, itemId string, item interface{}) error {
 	c, _ := json.Marshal(item)
 
 	_, err := d.dynamodbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
@@ -1003,10 +1022,15 @@ func (d UserManagerAppData) addOrUpdateInfo(ctx context.Context, keyId string, k
 		},
 		ConditionExpression: aws.String(fmt.Sprintf("attribute_exists(%s)", infoAttribute)),
 	})
+	return err
+}
+func (d UserManagerAppData) addOrUpdateInfo(ctx context.Context, keyId string, keyType string, itemId string, item interface{}) error {
+	err := d.updateInfo(ctx, keyId, keyType, itemId, item)
 
 	if err != nil {
 		var cfe *types.ConditionalCheckFailedException
 		if errors.As(err, &cfe) {
+			c, _ := json.Marshal(item)
 			_, err = d.dynamodbClient.PutItem(ctx, &dynamodb.PutItemInput{
 				TableName: &d.cfg.UserDataTableName,
 				Item: map[string]types.AttributeValue{
