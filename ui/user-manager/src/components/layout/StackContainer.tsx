@@ -1,10 +1,10 @@
 import React from 'react';
 import { Stack } from '@mui/material';
 
-type Props = {
+export type ContainerProps = {
   children?: React.ReactNode;
 };
-export default function StackContainer({ children }: Props) {
+export default function StackContainer({ children }: ContainerProps) {
   return (
     <Stack
       direction="column"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  AlertColor, Chip, Divider, Stack,
+  AlertColor, Chip, Divider,
 } from '@mui/material';
 import parse from 'html-react-parser';
 import { AdminProps } from '../../pages/private/Admin';
@@ -68,7 +68,7 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
     loadPageContents();
   }, [user]);
   return (
-    <Stack spacing={2} p={2} sx={{ width: { sm: 0.92, md: 0.5 } }}>
+    <>
       <InfoBar isOpen={infoBarOpen} onClose={() => { setInfoBarOpen(false); }} message={infoBarMessage} severity={infoBarSeverity} />
       <>
         {pageContents.map((pc) => (
@@ -104,6 +104,6 @@ export default function PageManager({ user, pageId }:PageManagerProps) {
       && <Divider><Chip label="Add More" /></Divider>}
       {user.isAdmin
       && <EditPageContent user={user} onSave={saveContent} />}
-    </Stack>
+    </>
   );
 }
