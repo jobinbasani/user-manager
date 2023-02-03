@@ -35,7 +35,7 @@ export default function Navbar() {
           <Typography variant="h5">
             Holy Family Syro Malabar Catholic Church
           </Typography>
-          <Typography variant="h6">
+          <Typography variant="body2">
             Halifax
           </Typography>
         </Box>

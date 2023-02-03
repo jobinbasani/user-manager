@@ -17,6 +17,8 @@ export default function ContactCard() {
           </ImageListItem>
         ))}
       </ImageList>
+      <br />
+      <br />
     </>
   );
 }
