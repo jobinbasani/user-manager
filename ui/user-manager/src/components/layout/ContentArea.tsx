@@ -6,6 +6,7 @@ import LandingPage from '../../pages/public/LandingPage';
 import Feed from '../feed/Feed';
 import MyAccount from '../../pages/private/MyAccount';
 import Admin from '../../pages/private/Admin';
+import History from '../../pages/public/History';
 
 const Router = () => useRoutes(
   [
@@ -13,6 +14,7 @@ const Router = () => useRoutes(
     { path: 'home', element: <Feed /> },
     { path: 'feed', element: <Feed /> },
     { path: 'myaccount', element: <MyAccount /> },
+    { path: 'history', element: <History /> },
     { path: 'committee', element: <Committee /> },
     { path: 'services', element: <Services /> },
     { path: 'catechism', element: <Catechism /> },

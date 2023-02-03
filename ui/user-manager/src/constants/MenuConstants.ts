@@ -6,6 +6,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import BookIcon from '@mui/icons-material/Book';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import PublicIcon from '@mui/icons-material/Public';
 import LoginIcon from '@mui/icons-material/Login';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { LOGIN_URL, SIGNOUT_URL, SIGNUP_URL } from './ApiConstants';
@@ -25,27 +26,30 @@ export const navMenuItems: Array<NavMenuItemType> = [
     key: '1', value: 'Home', navLink: '/', isPrivate: false, Icon: HomeIcon, visibility: 'all',
   },
   {
-    key: '2', value: 'Services', navLink: '/services', isPrivate: false, Icon: RoomServiceIcon, visibility: 'all',
+    key: '2', value: 'History', navLink: '/history', isPrivate: false, Icon: PublicIcon, visibility: 'all',
   },
   {
-    key: '3', value: 'Committee', navLink: '/committee', isPrivate: false, Icon: GroupIcon, visibility: 'all',
+    key: '3', value: 'Services', navLink: '/services', isPrivate: false, Icon: RoomServiceIcon, visibility: 'all',
   },
   {
-    key: '4', value: 'Catechism', navLink: '/catechism', isPrivate: false, Icon: BookIcon, visibility: 'all',
+    key: '4', value: 'Committee', navLink: '/committee', isPrivate: false, Icon: GroupIcon, visibility: 'all',
   },
   {
-    key: '5', value: 'Admin', navLink: '/admin', isPrivate: false, Icon: AdminPanelSettingsIcon, visibility: 'admin',
+    key: '5', value: 'Catechism', navLink: '/catechism', isPrivate: false, Icon: BookIcon, visibility: 'all',
   },
   {
-    key: '6', value: 'Sign Up', navLink: SIGNUP_URL, isPrivate: false, Icon: HowToRegIcon, visibility: 'loggedout',
+    key: '6', value: 'Admin', navLink: '/admin', isPrivate: false, Icon: AdminPanelSettingsIcon, visibility: 'admin',
   },
   {
-    key: '7', value: 'Login', navLink: LOGIN_URL, isPrivate: false, Icon: LoginIcon, visibility: 'loggedout',
+    key: '7', value: 'Sign Up', navLink: SIGNUP_URL, isPrivate: false, Icon: HowToRegIcon, visibility: 'loggedout',
   },
   {
-    key: '8', value: 'My Account', navLink: '/myaccount', isPrivate: false, Icon: AccountBoxIcon, visibility: 'loggedin',
+    key: '8', value: 'Login', navLink: LOGIN_URL, isPrivate: false, Icon: LoginIcon, visibility: 'loggedout',
   },
   {
-    key: '9', value: 'Logout', navLink: SIGNOUT_URL, isPrivate: false, Icon: LogoutIcon, visibility: 'loggedin',
+    key: '9', value: 'My Account', navLink: '/myaccount', isPrivate: false, Icon: AccountBoxIcon, visibility: 'loggedin',
+  },
+  {
+    key: '10', value: 'Logout', navLink: SIGNOUT_URL, isPrivate: false, Icon: LogoutIcon, visibility: 'loggedin',
   },
 ];

@@ -565,6 +565,7 @@ paths:
               - services
               - committee
               - homepage
+              - history
       requestBody:
         description: Page content
         required: true
@@ -602,6 +603,7 @@ paths:
               - services
               - committee
               - homepage
+              - history
         - name: contentId
           description: Unique identifier of the page content
           in: path
@@ -643,6 +645,7 @@ paths:
               - services
               - committee
               - homepage
+              - history
         - name: contentId
           description: Unique identifier of the page content
           in: path
@@ -793,6 +796,7 @@ paths:
               - services
               - committee
               - homepage
+              - history
       tags:
         - Public
       responses:

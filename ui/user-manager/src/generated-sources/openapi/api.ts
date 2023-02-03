@@ -859,12 +859,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * 
          * @summary Add content to a page
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {PageContent} pageContent Page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addPageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        addPageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'pageId' is not null or undefined
             assertParamExists('addPageContent', 'pageId', pageId)
             // verify required parameter 'pageContent' is not null or undefined
@@ -1059,12 +1059,12 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * 
          * @summary Delete content of a page
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {string} contentId Unique identifier of the page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        deletePageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'pageId' is not null or undefined
             assertParamExists('deletePageContent', 'pageId', pageId)
             // verify required parameter 'contentId' is not null or undefined
@@ -1451,13 +1451,13 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * 
          * @summary Update page content
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {string} contentId Unique identifier of the page content
          * @param {PageContent} pageContent Updated page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updatePageContent: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, pageContent: PageContent, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'pageId' is not null or undefined
             assertParamExists('updatePageContent', 'pageId', pageId)
             // verify required parameter 'contentId' is not null or undefined
@@ -1544,12 +1544,12 @@ export const AdminApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Add content to a page
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {PageContent} pageContent Page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.addPageContent(pageId, pageContent, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1600,12 +1600,12 @@ export const AdminApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Delete content of a page
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {string} contentId Unique identifier of the page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deletePageContent(pageId, contentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1709,13 +1709,13 @@ export const AdminApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Update page content
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {string} contentId Unique identifier of the page content
          * @param {PageContent} pageContent Updated page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, pageContent: PageContent, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updatePageContent(pageId, contentId, pageContent, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1764,12 +1764,12 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         /**
          * 
          * @summary Add content to a page
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {PageContent} pageContent Page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options?: any): AxiosPromise<void> {
+        addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', pageContent: PageContent, options?: any): AxiosPromise<void> {
             return localVarFp.addPageContent(pageId, pageContent, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1815,12 +1815,12 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         /**
          * 
          * @summary Delete content of a page
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {string} contentId Unique identifier of the page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options?: any): AxiosPromise<void> {
+        deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, options?: any): AxiosPromise<void> {
             return localVarFp.deletePageContent(pageId, contentId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1914,13 +1914,13 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
         /**
          * 
          * @summary Update page content
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {string} contentId Unique identifier of the page content
          * @param {PageContent} pageContent Updated page content
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options?: any): AxiosPromise<void> {
+        updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, pageContent: PageContent, options?: any): AxiosPromise<void> {
             return localVarFp.updatePageContent(pageId, contentId, pageContent, options).then((request) => request(axios, basePath));
         },
     };
@@ -1974,13 +1974,13 @@ export class AdminApi extends BaseAPI {
     /**
      * 
      * @summary Add content to a page
-     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
      * @param {PageContent} pageContent Page content
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AdminApi
      */
-    public addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', pageContent: PageContent, options?: AxiosRequestConfig) {
+    public addPageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', pageContent: PageContent, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).addPageContent(pageId, pageContent, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2035,13 +2035,13 @@ export class AdminApi extends BaseAPI {
     /**
      * 
      * @summary Delete content of a page
-     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
      * @param {string} contentId Unique identifier of the page content
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AdminApi
      */
-    public deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, options?: AxiosRequestConfig) {
+    public deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).deletePageContent(pageId, contentId, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2154,14 +2154,14 @@ export class AdminApi extends BaseAPI {
     /**
      * 
      * @summary Update page content
-     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
      * @param {string} contentId Unique identifier of the page content
      * @param {PageContent} pageContent Updated page content
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AdminApi
      */
-    public updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage', contentId: string, pageContent: PageContent, options?: AxiosRequestConfig) {
+    public updatePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', contentId: string, pageContent: PageContent, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).updatePageContent(pageId, contentId, pageContent, options).then((request) => request(this.axios, this.basePath));
     }
 }
@@ -2654,11 +2654,11 @@ export const PublicApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * 
          * @summary Get page contents
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPageContents: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getPageContents: async (pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'pageId' is not null or undefined
             assertParamExists('getPageContents', 'pageId', pageId)
             const localVarPath = `/api/v1/public/pages/{pageId}`
@@ -2782,11 +2782,11 @@ export const PublicApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Get page contents
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PageContent>>> {
+        async getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PageContent>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getPageContents(pageId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2858,11 +2858,11 @@ export const PublicApiFactory = function (configuration?: Configuration, basePat
         /**
          * 
          * @summary Get page contents
-         * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+         * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage', options?: any): AxiosPromise<Array<PageContent>> {
+        getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', options?: any): AxiosPromise<Array<PageContent>> {
             return localVarFp.getPageContents(pageId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2942,12 +2942,12 @@ export class PublicApi extends BaseAPI {
     /**
      * 
      * @summary Get page contents
-     * @param {'catechism' | 'services' | 'committee' | 'homepage'} pageId The unique identifier for the page
+     * @param {'catechism' | 'services' | 'committee' | 'homepage' | 'history'} pageId The unique identifier for the page
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PublicApi
      */
-    public getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage', options?: AxiosRequestConfig) {
+    public getPageContents(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history', options?: AxiosRequestConfig) {
         return PublicApiFp(this.configuration).getPageContents(pageId, options).then((request) => request(this.axios, this.basePath));
     }
 
