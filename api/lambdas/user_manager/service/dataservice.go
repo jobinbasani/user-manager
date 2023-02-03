@@ -741,6 +741,18 @@ func (d UserManagerAppData) GetPageContents(ctx context.Context, pageId string) 
 	if err != nil {
 		return nil, err
 	}
+	sort.Slice(allPageContents, func(i, j int) bool {
+		contentIdStr1, contentIdStr2 := allPageContents[i].Id, allPageContents[j].Id
+		contentId1, parseErr := strconv.Atoi(contentIdStr1)
+		if parseErr != nil {
+			return true
+		}
+		contentId2, parseErr := strconv.Atoi(contentIdStr2)
+		if parseErr != nil {
+			return false
+		}
+		return contentId1 < contentId2
+	})
 	return allPageContents, nil
 }
 
