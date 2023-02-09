@@ -13,7 +13,7 @@ type MessageCardProps = {
   subtitles?:string[]
   message:string | React.ReactNode
   showOptions: boolean
-  onDelete: ()=>void
+  onDelete?: ()=>void
   onEdit?: ()=>void
   deletionMessage?:string
   hidden?:boolean
@@ -36,7 +36,9 @@ export default function MessageCard({
         }}
         onConfirm={() => {
           setConfirmDialogOpen(false);
-          onDelete();
+          if (onDelete) {
+            onDelete();
+          }
         }}
         message={deletionMessage || 'Delete message?'}
       />
