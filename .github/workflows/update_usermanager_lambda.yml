@@ -32,7 +32,7 @@ jobs:
     - name: build app
       run: |
         rm -rf ./bin
-        env GOARCH=amd64 GOOS=linux $(which go) build -ldflags="-s -w" -o bin/bootstrap user_manager/main.go
+        env GOARCH=amd64 GOOS=linux CGO_ENABLED=0 $(which go) build -ldflags="-s -w" -o bin/bootstrap user_manager/main.go
         zip -mj bin/usermanager.zip bin/bootstrap     
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v1
