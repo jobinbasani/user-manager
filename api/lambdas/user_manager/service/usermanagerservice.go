@@ -79,46 +79,6 @@ func (u *UserManagerService) GetUserFamily(ctx context.Context) (openapi.ImplRes
 	}, nil
 }
 
-func (u *UserManagerService) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (openapi.ImplResponse, error) {
-	id, err := u.dataService.AddAnnouncement(ctx, announcement)
-
-	if err != nil {
-		log.Println(err)
-		return openapi.ImplResponse{
-			Code: http.StatusInternalServerError,
-		}, err
-	}
-
-	return openapi.ImplResponse{
-		Code: http.StatusCreated,
-		Body: map[string]string{
-			"id": id,
-		},
-	}, nil
-}
-
-func (u *UserManagerService) GetAnnouncements(ctx context.Context) (openapi.ImplResponse, error) {
-	data, err := u.dataService.GetAnnouncements(ctx)
-	if err != nil {
-		log.Println(err)
-		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
-			Message: err.Error(),
-		}), err
-	}
-	return openapi.Response(http.StatusOK, data), nil
-}
-
-func (u *UserManagerService) DeleteAnnouncements(ctx context.Context, announcementIds []string) (openapi.ImplResponse, error) {
-	ids, err := u.dataService.DeleteAnnouncements(ctx, announcementIds)
-	if err != nil {
-		log.Println(err)
-		return openapi.Response(http.StatusInternalServerError, openapi.InternalServerError{
-			Message: err.Error(),
-		}), err
-	}
-	return openapi.Response(http.StatusOK, ids), nil
-}
-
 func (u *UserManagerService) GetAdmins(ctx context.Context) (openapi.ImplResponse, error) {
 	users, err := u.authService.GetAdmins(ctx)
 	if err != nil {
@@ -133,36 +93,6 @@ func (u *UserManagerService) GetAdmins(ctx context.Context) (openapi.ImplRespons
 func (u *UserManagerService) UpdateFamilyMember(ctx context.Context, userId string, user openapi.UserData) (openapi.ImplResponse, error) {
 	updatedUserId, err := u.dataService.UpdateFamilyMember(ctx, userId, user)
 	return u.handleResponse(updatedUserId, err)
-}
-
-func (u *UserManagerService) SetServiceData(ctx context.Context, pageContent openapi.PageContent) (openapi.ImplResponse, error) {
-	err := u.dataService.SetPageContent(ctx, servicesRecType, pageContent)
-	return u.handleResponse(nil, err)
-}
-
-func (u *UserManagerService) GetServices(ctx context.Context) (openapi.ImplResponse, error) {
-	content, err := u.dataService.GetPageContent(ctx, servicesRecType)
-	return u.handleResponse(content, err)
-}
-
-func (u *UserManagerService) SetCommitteeData(ctx context.Context, pageContent openapi.PageContent) (openapi.ImplResponse, error) {
-	err := u.dataService.SetPageContent(ctx, committeeRecType, pageContent)
-	return u.handleResponse(nil, err)
-}
-
-func (u *UserManagerService) GetCommittee(ctx context.Context) (openapi.ImplResponse, error) {
-	content, err := u.dataService.GetPageContent(ctx, committeeRecType)
-	return u.handleResponse(content, err)
-}
-
-func (u *UserManagerService) SetCatechismData(ctx context.Context, pageContent openapi.PageContent) (openapi.ImplResponse, error) {
-	err := u.dataService.SetPageContent(ctx, catechismRecType, pageContent)
-	return u.handleResponse(nil, err)
-}
-
-func (u *UserManagerService) GetCatechism(ctx context.Context) (openapi.ImplResponse, error) {
-	content, err := u.dataService.GetPageContent(ctx, catechismRecType)
-	return u.handleResponse(content, err)
 }
 
 func (u *UserManagerService) SearchSignedUpUsers(ctx context.Context, query string) (openapi.ImplResponse, error) {

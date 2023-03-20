@@ -19,12 +19,10 @@ import (
 // The AdminApiRouter implementation should parse necessary information from the http request,
 // pass the data to a AdminApiServicer to perform the required actions, then write the service results to the http response.
 type AdminApiRouter interface {
-	AddAnnouncement(http.ResponseWriter, *http.Request)
 	AddBackgroundImage(http.ResponseWriter, *http.Request)
 	AddCarouselItem(http.ResponseWriter, *http.Request)
 	AddPageContent(http.ResponseWriter, *http.Request)
 	AddToAdminGroup(http.ResponseWriter, *http.Request)
-	DeleteAnnouncements(http.ResponseWriter, *http.Request)
 	DeleteBackgroundImage(http.ResponseWriter, *http.Request)
 	DeleteCarouselItem(http.ResponseWriter, *http.Request)
 	DeletePageContent(http.ResponseWriter, *http.Request)
@@ -33,10 +31,7 @@ type AdminApiRouter interface {
 	RemoveFromAdminGroup(http.ResponseWriter, *http.Request)
 	SearchFamilyMembers(http.ResponseWriter, *http.Request)
 	SearchSignedUpUsers(http.ResponseWriter, *http.Request)
-	SetCatechismData(http.ResponseWriter, *http.Request)
-	SetCommitteeData(http.ResponseWriter, *http.Request)
 	SetLocation(http.ResponseWriter, *http.Request)
-	SetServiceData(http.ResponseWriter, *http.Request)
 	UpdatePageContent(http.ResponseWriter, *http.Request)
 }
 
@@ -54,13 +49,9 @@ type FamilyManagementApiRouter interface {
 // The PublicApiRouter implementation should parse necessary information from the http request,
 // pass the data to a PublicApiServicer to perform the required actions, then write the service results to the http response.
 type PublicApiRouter interface {
-	GetAnnouncements(http.ResponseWriter, *http.Request)
 	GetCarouselItems(http.ResponseWriter, *http.Request)
-	GetCatechism(http.ResponseWriter, *http.Request)
-	GetCommittee(http.ResponseWriter, *http.Request)
 	GetLocation(http.ResponseWriter, *http.Request)
 	GetPageContents(http.ResponseWriter, *http.Request)
-	GetServices(http.ResponseWriter, *http.Request)
 }
 
 // UserManagementApiRouter defines the required methods for binding the api requests to a responses for the UserManagementApi
@@ -75,12 +66,10 @@ type UserManagementApiRouter interface {
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type AdminApiServicer interface {
-	AddAnnouncement(context.Context, Announcement) (ImplResponse, error)
 	AddBackgroundImage(context.Context, *os.File) (ImplResponse, error)
 	AddCarouselItem(context.Context, *os.File, string, string) (ImplResponse, error)
 	AddPageContent(context.Context, string, PageContent) (ImplResponse, error)
 	AddToAdminGroup(context.Context, []string) (ImplResponse, error)
-	DeleteAnnouncements(context.Context, []string) (ImplResponse, error)
 	DeleteBackgroundImage(context.Context, string) (ImplResponse, error)
 	DeleteCarouselItem(context.Context, string) (ImplResponse, error)
 	DeletePageContent(context.Context, string, string) (ImplResponse, error)
@@ -89,10 +78,7 @@ type AdminApiServicer interface {
 	RemoveFromAdminGroup(context.Context, []string) (ImplResponse, error)
 	SearchFamilyMembers(context.Context, string) (ImplResponse, error)
 	SearchSignedUpUsers(context.Context, string) (ImplResponse, error)
-	SetCatechismData(context.Context, PageContent) (ImplResponse, error)
-	SetCommitteeData(context.Context, PageContent) (ImplResponse, error)
 	SetLocation(context.Context, Location) (ImplResponse, error)
-	SetServiceData(context.Context, PageContent) (ImplResponse, error)
 	UpdatePageContent(context.Context, string, string, PageContent) (ImplResponse, error)
 }
 
@@ -112,13 +98,9 @@ type FamilyManagementApiServicer interface {
 // while the service implementation can ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type PublicApiServicer interface {
-	GetAnnouncements(context.Context) (ImplResponse, error)
 	GetCarouselItems(context.Context) (ImplResponse, error)
-	GetCatechism(context.Context) (ImplResponse, error)
-	GetCommittee(context.Context) (ImplResponse, error)
 	GetLocation(context.Context) (ImplResponse, error)
 	GetPageContents(context.Context, string) (ImplResponse, error)
-	GetServices(context.Context) (ImplResponse, error)
 }
 
 // UserManagementApiServicer defines the api actions for the UserManagementApi service

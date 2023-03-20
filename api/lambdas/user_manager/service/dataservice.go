@@ -14,7 +14,6 @@ import (
 	"lambdas/user_manager/config"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/util"
-	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -22,7 +21,6 @@ import (
 
 	"github.com/disintegration/imaging"
 
-	"github.com/aws/smithy-go"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
@@ -43,12 +41,7 @@ const (
 	familyIdAttribute      = "familyId"
 	emailIdAttribute       = "emailId"
 	infoAttribute          = "info"
-	ttlAttribute           = "expDate"
 	userRecType            = "USER"
-	servicesRecType        = "SERVICES"
-	catechismRecType       = "CATECHISM"
-	committeeRecType       = "COMMITTEE"
-	announcementId         = "announcements"
 	pageContentId          = "pagecontent"
 	appdataContentId       = "appdata"
 	locationRecType        = "location"
@@ -69,11 +62,6 @@ type DataService interface {
 	AdminLoadFamily(ctx context.Context, userData []openapi.UserData) (openapi.FamilyId, error)
 	UpdateFamilyMember(ctx context.Context, userId string, userData openapi.UserData) (openapi.UserId, error)
 	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
-	AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error)
-	GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error)
-	DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error)
-	GetPageContent(ctx context.Context, key string) (openapi.PageContent, error)
-	SetPageContent(ctx context.Context, key string, content openapi.PageContent) error
 	SetAppData(ctx context.Context, id string, key string, content interface{}) error
 	GetAppData(ctx context.Context, id string, key string, target interface{}) error
 	SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error)
@@ -260,129 +248,6 @@ func (d UserManagerAppData) DeleteFamilyMembers(ctx context.Context, memberIds [
 	}
 
 	return memberIds, nil
-}
-
-func (d UserManagerAppData) AddAnnouncement(ctx context.Context, announcement openapi.Announcement) (string, error) {
-	now := time.Now()
-	ts := now.Unix()
-	today := now.Format("January 2, 2006")
-	announcement.Id = fmt.Sprintf("announce-%d", ts)
-	announcement.CreatedOn = today
-	announcementJson, err := json.Marshal(announcement)
-	var expiry int
-	if len(announcement.ExpiresOn) > 0 {
-		if s, err := strconv.Atoi(announcement.ExpiresOn); err == nil {
-			expiry = s
-		}
-	}
-	if err != nil {
-		return "", err
-	}
-	_, err = d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement: aws.String(fmt.Sprintf(
-			`INSERT INTO "%s" VALUE {'%s' : '%s', '%s' : '%s', '%s' : ?, '%s' : %d, '%s' : %d}`,
-			d.cfg.UserDataTableName,
-			idAttribute,
-			announcementId,
-			recTypeAttribute,
-			announcement.Id,
-			infoAttribute,
-			createdAtAttribute,
-			ts,
-			ttlAttribute,
-			expiry,
-		)),
-		Parameters: []types.AttributeValue{
-			&types.AttributeValueMemberS{
-				Value: string(announcementJson),
-			},
-		},
-	})
-
-	if err != nil {
-		return "", err
-	}
-
-	return announcement.Id, nil
-}
-
-func (d UserManagerAppData) GetAnnouncements(ctx context.Context) ([]openapi.Announcement, error) {
-	data, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
-		Statement: aws.String(
-			fmt.Sprintf(
-				`SELECT * FROM "%s" WHERE "%s" = '%s' ORDER BY "%s" DESC`,
-				d.cfg.UserDataTableName,
-				idAttribute,
-				announcementId,
-				recTypeAttribute,
-			),
-		),
-	},
-	)
-	if err != nil {
-		var oe *smithy.OperationError
-		if errors.As(err, &oe) {
-			log.Printf("failed to call service: %s, operation: %s, error: %v", oe.Service(), oe.Operation(), oe.Unwrap())
-		}
-		return nil, err
-	}
-	if len(data.Items) == 0 {
-		return []openapi.Announcement{
-			{
-				Id:          "default-announcement",
-				Title:       "Welcome!",
-				Subtitle:    "Join our growing community",
-				Description: "Please sign up if you haven't done so!",
-			},
-		}, nil
-	}
-	announcements := make([]openapi.Announcement, len(data.Items))
-	for i := range data.Items {
-		a := d.getStringValue(data.Items[i], infoAttribute)
-		if a != nil {
-			var announcement openapi.Announcement
-			_ = json.Unmarshal([]byte(*a), &announcement)
-			announcements[i] = announcement
-		}
-	}
-	return announcements, nil
-}
-
-func (d UserManagerAppData) DeleteAnnouncements(ctx context.Context, announcementIds []string) ([]string, error) {
-	statements := make([]types.ParameterizedStatement, len(announcementIds))
-	for i, id := range announcementIds {
-		statements[i] = types.ParameterizedStatement{
-			Statement: aws.String(fmt.Sprintf(`DELETE FROM "%s" WHERE "%s" = '%s' AND "%s" = '%s'`,
-				d.cfg.UserDataTableName,
-				idAttribute,
-				announcementId,
-				recTypeAttribute,
-				id,
-			)),
-		}
-	}
-	_, err := d.dynamodbClient.ExecuteTransaction(ctx, &dynamodb.ExecuteTransactionInput{
-		TransactStatements: statements,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return announcementIds, nil
-}
-
-func (d UserManagerAppData) GetPageContent(ctx context.Context, key string) (openapi.PageContent, error) {
-
-	var content openapi.PageContent
-	err := d.GetAppData(ctx, pageContentId, key, &content)
-
-	if err != nil {
-		return openapi.PageContent{}, err
-	}
-	return content, nil
-}
-
-func (d UserManagerAppData) SetPageContent(ctx context.Context, key string, content openapi.PageContent) error {
-	return d.SetAppData(ctx, pageContentId, key, content)
 }
 
 func (d UserManagerAppData) SetAppData(ctx context.Context, id string, key string, content interface{}) error {
