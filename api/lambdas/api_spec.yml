@@ -265,6 +265,137 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/announcements:
+    post:
+      operationId: addAnnouncement
+      summary: Add a new announcement
+      requestBody:
+        description: Announcement details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Announcement'
+      tags:
+        - Admin
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementId'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      operationId: deleteAnnouncements
+      summary: Delete announcements
+      requestBody:
+        description: Announcement id's to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StringArray'
+      tags:
+        - Admin
+      responses:
+        200:
+          description: deleted id's
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringArray'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/services:
+    put:
+      operationId: setServiceData
+      summary: Set service details
+      requestBody:
+        description: Service page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set service data
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/catechism:
+    put:
+      operationId: setCatechismData
+      summary: Set catechism details
+      requestBody:
+        description: Service page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set catechism data
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/committee:
+    put:
+      operationId: setCommitteeData
+      summary: Set committee details
+      requestBody:
+        description: Service page content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PageContent'
+      tags:
+        - Admin
+      responses:
+        204:
+          description: Set committee data
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/admin/location:
     put:
       operationId: setLocation
@@ -530,6 +661,82 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/announcements:
+    get:
+      operationId: getAnnouncements
+      summary: Get all announcements
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcements'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/services:
+    get:
+      operationId: getServices
+      summary: Get service details
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContent'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/catechism:
+    get:
+      operationId: getCatechism
+      summary: Get catechism details
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContent'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/public/committee:
+    get:
+      operationId: getCommittee
+      summary: Get committee details
+      security: []
+      tags:
+        - Public
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContent'
         404:
           $ref: '#/components/responses/NotFound'
         default:

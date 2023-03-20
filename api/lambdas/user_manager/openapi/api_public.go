@@ -50,10 +50,28 @@ func NewPublicApiController(s PublicApiServicer, opts ...PublicApiOption) Router
 func (c *PublicApiController) Routes() Routes {
 	return Routes{
 		{
+			"GetAnnouncements",
+			strings.ToUpper("Get"),
+			"/api/v1/public/announcements",
+			c.GetAnnouncements,
+		},
+		{
 			"GetCarouselItems",
 			strings.ToUpper("Get"),
 			"/api/v1/public/carousel",
 			c.GetCarouselItems,
+		},
+		{
+			"GetCatechism",
+			strings.ToUpper("Get"),
+			"/api/v1/public/catechism",
+			c.GetCatechism,
+		},
+		{
+			"GetCommittee",
+			strings.ToUpper("Get"),
+			"/api/v1/public/committee",
+			c.GetCommittee,
 		},
 		{
 			"GetLocation",
@@ -67,12 +85,57 @@ func (c *PublicApiController) Routes() Routes {
 			"/api/v1/public/pages/{pageId}",
 			c.GetPageContents,
 		},
+		{
+			"GetServices",
+			strings.ToUpper("Get"),
+			"/api/v1/public/services",
+			c.GetServices,
+		},
 	}
+}
+
+// GetAnnouncements - Get all announcements
+func (c *PublicApiController) GetAnnouncements(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetAnnouncements(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
 }
 
 // GetCarouselItems - Get carousel items
 func (c *PublicApiController) GetCarouselItems(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetCarouselItems(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetCatechism - Get catechism details
+func (c *PublicApiController) GetCatechism(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetCatechism(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetCommittee - Get committee details
+func (c *PublicApiController) GetCommittee(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetCommittee(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -102,6 +165,19 @@ func (c *PublicApiController) GetPageContents(w http.ResponseWriter, r *http.Req
 	pageIdParam := params["pageId"]
 
 	result, err := c.service.GetPageContents(r.Context(), pageIdParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// GetServices - Get service details
+func (c *PublicApiController) GetServices(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.GetServices(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
