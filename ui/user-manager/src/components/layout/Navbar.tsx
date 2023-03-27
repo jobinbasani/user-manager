@@ -36,7 +36,7 @@ export default function Navbar() {
             Holy Family Syro Malabar Catholic Church
           </Typography>
           <Typography variant="body2">
-            Halifax
+            137 Hebridean Dr, Herring Cove, B3V 1H4
           </Typography>
         </Box>
         {user?.isLoggedIn

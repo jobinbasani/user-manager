@@ -10,7 +10,7 @@ build-usermanager: clean
 
 build-postsignup: clean
 		@echo "Building Post Sign Up lambda"
-		env GOARCH=amd64 GOOS=linux $$(which go) build -ldflags="-s -w" -o bin/post-signup post_signup/main.go; \
+		env GOARCH=amd64 GOOS=linux CGO_ENABLED=0 $$(which go) build -ldflags="-s -w" -o bin/post-signup post_signup/main.go; \
 		zip -mj bin/post-signup.zip bin/post-signup; \
 
 build: build-usermanager build-postsignup
