@@ -51,12 +51,6 @@ func NewAdminApiController(s AdminApiServicer, opts ...AdminApiOption) Router {
 func (c *AdminApiController) Routes() Routes {
 	return Routes{
 		{
-			"AddAnnouncement",
-			strings.ToUpper("Post"),
-			"/api/v1/admin/announcements",
-			c.AddAnnouncement,
-		},
-		{
 			"AddBackgroundImage",
 			strings.ToUpper("Post"),
 			"/api/v1/admin/images/backgrounds",
@@ -79,12 +73,6 @@ func (c *AdminApiController) Routes() Routes {
 			strings.ToUpper("Put"),
 			"/api/v1/admin/admins",
 			c.AddToAdminGroup,
-		},
-		{
-			"DeleteAnnouncements",
-			strings.ToUpper("Delete"),
-			"/api/v1/admin/announcements",
-			c.DeleteAnnouncements,
 		},
 		{
 			"DeleteBackgroundImage",
@@ -135,28 +123,10 @@ func (c *AdminApiController) Routes() Routes {
 			c.SearchSignedUpUsers,
 		},
 		{
-			"SetCatechismData",
-			strings.ToUpper("Put"),
-			"/api/v1/admin/catechism",
-			c.SetCatechismData,
-		},
-		{
-			"SetCommitteeData",
-			strings.ToUpper("Put"),
-			"/api/v1/admin/committee",
-			c.SetCommitteeData,
-		},
-		{
 			"SetLocation",
 			strings.ToUpper("Put"),
 			"/api/v1/admin/location",
 			c.SetLocation,
-		},
-		{
-			"SetServiceData",
-			strings.ToUpper("Put"),
-			"/api/v1/admin/services",
-			c.SetServiceData,
 		},
 		{
 			"UpdatePageContent",
@@ -165,30 +135,6 @@ func (c *AdminApiController) Routes() Routes {
 			c.UpdatePageContent,
 		},
 	}
-}
-
-// AddAnnouncement - Add a new announcement
-func (c *AdminApiController) AddAnnouncement(w http.ResponseWriter, r *http.Request) {
-	announcementParam := Announcement{}
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if err := d.Decode(&announcementParam); err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	if err := AssertAnnouncementRequired(announcementParam); err != nil {
-		c.errorHandler(w, r, err, nil)
-		return
-	}
-	result, err := c.service.AddAnnouncement(r.Context(), announcementParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
 }
 
 // AddBackgroundImage - Add a background image
@@ -276,26 +222,6 @@ func (c *AdminApiController) AddToAdminGroup(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	result, err := c.service.AddToAdminGroup(r.Context(), requestBodyParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// DeleteAnnouncements - Delete announcements
-func (c *AdminApiController) DeleteAnnouncements(w http.ResponseWriter, r *http.Request) {
-	requestBodyParam := []string{}
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if err := d.Decode(&requestBodyParam); err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	result, err := c.service.DeleteAnnouncements(r.Context(), requestBodyParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
@@ -432,54 +358,6 @@ func (c *AdminApiController) SearchSignedUpUsers(w http.ResponseWriter, r *http.
 
 }
 
-// SetCatechismData - Set catechism details
-func (c *AdminApiController) SetCatechismData(w http.ResponseWriter, r *http.Request) {
-	pageContentParam := PageContent{}
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if err := d.Decode(&pageContentParam); err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	if err := AssertPageContentRequired(pageContentParam); err != nil {
-		c.errorHandler(w, r, err, nil)
-		return
-	}
-	result, err := c.service.SetCatechismData(r.Context(), pageContentParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// SetCommitteeData - Set committee details
-func (c *AdminApiController) SetCommitteeData(w http.ResponseWriter, r *http.Request) {
-	pageContentParam := PageContent{}
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if err := d.Decode(&pageContentParam); err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	if err := AssertPageContentRequired(pageContentParam); err != nil {
-		c.errorHandler(w, r, err, nil)
-		return
-	}
-	result, err := c.service.SetCommitteeData(r.Context(), pageContentParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
 // SetLocation - Set location details
 func (c *AdminApiController) SetLocation(w http.ResponseWriter, r *http.Request) {
 	locationParam := Location{}
@@ -494,30 +372,6 @@ func (c *AdminApiController) SetLocation(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	result, err := c.service.SetLocation(r.Context(), locationParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// SetServiceData - Set service details
-func (c *AdminApiController) SetServiceData(w http.ResponseWriter, r *http.Request) {
-	pageContentParam := PageContent{}
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if err := d.Decode(&pageContentParam); err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	if err := AssertPageContentRequired(pageContentParam); err != nil {
-		c.errorHandler(w, r, err, nil)
-		return
-	}
-	result, err := c.service.SetServiceData(r.Context(), pageContentParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
