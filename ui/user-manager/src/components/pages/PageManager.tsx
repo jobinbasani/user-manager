@@ -11,7 +11,7 @@ import InfoBar from '../common/InfoBar';
 import EditPageContent from './EditPageContent';
 
 type PageManagerProps = AdminProps & {
-  pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history'
+  pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history' | 'location'
 }
 export default function PageManager({ user, pageId }:PageManagerProps) {
   const [pageContents, setPageContents] = useState<PageContent[]>([]);

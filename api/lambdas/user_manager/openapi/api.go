@@ -31,7 +31,6 @@ type AdminApiRouter interface {
 	RemoveFromAdminGroup(http.ResponseWriter, *http.Request)
 	SearchFamilyMembers(http.ResponseWriter, *http.Request)
 	SearchSignedUpUsers(http.ResponseWriter, *http.Request)
-	SetLocation(http.ResponseWriter, *http.Request)
 	UpdatePageContent(http.ResponseWriter, *http.Request)
 }
 
@@ -50,7 +49,6 @@ type FamilyManagementApiRouter interface {
 // pass the data to a PublicApiServicer to perform the required actions, then write the service results to the http response.
 type PublicApiRouter interface {
 	GetCarouselItems(http.ResponseWriter, *http.Request)
-	GetLocation(http.ResponseWriter, *http.Request)
 	GetPageContents(http.ResponseWriter, *http.Request)
 }
 
@@ -78,7 +76,6 @@ type AdminApiServicer interface {
 	RemoveFromAdminGroup(context.Context, []string) (ImplResponse, error)
 	SearchFamilyMembers(context.Context, string) (ImplResponse, error)
 	SearchSignedUpUsers(context.Context, string) (ImplResponse, error)
-	SetLocation(context.Context, Location) (ImplResponse, error)
 	UpdatePageContent(context.Context, string, string, PageContent) (ImplResponse, error)
 }
 
@@ -99,7 +96,6 @@ type FamilyManagementApiServicer interface {
 // and updated with the logic required for the API.
 type PublicApiServicer interface {
 	GetCarouselItems(context.Context) (ImplResponse, error)
-	GetLocation(context.Context) (ImplResponse, error)
 	GetPageContents(context.Context, string) (ImplResponse, error)
 }
 

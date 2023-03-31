@@ -114,16 +114,6 @@ func (u *UserManagerService) RemoveFromAdminGroup(ctx context.Context, userIds [
 	err := u.authService.RemoveFromAdminGroup(ctx, userIds)
 	return u.handleResponse(nil, err)
 }
-func (u *UserManagerService) SetLocation(ctx context.Context, location openapi.Location) (openapi.ImplResponse, error) {
-	err := u.dataService.SetAppData(ctx, appdataContentId, locationRecType, location)
-	return u.handleResponse(nil, err)
-}
-
-func (u *UserManagerService) GetLocation(ctx context.Context) (openapi.ImplResponse, error) {
-	var data openapi.Location
-	err := u.dataService.GetAppData(ctx, appdataContentId, locationRecType, &data)
-	return u.handleResponse(data, err)
-}
 
 func (u *UserManagerService) AddCarouselItem(ctx context.Context, img *os.File, title string, subtitle string) (openapi.ImplResponse, error) {
 	if img == nil {

@@ -123,12 +123,6 @@ func (c *AdminApiController) Routes() Routes {
 			c.SearchSignedUpUsers,
 		},
 		{
-			"SetLocation",
-			strings.ToUpper("Put"),
-			"/api/v1/admin/location",
-			c.SetLocation,
-		},
-		{
 			"UpdatePageContent",
 			strings.ToUpper("Put"),
 			"/api/v1/admin/pages/{pageId}/{contentId}",
@@ -348,30 +342,6 @@ func (c *AdminApiController) SearchSignedUpUsers(w http.ResponseWriter, r *http.
 	query := r.URL.Query()
 	qParam := query.Get("q")
 	result, err := c.service.SearchSignedUpUsers(r.Context(), qParam)
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// SetLocation - Set location details
-func (c *AdminApiController) SetLocation(w http.ResponseWriter, r *http.Request) {
-	locationParam := Location{}
-	d := json.NewDecoder(r.Body)
-	d.DisallowUnknownFields()
-	if err := d.Decode(&locationParam); err != nil {
-		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
-		return
-	}
-	if err := AssertLocationRequired(locationParam); err != nil {
-		c.errorHandler(w, r, err, nil)
-		return
-	}
-	result, err := c.service.SetLocation(r.Context(), locationParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

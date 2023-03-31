@@ -44,7 +44,6 @@ const (
 	userRecType            = "USER"
 	pageContentId          = "pagecontent"
 	appdataContentId       = "appdata"
-	locationRecType        = "location"
 	carouselImageDir       = "/images/carousel/"
 	carouselRecType        = "carousel"
 	backgroundImageDir     = "/images/backgrounds/"

@@ -56,12 +56,6 @@ func (c *PublicApiController) Routes() Routes {
 			c.GetCarouselItems,
 		},
 		{
-			"GetLocation",
-			strings.ToUpper("Get"),
-			"/api/v1/public/location",
-			c.GetLocation,
-		},
-		{
 			"GetPageContents",
 			strings.ToUpper("Get"),
 			"/api/v1/public/pages/{pageId}",
@@ -73,19 +67,6 @@ func (c *PublicApiController) Routes() Routes {
 // GetCarouselItems - Get carousel items
 func (c *PublicApiController) GetCarouselItems(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetCarouselItems(r.Context())
-	// If an error occurred, encode the error with the status code
-	if err != nil {
-		c.errorHandler(w, r, err, &result)
-		return
-	}
-	// If no error, encode the body and the result code
-	EncodeJSONResponse(result.Body, &result.Code, w)
-
-}
-
-// GetLocation - Get location details
-func (c *PublicApiController) GetLocation(w http.ResponseWriter, r *http.Request) {
-	result, err := c.service.GetLocation(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)
