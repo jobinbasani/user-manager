@@ -215,7 +215,7 @@ export default function AddUpdateFamilyMember({
           <br />
           <FormTextField label="Postal Code *" name="postalCode" />
           <br />
-          <FormTextField label="Mobile Number" name="cell" />
+          <FormTextField label="Mobile Number" name="mobile" />
           {isSubmitting && <LinearProgress />}
           <br />
           {Object.keys(errors).length > 0
