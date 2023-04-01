@@ -179,6 +179,11 @@ func (u *UserManagerService) UpdatePageContent(ctx context.Context, pageId strin
 	return u.handleResponse(nil, err)
 }
 
+func (u *UserManagerService) ListUsers(ctx context.Context, start string, limit int32) (openapi.ImplResponse, error) {
+	results, err := u.dataService.ListUsers(ctx, start, limit)
+	return u.handleResponse(results, err)
+}
+
 func (u *UserManagerService) handleResponse(body interface{}, err error) (openapi.ImplResponse, error) {
 	if err != nil {
 		log.Println(err)

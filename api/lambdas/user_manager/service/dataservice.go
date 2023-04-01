@@ -76,6 +76,7 @@ type DataService interface {
 	UpdatePageContent(ctx context.Context, pageId string, contentId string, content openapi.PageContent) error
 	DeletePageContent(ctx context.Context, pageId string, contentId string) error
 	GetPageContents(ctx context.Context, pageId string) ([]openapi.PageContent, error)
+	ListUsers(ctx context.Context, start string, limit int32) (openapi.BasicUserInfoList, error)
 }
 type UserManagerAppData struct {
 	cfg            *config.Config
@@ -207,6 +208,63 @@ func (d UserManagerAppData) UpdateFamilyMember(ctx context.Context, userId strin
 	}
 	return openapi.UserId{
 		UserId: userId,
+	}, nil
+}
+
+func (d UserManagerAppData) ListUsers(ctx context.Context, start string, limit int32) (openapi.BasicUserInfoList, error) {
+	resultLimit := limit
+	if resultLimit < 1 || resultLimit > 30 {
+		resultLimit = 30
+	}
+	scanInput := dynamodb.ScanInput{
+		TableName:            aws.String(d.cfg.UserDataTableName),
+		Limit:                aws.Int32(resultLimit),
+		ProjectionExpression: aws.String(fmt.Sprintf("%s,%s", idAttribute, infoAttribute)),
+		FilterExpression:     aws.String(fmt.Sprintf("%s = :user_rec", recTypeAttribute)),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":user_rec": &types.AttributeValueMemberS{
+				Value: userRecType,
+			},
+		},
+	}
+
+	if len(start) > 0 {
+		scanInput.ExclusiveStartKey = map[string]types.AttributeValue{
+			idAttribute: &types.AttributeValueMemberS{
+				Value: start,
+			},
+			recTypeAttribute: &types.AttributeValueMemberS{
+				Value: userRecType,
+			},
+		}
+	}
+
+	data, err := d.dynamodbClient.Scan(ctx, &scanInput)
+	if err != nil {
+		return openapi.BasicUserInfoList{}, err
+	}
+	users := []openapi.User{}
+	for _, item := range data.Items {
+		id := d.getStringValue(item, idAttribute)
+		infoJSON := d.getStringValue(item, infoAttribute)
+		var userData openapi.User
+		err := json.Unmarshal([]byte(*infoJSON), &userData)
+		if err != nil {
+			return openapi.BasicUserInfoList{}, err
+		}
+		userData.Id = *id
+		users = append(users, userData)
+	}
+
+	var next *string
+	if data.LastEvaluatedKey != nil {
+		next = d.getStringValue(data.LastEvaluatedKey, idAttribute)
+	}
+
+	return openapi.BasicUserInfoList{
+		Total: int32(len(users)),
+		Items: users,
+		Next:  next,
 	}, nil
 }
 

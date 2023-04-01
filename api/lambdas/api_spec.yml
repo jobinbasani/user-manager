@@ -265,6 +265,41 @@ paths:
         default:
           $ref: '#/components/responses/InternalServerError'
 
+  /api/v1/admin/users:
+    get:
+      operationId: listUsers
+      summary: List users in the system
+      parameters:
+        - in: query
+          name: start
+          schema:
+            type: string
+          required: false
+          description: Start page token
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Number of results to be returned
+      tags:
+        - Admin
+      responses:
+        200:
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicUserInfoList'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
   /api/v1/admin/carousel:
     post:
       operationId: addCarouselItem
@@ -923,6 +958,7 @@ components:
       required:
         - total
         - items
+        - next
       properties:
         total:
           type: integer
@@ -931,6 +967,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+        next:
+          type: string
+          nullable: true
 
     StringArray:
       type: array

@@ -28,6 +28,7 @@ type Config struct {
 	SearchIndexName   string               `envconfig:"USERMANAGER_SEARCH_INDEX_NAME" required:"true"`
 	FamilyIndexName   string               `envconfig:"USERMANAGER_FAMILY_INDEX_NAME" required:"true"`
 	AWSEndpointURL    *string              `envconfig:"USERMANAGER_AWS_ENDPOINT_URL"`
+	AWSProfile        *string              `envconfig:"USERMANAGER_AWS_PROFILE"`
 }
 
 // Configure creates a config by processing the environment variables and default values
@@ -41,14 +42,22 @@ func Configure(ctx context.Context) *Config {
 	if err != nil {
 		panic(err)
 	}
-	config.AwsConfig, err = awsconfig.LoadDefaultConfig(ctx, awsconfig.WithEndpointResolverWithOptions(aws.EndpointResolverWithOptionsFunc(
-		func(service, region string, options ...interface{}) (aws.Endpoint, error) {
-			if config.AWSEndpointURL != nil && (service == dynamodb.ServiceID || service == s3.ServiceID) {
-				return aws.Endpoint{URL: *config.AWSEndpointURL}, nil
-			}
-			// returning EndpointNotFoundError will allow the service to fallback to it's default resolution
-			return aws.Endpoint{}, &aws.EndpointNotFoundError{}
-		})))
+	var loadOption awsconfig.LoadOptionsFunc
+
+	if config.AWSProfile != nil {
+		loadOption = awsconfig.WithSharedConfigProfile(*config.AWSProfile)
+	} else {
+		loadOption = awsconfig.WithEndpointResolverWithOptions(aws.EndpointResolverWithOptionsFunc(
+			func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+				if config.AWSEndpointURL != nil && (service == dynamodb.ServiceID || service == s3.ServiceID) {
+					return aws.Endpoint{URL: *config.AWSEndpointURL}, nil
+				}
+				// returning EndpointNotFoundError will allow the service to fallback to it's default resolution
+				return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+			}))
+	}
+
+	config.AwsConfig, err = awsconfig.LoadDefaultConfig(ctx, loadOption)
 	if err != nil {
 		panic(err)
 	}

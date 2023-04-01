@@ -105,6 +105,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.GetBackgroundImages,
 		},
 		{
+			"ListUsers",
+			strings.ToUpper("Get"),
+			"/api/v1/admin/users",
+			c.ListUsers,
+		},
+		{
 			"RemoveFromAdminGroup",
 			strings.ToUpper("Delete"),
 			"/api/v1/admin/admins",
@@ -292,6 +298,26 @@ func (c *AdminApiController) GetAdmins(w http.ResponseWriter, r *http.Request) {
 // GetBackgroundImages - Get list of background images
 func (c *AdminApiController) GetBackgroundImages(w http.ResponseWriter, r *http.Request) {
 	result, err := c.service.GetBackgroundImages(r.Context())
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// ListUsers - List users in the system
+func (c *AdminApiController) ListUsers(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	startParam := query.Get("start")
+	limitParam, err := parseInt32Parameter(query.Get("limit"), false)
+	if err != nil {
+		c.errorHandler(w, r, &ParsingError{Err: err}, nil)
+		return
+	}
+	result, err := c.service.ListUsers(r.Context(), startParam, limitParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

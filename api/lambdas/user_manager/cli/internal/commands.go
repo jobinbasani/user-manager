@@ -108,7 +108,7 @@ func NewStartServerCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "server",
 		Aliases: []string{},
-		Usage:   "Get User Info by sub",
+		Usage:   "Start server",
 		Action:  getStartServerAction,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
@@ -118,6 +118,10 @@ func NewStartServerCommand() *cli.Command {
 			&cli.IntFlag{
 				Name:  "port",
 				Usage: "Port to run the server on",
+			},
+			&cli.StringFlag{
+				Name:  "aws_profile",
+				Usage: "AWS Profile to use",
 			},
 		},
 	}

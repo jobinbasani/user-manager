@@ -13,6 +13,8 @@ type BasicUserInfoList struct {
 	Total int32 `json:"total"`
 
 	Items []User `json:"items"`
+
+	Next *string `json:"next"`
 }
 
 // AssertBasicUserInfoListRequired checks if the required fields are not zero-ed
@@ -20,6 +22,7 @@ func AssertBasicUserInfoListRequired(obj BasicUserInfoList) error {
 	elements := map[string]interface{}{
 		"total": obj.Total,
 		"items": obj.Items,
+		"next":  obj.Next,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
