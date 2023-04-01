@@ -1,7 +1,8 @@
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Box } from '@mui/material';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { Link } from '@tiptap/extension-link';
 
 type MenuBarProps={
   editor:Editor|null
@@ -16,6 +17,27 @@ function MenuBar({ editor }:MenuBarProps) {
   if (!editor) {
     return null;
   }
+
+  const setLink = useCallback(() => {
+    const previousUrl = editor.getAttributes('link').href;
+    const url = window.prompt('URL', previousUrl);
+
+    // cancelled
+    if (url === null) {
+      return;
+    }
+
+    // empty
+    if (url === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink()
+        .run();
+      return;
+    }
+
+    // update link
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url })
+      .run();
+  }, [editor]);
 
   return (
     <>
@@ -52,6 +74,13 @@ function MenuBar({ editor }:MenuBarProps) {
         className={editor.isActive('paragraph') ? 'is-active' : ''}
       >
         paragraph
+      </button>
+      <button
+        type="button"
+        onClick={setLink}
+        className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
+      >
+        link
       </button>
       <button
         type="button"
@@ -137,6 +166,7 @@ export default function RichTextEditor({
   const richTextEditor = useEditor({
     extensions: [
       StarterKit,
+      Link.configure(),
     ],
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
