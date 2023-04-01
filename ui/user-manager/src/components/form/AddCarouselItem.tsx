@@ -72,9 +72,7 @@ export default function AddCarouselItem({ onAddImage }:AddCarouselProps) {
           }) => (
             <Form>
               <FormTextField label="Title" name="title" />
-              <br />
               <FormTextField label="Subtitle" name="subtitle" />
-              <br />
               {selectedFile
               && (
                 <>

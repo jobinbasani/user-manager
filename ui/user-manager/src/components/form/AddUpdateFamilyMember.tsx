@@ -160,61 +160,36 @@ export default function AddUpdateFamilyMember({
         <Form>
           <div ref={focusRef} />
           <FormTextField label="First Name *" name="firstName" />
-          <br />
           <FormTextField label="Middle Name" name="middleName" />
-          <br />
           <FormTextField label="Last Name *" name="lastName" />
-          <br />
           <FormSelectField label="Gender *" name="gender" value={UserDataGenderEnum} />
-          <br />
           <FormTextField label="Email *" name="email" />
-          <br />
           <FormSelectField label="Marital Status" name="maritalStatus" value={UserDataMaritalStatusEnum} />
-          <br />
-          {values?.maritalStatus?.toLowerCase() === 'married'
-            && (
-              <>
-                <FormDateField value={values.dateOfMarriage} setFieldValue={setFieldValue} label="Date of Marriage *" name="dateOfMarriage" />
-                <br />
-              </>
-            )}
+          <FormDateField
+            hidden={values?.maritalStatus?.toLowerCase() !== 'married'}
+            value={values.dateOfMarriage}
+            setFieldValue={setFieldValue}
+            label="Date of Marriage *"
+            name="dateOfMarriage"
+          />
           <FormTextField label="Baptismal Name" name="baptismalName" />
-          <br />
-          {relatedUser.length > 0
-            && <FormSelectField label={`Relation to ${relatedUser} *`} name="relation" value={UserDataRelationEnum} />}
-          <br />
+          <FormSelectField hidden={relatedUser.length > 0} label={`Relation to ${relatedUser} *`} name="relation" value={UserDataRelationEnum} />
           <FormTextField label="House Name" name="houseName" />
-          <br />
           <FormTextField label="Family Unit" name="familyUnit" />
-          <br />
           <FormDateField value={values.dateOfBirth} setFieldValue={setFieldValue} label="Date of Birth *" name="dateOfBirth" />
-          <br />
           <FormDateField value={values.dateOfBaptism} setFieldValue={setFieldValue} label="Date of Baptism" name="dateOfBaptism" />
-          <br />
           <FormDateField value={values.dateOfConfirmation} setFieldValue={setFieldValue} label="Date of Confirmation" name="dateOfConfirmation" />
-          <br />
           <FormSelectField label="Status in Canada *" name="canadianStatus" value={UserDataCanadianStatusEnum} />
-          <br />
           <FormDateField value={values.inCanadaSince} setFieldValue={setFieldValue} label="In Canada since" name="inCanadaSince" />
-          <br />
           <FormTextField label="Profession" name="profession" />
-          <br />
           <FormTextField label="Home Parish" name="homeParish" />
-          <br />
           <FormTextField label="Diocese in India" name="dioceseInIndia" />
-          <br />
           <FormTextField label="Previous Parish in Canada" name="previousParish" />
-          <br />
           <FormTextField label="Apt #" name="apartment" />
-          <br />
           <FormTextField label="Street # and name *" name="street" />
-          <br />
           <FormTextField label="City *" name="city" />
-          <br />
           <FormSelectField label="Province *" name="province" value={UserDataProvinceEnum} />
-          <br />
           <FormTextField label="Postal Code *" name="postalCode" />
-          <br />
           <FormTextField label="Mobile Number" name="mobile" />
           {isSubmitting && <LinearProgress />}
           <br />
@@ -230,7 +205,6 @@ export default function AddUpdateFamilyMember({
             Submit
           </Button>
           <Button onClick={() => showFormFn(false)}>Cancel</Button>
-
         </Form>
       )}
     </Formik>

@@ -96,9 +96,7 @@ export default function EditPageContent({
           }) => (
             <Form>
               <FormTextField label="Title" name="title" />
-              <br />
               <FormTextField label="Subtitle" name="subtitle" />
-              <br />
               <Typography variant="h6" component="div">
                 Background
               </Typography>
