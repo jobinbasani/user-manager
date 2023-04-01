@@ -39,6 +39,7 @@
     "react/require-default-props": "off",
     "no-param-reassign": "off",
     "no-console": "off",
-    "max-len": "off"
+    "max-len": "off",
+    "no-alert": "off"
   }
 }
