@@ -213,8 +213,8 @@ func (d UserManagerAppData) UpdateFamilyMember(ctx context.Context, userId strin
 
 func (d UserManagerAppData) ListUsers(ctx context.Context, start string, limit int32) (openapi.BasicUserInfoList, error) {
 	resultLimit := limit
-	if resultLimit < 1 || resultLimit > 30 {
-		resultLimit = 30
+	if resultLimit < 1 || resultLimit > 50 {
+		resultLimit = 50
 	}
 	scanInput := dynamodb.ScanInput{
 		TableName:            aws.String(d.cfg.UserDataTableName),

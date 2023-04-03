@@ -13,7 +13,7 @@ export default function AdminList({ rows, loading, onRowSelect }:AdminListProps)
     { field: 'firstName', headerName: 'First name', width: 130 },
     { field: 'lastName', headerName: 'Last name', width: 130 },
     {
-      field: 'email', headerName: 'Email', width: 130, sortable: false,
+      field: 'email', headerName: 'Email', width: 200, sortable: false,
     },
   ];
 

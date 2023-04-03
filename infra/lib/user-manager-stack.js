@@ -310,6 +310,7 @@ class UserManagerStack extends cdk.Stack {
         'dynamodb:PartiQLUpdate',
         'dynamodb:PutItem',
         'dynamodb:UpdateItem',
+        'dynamodb:Scan',
       ],
       resources: [
         userTable.tableArn,
