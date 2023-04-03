@@ -7,6 +7,7 @@ import ManageAdmins from '../../components/admin/ManageAdmins';
 import { RootState } from '../../store';
 import ManageBackgroundImages from '../../components/admin/ManageBackgroundImages';
 import { UserDetails } from '../../store/user/user-slice';
+import ManageUsers from '../../components/admin/ManageUsers';
 
 export type AdminProps={
   user: UserDetails
@@ -25,6 +26,7 @@ export default function Admin() {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange}>
           <Tab label="Admins" />
+          <Tab label="Users" />
           <Tab label="Backgrounds" />
         </Tabs>
       </Box>
@@ -32,6 +34,9 @@ export default function Admin() {
         <ManageAdmins />
       </TabPanel>
       <TabPanel value={value} index={1}>
+        <ManageUsers user={user} />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
         <ManageBackgroundImages user={user} />
       </TabPanel>
     </Box>

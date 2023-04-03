@@ -151,6 +151,12 @@ export interface BasicUserInfoList {
      * @memberof BasicUserInfoList
      */
     'items': Array<User>;
+    /**
+     * 
+     * @type {string}
+     * @memberof BasicUserInfoList
+     */
+    'next': string | null;
 }
 /**
  * 
@@ -1088,6 +1094,50 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary List users in the system
+         * @param {string} [start] Start page token
+         * @param {number} [limit] Number of results to be returned
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUsers: async (start?: string, limit?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/admin/users`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (start !== undefined) {
+                localVarQueryParameter['start'] = start;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Remove members from admin group
          * @param {Array<string>} requestBody User id\&#39;s of members to be deleted
          * @param {*} [options] Override http request option.
@@ -1369,6 +1419,18 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary List users in the system
+         * @param {string} [start] Start page token
+         * @param {number} [limit] Number of results to be returned
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async listUsers(start?: string, limit?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BasicUserInfoList>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(start, limit, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Remove members from admin group
          * @param {Array<string>} requestBody User id\&#39;s of members to be deleted
          * @param {*} [options] Override http request option.
@@ -1514,6 +1576,17 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         getBackgroundImages(options?: any): AxiosPromise<Array<BackgroundImageItem>> {
             return localVarFp.getBackgroundImages(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary List users in the system
+         * @param {string} [start] Start page token
+         * @param {number} [limit] Number of results to be returned
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        listUsers(start?: string, limit?: number, options?: any): AxiosPromise<BasicUserInfoList> {
+            return localVarFp.listUsers(start, limit, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1675,6 +1748,19 @@ export class AdminApi extends BaseAPI {
      */
     public getBackgroundImages(options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).getBackgroundImages(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary List users in the system
+     * @param {string} [start] Start page token
+     * @param {number} [limit] Number of results to be returned
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public listUsers(start?: string, limit?: number, options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).listUsers(start, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
