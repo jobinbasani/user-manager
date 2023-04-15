@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { DataGrid, GridColDef, GridToolbarContainer } from '@mui/x-data-grid';
-import { Grid, LinearProgress, TextField } from '@mui/material';
+import {
+  DataGrid, gridClasses, GridColDef, GridToolbarContainer,
+} from '@mui/x-data-grid';
+import {
+  alpha, Grid, LinearProgress, styled, TextField,
+} from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Button from '@mui/material/Button';
@@ -8,6 +12,44 @@ import { User } from '../../generated-sources/openapi';
 import { getAdminAPI } from '../../api/api';
 import { AdminProps } from '../../pages/private/Admin';
 import StackContainer from '../layout/StackContainer';
+
+const ODD_OPACITY = 0.2;
+
+const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
+  [`& .${gridClasses.row}.even`]: {
+    backgroundColor: theme.palette.grey[200],
+    '&:hover, &.Mui-hovered': {
+      backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
+      '@media (hover: none)': {
+        backgroundColor: 'transparent',
+      },
+    },
+    '&.Mui-selected': {
+      backgroundColor: alpha(
+        theme.palette.primary.main,
+        ODD_OPACITY + theme.palette.action.selectedOpacity,
+      ),
+      '&:hover, &.Mui-hovered': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          ODD_OPACITY
+          + theme.palette.action.selectedOpacity
+          + theme.palette.action.hoverOpacity,
+        ),
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            ODD_OPACITY + theme.palette.action.selectedOpacity,
+          ),
+        },
+      },
+    },
+  },
+  '& .MuiDataGrid-columnHeaderTitle': {
+    fontWeight: 'bold',
+  },
+}));
 
 export default function ManageUsers({ user }:AdminProps) {
   const columns: GridColDef[] = [
@@ -116,12 +158,13 @@ export default function ManageUsers({ user }:AdminProps) {
   }, [page]);
   return (
     <StackContainer height={700}>
-      <DataGrid
+      <StripedDataGrid
         initialState={{
           sorting: {
             sortModel: [{ field: 'firstName', sort: 'asc' }],
           },
         }}
+        getRowClassName={(params) => (params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd')}
         disableSelectionOnClick
         loading={loading}
         rows={rows}
