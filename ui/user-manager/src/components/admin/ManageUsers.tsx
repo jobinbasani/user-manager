@@ -115,9 +115,13 @@ export default function ManageUsers({ user }:AdminProps) {
     }
   }, [page]);
   return (
-    <StackContainer>
+    <StackContainer height={700}>
       <DataGrid
-        paginationMode="server"
+        initialState={{
+          sorting: {
+            sortModel: [{ field: 'firstName', sort: 'asc' }],
+          },
+        }}
         disableSelectionOnClick
         loading={loading}
         rows={rows}
