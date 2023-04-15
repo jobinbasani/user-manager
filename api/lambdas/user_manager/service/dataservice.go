@@ -63,7 +63,6 @@ type DataService interface {
 	DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error)
 	SetAppData(ctx context.Context, id string, key string, content interface{}) error
 	GetAppData(ctx context.Context, id string, key string, target interface{}) error
-	SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error)
 	AddCarouselItem(ctx context.Context, img *bytes.Reader, title string, subtitle string) error
 	GetCarouselItems(ctx context.Context) ([]openapi.CarouselItem, error)
 	GetCarouselItem(ctx context.Context, itemId string) (openapi.CarouselItem, error)
@@ -77,6 +76,7 @@ type DataService interface {
 	DeletePageContent(ctx context.Context, pageId string, contentId string) error
 	GetPageContents(ctx context.Context, pageId string) ([]openapi.PageContent, error)
 	ListUsers(ctx context.Context, start string, limit int32) (openapi.BasicUserInfoList, error)
+	SearchFamilyMembers(ctx context.Context, query string) (openapi.BasicUserInfoList, error)
 }
 type UserManagerAppData struct {
 	cfg            *config.Config
@@ -359,9 +359,9 @@ func (d UserManagerAppData) GetAppData(ctx context.Context, id string, key strin
 	return nil
 }
 
-func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query string) ([]openapi.User, error) {
+func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query string) (openapi.BasicUserInfoList, error) {
 	if len(query) < 3 {
-		return nil, fmt.Errorf("invalid query - %s - must have atleast 3 characters", query)
+		return openapi.BasicUserInfoList{}, fmt.Errorf("invalid query - %s - must have atleast 3 characters", query)
 	}
 	var users []openapi.User
 	searchQueryOutput, err := d.dynamodbClient.ExecuteStatement(ctx, &dynamodb.ExecuteStatementInput{
@@ -374,11 +374,11 @@ func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query strin
 		)),
 	})
 	if err != nil {
-		return nil, err
+		return openapi.BasicUserInfoList{}, err
 	}
 
 	if len(searchQueryOutput.Items) == 0 {
-		return users, nil
+		return openapi.BasicUserInfoList{}, nil
 	}
 	var allIds []string
 	for i := range searchQueryOutput.Items {
@@ -401,11 +401,11 @@ func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query strin
 	})
 
 	if err != nil {
-		return nil, err
+		return openapi.BasicUserInfoList{}, err
 	}
 
 	if len(userQueryOutput.Items) == 0 {
-		return users, nil
+		return openapi.BasicUserInfoList{}, nil
 	}
 
 	for i := range userQueryOutput.Items {
@@ -416,7 +416,7 @@ func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query strin
 		var userData openapi.User
 		err := json.Unmarshal([]byte(*infoJson), &userData)
 		if err != nil {
-			return nil, err
+			return openapi.BasicUserInfoList{}, err
 		}
 
 		userId := d.getStringValue(userQueryOutput.Items[i], idAttribute)
@@ -428,7 +428,10 @@ func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query strin
 	sort.Slice(users, func(i, j int) bool {
 		return users[i].DisplayName < users[j].DisplayName
 	})
-	return users, nil
+	return openapi.BasicUserInfoList{
+		Total: int32(len(users)),
+		Items: users,
+	}, nil
 }
 
 func (d UserManagerAppData) AddCarouselItem(ctx context.Context, img *bytes.Reader, title string, subtitle string) error {
