@@ -370,7 +370,7 @@ func (d UserManagerAppData) SearchFamilyMembers(ctx context.Context, query strin
 			d.cfg.UserDataTableName,
 			d.cfg.SearchIndexName,
 			searchAttribute,
-			query,
+			strings.TrimSpace(strings.ToLower(query)),
 		)),
 	})
 	if err != nil {
