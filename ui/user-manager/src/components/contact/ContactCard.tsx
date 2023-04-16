@@ -8,11 +8,11 @@ export default function ContactCard() {
       <Typography variant="h6" fontWeight={100}>
         Connect
       </Typography>
-      <ImageList>
+      <ImageList cols={3} gap={2}>
         {ContactInfoItems.map((contact) => (
           <ImageListItem key={contact.key}>
             <a href={contact.link} target="_blank" rel="noreferrer">
-              <contact.Image />
+              <contact.Image color="primary" />
             </a>
           </ImageListItem>
         ))}
