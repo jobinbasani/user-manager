@@ -173,7 +173,7 @@ export default function AddUpdateFamilyMember({
             name="dateOfMarriage"
           />
           <FormTextField label="Baptismal Name" name="baptismalName" />
-          <FormSelectField hidden={relatedUser.length > 0} label={`Relation to ${relatedUser} *`} name="relation" value={UserDataRelationEnum} />
+          <FormSelectField hidden={relatedUser.length === 0} label={`Relation to ${relatedUser} *`} name="relation" value={UserDataRelationEnum} />
           <FormTextField label="House Name" name="houseName" />
           <FormTextField label="Family Unit" name="familyUnit" />
           <FormDateField value={values.dateOfBirth} setFieldValue={setFieldValue} label="Date of Birth *" name="dateOfBirth" />
