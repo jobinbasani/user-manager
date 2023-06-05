@@ -22,4 +22,4 @@ RUN chmod a+x apiserver
 
 ENTRYPOINT ["/server/apiserver", "server"]
 
-CMD ["--port=8989", "--dynamo_endpoint=http://usermanager_localstack:4566"]
+CMD ["--port=8989", "--aws_endpoint=http://usermanager_localstack:4566"]

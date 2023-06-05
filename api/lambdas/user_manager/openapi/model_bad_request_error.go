@@ -15,7 +15,7 @@ type BadRequestError struct {
 
 	Code int32 `json:"code"`
 
-	Errors []InternalServerErrorErrors `json:"errors,omitempty"`
+	Errors []InternalServerErrorErrorsInner `json:"errors,omitempty"`
 }
 
 // AssertBadRequestErrorRequired checks if the required fields are not zero-ed
@@ -31,7 +31,7 @@ func AssertBadRequestErrorRequired(obj BadRequestError) error {
 	}
 
 	for _, el := range obj.Errors {
-		if err := AssertInternalServerErrorErrorsRequired(el); err != nil {
+		if err := AssertInternalServerErrorErrorsInnerRequired(el); err != nil {
 			return err
 		}
 	}

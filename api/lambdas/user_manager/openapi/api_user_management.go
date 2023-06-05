@@ -44,7 +44,7 @@ func NewUserManagementApiController(s UserManagementApiServicer, opts ...UserMan
 	return controller
 }
 
-// Routes returns all of the api route for the UserManagementApiController
+// Routes returns all the api routes for the UserManagementApiController
 func (c *UserManagementApiController) Routes() Routes {
 	return Routes{
 		{

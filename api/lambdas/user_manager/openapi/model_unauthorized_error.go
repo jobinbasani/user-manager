@@ -15,7 +15,7 @@ type UnauthorizedError struct {
 
 	Code int32 `json:"code"`
 
-	Errors []InternalServerErrorErrors `json:"errors,omitempty"`
+	Errors []InternalServerErrorErrorsInner `json:"errors,omitempty"`
 }
 
 // AssertUnauthorizedErrorRequired checks if the required fields are not zero-ed
@@ -31,7 +31,7 @@ func AssertUnauthorizedErrorRequired(obj UnauthorizedError) error {
 	}
 
 	for _, el := range obj.Errors {
-		if err := AssertInternalServerErrorErrorsRequired(el); err != nil {
+		if err := AssertInternalServerErrorErrorsInnerRequired(el); err != nil {
 			return err
 		}
 	}

@@ -62,7 +62,7 @@ type UserManagementApiRouter interface {
 
 // AdminApiServicer defines the api actions for the AdminApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
-// while the service implementation can ignored with the .openapi-generator-ignore file
+// while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type AdminApiServicer interface {
 	AddBackgroundImage(context.Context, *os.File) (ImplResponse, error)
@@ -83,7 +83,7 @@ type AdminApiServicer interface {
 
 // FamilyManagementApiServicer defines the api actions for the FamilyManagementApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
-// while the service implementation can ignored with the .openapi-generator-ignore file
+// while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type FamilyManagementApiServicer interface {
 	AddFamilyMembers(context.Context, []UserData) (ImplResponse, error)
@@ -94,7 +94,7 @@ type FamilyManagementApiServicer interface {
 
 // PublicApiServicer defines the api actions for the PublicApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
-// while the service implementation can ignored with the .openapi-generator-ignore file
+// while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type PublicApiServicer interface {
 	GetCarouselItems(context.Context) (ImplResponse, error)
@@ -103,7 +103,7 @@ type PublicApiServicer interface {
 
 // UserManagementApiServicer defines the api actions for the UserManagementApi service
 // This interface intended to stay up to date with the openapi yaml used to generate it,
-// while the service implementation can ignored with the .openapi-generator-ignore file
+// while the service implementation can be ignored with the .openapi-generator-ignore file
 // and updated with the logic required for the API.
 type UserManagementApiServicer interface {
 	GetUser(context.Context) (ImplResponse, error)

@@ -47,7 +47,7 @@ func NewAdminApiController(s AdminApiServicer, opts ...AdminApiOption) Router {
 	return controller
 }
 
-// Routes returns all of the api route for the AdminApiController
+// Routes returns all the api routes for the AdminApiController
 func (c *AdminApiController) Routes() Routes {
 	return Routes{
 		{
@@ -189,7 +189,6 @@ func (c *AdminApiController) AddCarouselItem(w http.ResponseWriter, r *http.Requ
 func (c *AdminApiController) AddPageContent(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pageIdParam := params["pageId"]
-
 	pageContentParam := PageContent{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
@@ -236,7 +235,6 @@ func (c *AdminApiController) AddToAdminGroup(w http.ResponseWriter, r *http.Requ
 func (c *AdminApiController) DeleteBackgroundImage(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	backgroundImageItemIdParam := params["backgroundImageItemId"]
-
 	result, err := c.service.DeleteBackgroundImage(r.Context(), backgroundImageItemIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
@@ -252,7 +250,6 @@ func (c *AdminApiController) DeleteBackgroundImage(w http.ResponseWriter, r *htt
 func (c *AdminApiController) DeleteCarouselItem(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	carouselItemIdParam := params["carouselItemId"]
-
 	result, err := c.service.DeleteCarouselItem(r.Context(), carouselItemIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
@@ -268,9 +265,7 @@ func (c *AdminApiController) DeleteCarouselItem(w http.ResponseWriter, r *http.R
 func (c *AdminApiController) DeletePageContent(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pageIdParam := params["pageId"]
-
 	contentIdParam := params["contentId"]
-
 	result, err := c.service.DeletePageContent(r.Context(), pageIdParam, contentIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {
@@ -382,9 +377,7 @@ func (c *AdminApiController) SearchSignedUpUsers(w http.ResponseWriter, r *http.
 func (c *AdminApiController) UpdatePageContent(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pageIdParam := params["pageId"]
-
 	contentIdParam := params["contentId"]
-
 	pageContentParam := PageContent{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()

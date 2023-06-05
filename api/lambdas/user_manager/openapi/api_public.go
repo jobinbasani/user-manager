@@ -46,7 +46,7 @@ func NewPublicApiController(s PublicApiServicer, opts ...PublicApiOption) Router
 	return controller
 }
 
-// Routes returns all of the api route for the PublicApiController
+// Routes returns all the api routes for the PublicApiController
 func (c *PublicApiController) Routes() Routes {
 	return Routes{
 		{
@@ -81,7 +81,6 @@ func (c *PublicApiController) GetCarouselItems(w http.ResponseWriter, r *http.Re
 func (c *PublicApiController) GetPageContents(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	pageIdParam := params["pageId"]
-
 	result, err := c.service.GetPageContents(r.Context(), pageIdParam)
 	// If an error occurred, encode the error with the status code
 	if err != nil {

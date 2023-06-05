@@ -15,7 +15,7 @@ type ForbiddenError struct {
 
 	Code int32 `json:"code"`
 
-	Errors []InternalServerErrorErrors `json:"errors,omitempty"`
+	Errors []InternalServerErrorErrorsInner `json:"errors,omitempty"`
 }
 
 // AssertForbiddenErrorRequired checks if the required fields are not zero-ed
@@ -31,7 +31,7 @@ func AssertForbiddenErrorRequired(obj ForbiddenError) error {
 	}
 
 	for _, el := range obj.Errors {
-		if err := AssertInternalServerErrorErrorsRequired(el); err != nil {
+		if err := AssertInternalServerErrorErrorsInnerRequired(el); err != nil {
 			return err
 		}
 	}

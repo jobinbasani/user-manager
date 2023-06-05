@@ -47,7 +47,7 @@ func NewFamilyManagementApiController(s FamilyManagementApiServicer, opts ...Fam
 	return controller
 }
 
-// Routes returns all of the api route for the FamilyManagementApiController
+// Routes returns all the api routes for the FamilyManagementApiController
 func (c *FamilyManagementApiController) Routes() Routes {
 	return Routes{
 		{
@@ -140,7 +140,6 @@ func (c *FamilyManagementApiController) GetUserFamily(w http.ResponseWriter, r *
 func (c *FamilyManagementApiController) UpdateFamilyMember(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	userIdParam := params["userId"]
-
 	userDataParam := UserData{}
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields()
