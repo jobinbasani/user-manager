@@ -310,7 +310,15 @@ paths:
         200:
           description: success
           content:
-            text/csv: {}
+            text/csv:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="holyfamily_members.csv"
         401:
           $ref: '#/components/responses/Unauthorized'
         403:

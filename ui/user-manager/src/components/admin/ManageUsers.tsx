@@ -7,7 +7,9 @@ import {
 } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Button from '@mui/material/Button';
+import { saveAs } from 'file-saver';
 import { User } from '../../generated-sources/openapi';
 import { getAdminAPI } from '../../api/api';
 import { AdminProps } from '../../pages/private/Admin';
@@ -86,6 +88,14 @@ export default function ManageUsers({ user }:AdminProps) {
       });
   };
 
+  const downloadUsers = () => {
+    getAdminAPI(user.accessToken)
+      .downloadUsers({ responseType: 'blob' })
+      .then((resp) => {
+        saveAs(resp.data, 'holyfamily_users.csv');
+      });
+  };
+
   const searchUser = () => {
     const lookup = query.current.split(' ')[0];
     if (lookup.length === 0) {
@@ -136,6 +146,9 @@ export default function ManageUsers({ user }:AdminProps) {
       {showNav
         && (
           <>
+            <Button startIcon={<CloudDownloadIcon />} onClick={() => downloadUsers()}>
+              Download
+            </Button>
             <Button disabled={page < 1} startIcon={<ArrowBackIosIcon />} onClick={() => setPage(page - 1)}>
               Previous
             </Button>

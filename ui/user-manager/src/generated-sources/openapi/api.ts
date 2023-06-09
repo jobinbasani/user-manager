@@ -1026,6 +1026,40 @@ export const AdminApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
+         * @summary Download users in the system
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        downloadUsers: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/admin/download/users`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary List of users with Admin access
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1399,6 +1433,16 @@ export const AdminApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Download users in the system
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async downloadUsers(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<any>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.downloadUsers(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary List of users with Admin access
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1558,6 +1602,15 @@ export const AdminApiFactory = function (configuration?: Configuration, basePath
          */
         deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history' | 'location', contentId: string, options?: any): AxiosPromise<void> {
             return localVarFp.deletePageContent(pageId, contentId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Download users in the system
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        downloadUsers(options?: any): AxiosPromise<any> {
+            return localVarFp.downloadUsers(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1726,6 +1779,17 @@ export class AdminApi extends BaseAPI {
      */
     public deletePageContent(pageId: 'catechism' | 'services' | 'committee' | 'homepage' | 'history' | 'location', contentId: string, options?: AxiosRequestConfig) {
         return AdminApiFp(this.configuration).deletePageContent(pageId, contentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Download users in the system
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AdminApi
+     */
+    public downloadUsers(options?: AxiosRequestConfig) {
+        return AdminApiFp(this.configuration).downloadUsers(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

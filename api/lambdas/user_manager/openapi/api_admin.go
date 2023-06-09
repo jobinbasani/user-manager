@@ -111,7 +111,7 @@ func (c *AdminApiController) Routes() Routes {
 			c.GetBackgroundImages,
 		},
 		{
-			"DownloadUsers",
+			"ListUsers",
 			strings.ToUpper("Get"),
 			"/api/v1/admin/users",
 			c.ListUsers,
