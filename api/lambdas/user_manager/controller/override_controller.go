@@ -10,6 +10,7 @@ import (
 	"lambdas/user_manager/model"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/service"
+	"lambdas/user_manager/util"
 )
 
 const errMsgRequiredMissing = "required parameter is missing"
@@ -59,6 +60,7 @@ func (o *OverrideApiController) DownloadUsers(w http.ResponseWriter, r *http.Req
 			"Home Parish",
 			"Marital Status",
 			"Diocese In India",
+			"Status In Canada",
 			"Street",
 			"City",
 			"Postal Code",
@@ -71,10 +73,11 @@ func (o *OverrideApiController) DownloadUsers(w http.ResponseWriter, r *http.Req
 				k.Email,
 				k.BaptismalName,
 				k.DateOfBirth,
-				k.Gender,
+				util.ToTitleCase(k.Gender),
 				k.HomeParish,
-				k.MaritalStatus,
+				util.ToTitleCase(k.MaritalStatus),
 				k.DioceseInIndia,
+				util.ToTitleCase(k.CanadianStatus),
 				k.Street,
 				k.City,
 				k.PostalCode,
