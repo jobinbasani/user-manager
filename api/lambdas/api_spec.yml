@@ -291,6 +291,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BasicUserInfoList'
+            text/csv: {}
         401:
           $ref: '#/components/responses/Unauthorized'
         403:

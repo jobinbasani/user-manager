@@ -6,26 +6,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"image"
 	"image/jpeg"
+	_ "image/jpeg"
 	"image/png"
+	_ "image/png"
 	"io"
-	"lambdas/user_manager/config"
-	"lambdas/user_manager/openapi"
-	"lambdas/user_manager/util"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
+
+	"lambdas/user_manager/config"
+	"lambdas/user_manager/model"
+	"lambdas/user_manager/openapi"
+	"lambdas/user_manager/util"
+
 	"github.com/disintegration/imaging"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-
-	_ "image/jpeg"
-	_ "image/png"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -77,6 +80,7 @@ type DataService interface {
 	GetPageContents(ctx context.Context, pageId string) ([]openapi.PageContent, error)
 	ListUsers(ctx context.Context, start string, limit int32) (openapi.BasicUserInfoList, error)
 	SearchFamilyMembers(ctx context.Context, query string) (openapi.BasicUserInfoList, error)
+	GetAllUsers(ctx context.Context) ([]model.UserExtended, error)
 }
 type UserManagerAppData struct {
 	cfg            *config.Config
@@ -266,6 +270,85 @@ func (d UserManagerAppData) ListUsers(ctx context.Context, start string, limit i
 		Items: users,
 		Next:  next,
 	}, nil
+}
+
+func (d UserManagerAppData) GetAllUsers(ctx context.Context) ([]model.UserExtended, error) {
+	scanInput := dynamodb.ScanInput{
+		TableName:            aws.String(d.cfg.UserDataTableName),
+		ProjectionExpression: aws.String(fmt.Sprintf("%s,%s", familyIdAttribute, infoAttribute)),
+		FilterExpression:     aws.String(fmt.Sprintf("%s = :user_rec", recTypeAttribute)),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":user_rec": &types.AttributeValueMemberS{
+				Value: userRecType,
+			},
+		},
+	}
+
+	users := []model.UserExtended{}
+	var startKey *string
+
+	for {
+		if startKey != nil {
+			scanInput.ExclusiveStartKey = map[string]types.AttributeValue{
+				idAttribute: &types.AttributeValueMemberS{
+					Value: *startKey,
+				},
+				recTypeAttribute: &types.AttributeValueMemberS{
+					Value: userRecType,
+				},
+			}
+		}
+
+		data, err := d.dynamodbClient.Scan(ctx, &scanInput)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, item := range data.Items {
+			infoJSON := d.getStringValue(item, infoAttribute)
+			var userData model.UserExtended
+			err := json.Unmarshal([]byte(*infoJSON), &userData)
+			if err != nil {
+				return nil, err
+			}
+			familyID := d.getStringValue(item, familyIdAttribute)
+			if familyID != nil {
+				userData.FamilyID = *familyID
+			}
+			users = append(users, userData)
+		}
+
+		startKey = d.getStringValue(data.LastEvaluatedKey, idAttribute)
+		if startKey == nil {
+			break
+		}
+	}
+
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].DisplayName < users[j].DisplayName
+	})
+
+	om := orderedmap.New[string, []*model.UserExtended]()
+
+	for i, k := range users {
+		familyId := k.FamilyID
+		members, exists := om.Get(familyId)
+		if exists {
+			om.Set(familyId, append(members, &users[i]))
+		} else {
+			om.Set(familyId, []*model.UserExtended{&users[i]})
+		}
+	}
+
+	orderedUsers := []model.UserExtended{}
+
+	for pair := om.Oldest(); pair != nil; pair = pair.Next() {
+		for i := range pair.Value {
+			orderedUsers = append(orderedUsers, *pair.Value[i])
+		}
+	}
+
+	return orderedUsers, nil
 }
 
 func (d UserManagerAppData) DeleteFamilyMembers(ctx context.Context, memberIds []string) ([]string, error) {

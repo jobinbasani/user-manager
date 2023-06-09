@@ -3,12 +3,15 @@ package routes
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/gorilla/mux"
+
 	"lambdas/user_manager/config"
+	"lambdas/user_manager/controller"
 	"lambdas/user_manager/middleware"
 	"lambdas/user_manager/openapi"
 	"lambdas/user_manager/service"
-	"net/http"
 )
 
 // This directive instructs the "go generate ./..." command to call "../../scripts/generate_openapi_bindings.sh" in order to
@@ -26,8 +29,15 @@ func GetRoutes(ctx context.Context, cfg *config.Config) *mux.Router {
 	userManagementAPIController := openapi.NewUserManagementApiController(UserManagementAPIService)
 	adminAPIController := openapi.NewAdminApiController(UserManagementAPIService)
 	publicAPIController := openapi.NewPublicApiController(UserManagementAPIService)
+	overrideAPIController := controller.NewOverrideApiController(UserManagementAPIService)
 
-	r := openapi.NewRouter(userManagementAPIController, familyManagementAPIController, adminAPIController, publicAPIController)
+	r := openapi.NewRouter(
+		overrideAPIController,
+		userManagementAPIController,
+		familyManagementAPIController,
+		adminAPIController,
+		publicAPIController,
+	)
 
 	r.Use(middleware.DoAuth(ctx, cfg))
 	r.MethodNotAllowedHandler = methodNotAllowedHandler()
