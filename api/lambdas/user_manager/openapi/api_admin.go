@@ -93,6 +93,12 @@ func (c *AdminApiController) Routes() Routes {
 			c.DeletePageContent,
 		},
 		{
+			"DownloadUsers",
+			strings.ToUpper("Get"),
+			"/api/v1/admin/download/users",
+			c.DownloadUsers,
+		},
+		{
 			"GetAdmins",
 			strings.ToUpper("Get"),
 			"/api/v1/admin/admins",
@@ -105,7 +111,7 @@ func (c *AdminApiController) Routes() Routes {
 			c.GetBackgroundImages,
 		},
 		{
-			"ListUsers",
+			"DownloadUsers",
 			strings.ToUpper("Get"),
 			"/api/v1/admin/users",
 			c.ListUsers,
@@ -267,6 +273,19 @@ func (c *AdminApiController) DeletePageContent(w http.ResponseWriter, r *http.Re
 	pageIdParam := params["pageId"]
 	contentIdParam := params["contentId"]
 	result, err := c.service.DeletePageContent(r.Context(), pageIdParam, contentIdParam)
+	// If an error occurred, encode the error with the status code
+	if err != nil {
+		c.errorHandler(w, r, err, &result)
+		return
+	}
+	// If no error, encode the body and the result code
+	EncodeJSONResponse(result.Body, &result.Code, w)
+
+}
+
+// DownloadUsers - Download users in the system
+func (c *AdminApiController) DownloadUsers(w http.ResponseWriter, r *http.Request) {
+	result, err := c.service.DownloadUsers(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		c.errorHandler(w, r, err, &result)

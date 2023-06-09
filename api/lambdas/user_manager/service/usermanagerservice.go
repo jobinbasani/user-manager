@@ -181,16 +181,12 @@ func (u *UserManagerService) UpdatePageContent(ctx context.Context, pageId strin
 }
 
 func (u *UserManagerService) ListUsers(ctx context.Context, start string, limit int32) (openapi.ImplResponse, error) {
-	var generateCSV bool
-	csvVal := ctx.Value("csv")
-	if value, ok := csvVal.(bool); ok {
-		generateCSV = value
-	}
-	if generateCSV {
-		results, err := u.dataService.GetAllUsers(ctx)
-		return u.handleResponse(results, err)
-	}
 	results, err := u.dataService.ListUsers(ctx, start, limit)
+	return u.handleResponse(results, err)
+}
+
+func (u *UserManagerService) DownloadUsers(ctx context.Context) (openapi.ImplResponse, error) {
+	results, err := u.dataService.GetAllUsers(ctx)
 	return u.handleResponse(results, err)
 }
 

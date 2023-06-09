@@ -188,6 +188,29 @@ func (s *AdminApiService) DeletePageContent(ctx context.Context, pageId string, 
 	return Response(http.StatusNotImplemented, nil), errors.New("DeletePageContent method not implemented")
 }
 
+// DownloadUsers - Download users in the system
+func (s *AdminApiService) DownloadUsers(ctx context.Context) (ImplResponse, error) {
+	// TODO - update DownloadUsers with the required logic for this service method.
+	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+
+	//TODO: Uncomment the next line to return response Response(200, {}) or use other options such as http.Ok ...
+	//return Response(200, nil),nil
+
+	//TODO: Uncomment the next line to return response Response(401, UnauthorizedError{}) or use other options such as http.Ok ...
+	//return Response(401, UnauthorizedError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(403, ForbiddenError{}) or use other options such as http.Ok ...
+	//return Response(403, ForbiddenError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(404, NotFoundError{}) or use other options such as http.Ok ...
+	//return Response(404, NotFoundError{}), nil
+
+	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
+	//return Response(0, InternalServerError{}), nil
+
+	return Response(http.StatusNotImplemented, nil), errors.New("DownloadUsers method not implemented")
+}
+
 // GetAdmins - List of users with Admin access
 func (s *AdminApiService) GetAdmins(ctx context.Context) (ImplResponse, error) {
 	// TODO - update GetAdmins with the required logic for this service method.
@@ -236,7 +259,7 @@ func (s *AdminApiService) GetBackgroundImages(ctx context.Context) (ImplResponse
 
 // ListUsers - List users in the system
 func (s *AdminApiService) ListUsers(ctx context.Context, start string, limit int32) (ImplResponse, error) {
-	// TODO - update ListUsers with the required logic for this service method.
+	// TODO - update DownloadUsers with the required logic for this service method.
 	// Add api_admin_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 
 	//TODO: Uncomment the next line to return response Response(200, BasicUserInfoList{}) or use other options such as http.Ok ...
@@ -254,7 +277,7 @@ func (s *AdminApiService) ListUsers(ctx context.Context, start string, limit int
 	//TODO: Uncomment the next line to return response Response(0, InternalServerError{}) or use other options such as http.Ok ...
 	//return Response(0, InternalServerError{}), nil
 
-	return Response(http.StatusNotImplemented, nil), errors.New("ListUsers method not implemented")
+	return Response(http.StatusNotImplemented, nil), errors.New("DownloadUsers method not implemented")
 }
 
 // RemoveFromAdminGroup - Remove members from admin group

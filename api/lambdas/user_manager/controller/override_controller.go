@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"context"
 	"encoding/csv"
 	"errors"
 	"net/http"
@@ -23,10 +22,10 @@ type OverrideApiController struct {
 func (o *OverrideApiController) Routes() openapi.Routes {
 	return openapi.Routes{
 		{
-			Name:        "ListUsers",
+			Name:        "DownloadUsers",
 			Method:      strings.ToUpper("Get"),
-			Pattern:     "/api/v1/admin/users",
-			HandlerFunc: o.ListUsers,
+			Pattern:     "/api/v1/admin/download/users",
+			HandlerFunc: o.DownloadUsers,
 		},
 	}
 }
@@ -40,68 +39,50 @@ func NewOverrideApiController(s *service.UserManagerService) openapi.Router {
 	return controller
 }
 
-func (o *OverrideApiController) ListUsers(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	acceptHeader := r.Header.Get("Accept")
-	generateCSV := false
-	if acceptHeader == "text/csv" {
-		generateCSV = true
-		ctx = context.WithValue(ctx, "csv", generateCSV)
-	}
-	query := r.URL.Query()
-	startParam := query.Get("start")
-	limitParam, err := parseInt32Parameter(query.Get("limit"), false)
-	if err != nil {
-		o.errorHandler(w, r, &openapi.ParsingError{Err: err}, nil)
-		return
-	}
-	result, err := o.service.ListUsers(ctx, startParam, limitParam)
+func (o *OverrideApiController) DownloadUsers(w http.ResponseWriter, r *http.Request) {
+	result, err := o.service.DownloadUsers(r.Context())
 	// If an error occurred, encode the error with the status code
 	if err != nil {
 		o.errorHandler(w, r, err, &result)
 		return
 	}
 
-	if generateCSV {
-		if results, ok := result.Body.([]model.UserExtended); ok {
-			w.Header().Set("Content-Type", acceptHeader)
-			data := [][]string{{
-				"First Name",
-				"Last Name",
-				"Email",
-				"Baptismal Name",
-				"Date Of Birth",
-				"Gender",
-				"Home Parish",
-				"Marital Status",
-				"Diocese In India",
-				"Street",
-				"City",
-				"Postal Code",
-				"Province",
-			}}
-			for _, k := range results {
-				data = append(data, []string{
-					k.FirstName,
-					k.LastName,
-					k.Email,
-					k.BaptismalName,
-					k.DateOfBirth,
-					k.Gender,
-					k.HomeParish,
-					k.MaritalStatus,
-					k.DioceseInIndia,
-					k.Street,
-					k.City,
-					k.PostalCode,
-					k.Province,
-				})
-			}
-			cw := csv.NewWriter(w)
-			cw.WriteAll(data)
+	if results, ok := result.Body.([]model.UserExtended); ok {
+		w.Header().Set("Content-Disposition", "attachment; filename=\"holyfamily_members.csv\"")
+		data := [][]string{{
+			"First Name",
+			"Last Name",
+			"Email",
+			"Baptismal Name",
+			"Date Of Birth",
+			"Gender",
+			"Home Parish",
+			"Marital Status",
+			"Diocese In India",
+			"Street",
+			"City",
+			"Postal Code",
+			"Province",
+		}}
+		for _, k := range results {
+			data = append(data, []string{
+				k.FirstName,
+				k.LastName,
+				k.Email,
+				k.BaptismalName,
+				k.DateOfBirth,
+				k.Gender,
+				k.HomeParish,
+				k.MaritalStatus,
+				k.DioceseInIndia,
+				k.Street,
+				k.City,
+				k.PostalCode,
+				k.Province,
+			})
 		}
-	} else {
-		openapi.EncodeJSONResponse(result.Body, &result.Code, w)
+		cw := csv.NewWriter(w)
+		cw.WriteAll(data)
 	}
 }
 

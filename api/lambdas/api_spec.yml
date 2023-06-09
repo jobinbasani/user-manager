@@ -291,6 +291,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BasicUserInfoList'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/admin/download/users:
+    get:
+      operationId: downloadUsers
+      summary: Download users in the system
+      tags:
+        - Admin
+      responses:
+        200:
+          description: success
+          content:
             text/csv: {}
         401:
           $ref: '#/components/responses/Unauthorized'
