@@ -1,11 +1,14 @@
 package controller
 
 import (
-	"encoding/csv"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"unicode"
+
+	"github.com/xuri/excelize/v2"
 
 	"lambdas/user_manager/model"
 	"lambdas/user_manager/openapi"
@@ -49,8 +52,35 @@ func (o *OverrideApiController) DownloadUsers(w http.ResponseWriter, r *http.Req
 	}
 
 	if results, ok := result.Body.([]model.UserExtended); ok {
-		w.Header().Set("Content-Disposition", "attachment; filename=\"holyfamily_members.csv\"")
-		data := [][]string{{
+		f := excelize.NewFile()
+		defer func() {
+			if err := f.Close(); err != nil {
+				fmt.Println(err)
+			}
+		}()
+
+		sheetName := f.GetSheetName(0)
+
+		w.Header().Set("Content-Type", "application/octet-stream")
+		w.Header().Set("Content-Transfer-Encoding", "binary")
+		w.Header().Set("Expires", "0")
+		w.Header().Set("Content-Disposition", "attachment; filename=\"holyfamily_members.xlsx\"")
+
+		writeRow := func(row int, data []string) {
+			col := 'a'
+			for _, d := range data {
+				cell := fmt.Sprintf("%c%d", unicode.ToUpper(col), row)
+				err := f.SetCellStr(sheetName, cell, d)
+				if err != nil {
+					fmt.Println(err)
+				}
+				col++
+			}
+		}
+
+		rowNum := 1
+
+		writeRow(rowNum, []string{
 			"First Name",
 			"Last Name",
 			"Email",
@@ -65,9 +95,11 @@ func (o *OverrideApiController) DownloadUsers(w http.ResponseWriter, r *http.Req
 			"City",
 			"Postal Code",
 			"Province",
-		}}
+		})
+
 		for _, k := range results {
-			data = append(data, []string{
+			rowNum++
+			writeRow(rowNum, []string{
 				k.FirstName,
 				k.LastName,
 				k.Email,
@@ -84,8 +116,7 @@ func (o *OverrideApiController) DownloadUsers(w http.ResponseWriter, r *http.Req
 				k.Province,
 			})
 		}
-		cw := csv.NewWriter(w)
-		cw.WriteAll(data)
+		f.WriteTo(w)
 	}
 }
 

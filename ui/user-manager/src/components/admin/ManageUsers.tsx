@@ -92,7 +92,7 @@ export default function ManageUsers({ user }:AdminProps) {
     getAdminAPI(user.accessToken)
       .downloadUsers({ responseType: 'blob' })
       .then((resp) => {
-        saveAs(resp.data, 'holyfamily_users.csv');
+        saveAs(resp.data, 'holyfamily_users.xlsx');
       });
   };
 
