@@ -36,7 +36,7 @@ export default function Navbar() {
             Holy Family Syro Malabar Catholic Church
           </Typography>
           <Typography variant="body2">
-            @St. Stephen&apos;s Church,6032 Normandy Drive, Halifax, B3K 2S9
+            @St. Stephen&apos;s Church, 6032 Normandy Drive, Halifax, B3K 2S9
           </Typography>
         </Box>
         {user?.isLoggedIn
