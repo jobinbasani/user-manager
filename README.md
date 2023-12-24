@@ -11,4 +11,5 @@ A user manager system that run on AWS that aims to be a cost-effective system.
    - Github actions will deploy code after PR merge
 
 To start with backend, refer [here](api/lambdas)
+
 To start with frontend, refer [here](ui/user-manager)
