@@ -32,6 +32,9 @@ services:
       dockerfile: Dockerfile.api
     image: usermanager_api
     container_name: usermanager_api
+    environment:
+      - USERMANAGER_S3_BUCKET=uibucket
+      - USERMANAGER_SEARCH_INDEX_NAME=searchIndex
     ports:
       - "8989:8989"
 
